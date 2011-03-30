@@ -1,0 +1,68 @@
+.\" Process this file with
+.\" groff -man -Tascii main.6
+.\"
+.TH TEMPOND 1 "MARCH 2011" Linux "User Manuals"
+.SH NAME
+tempond \- todo
+.SH SYNOPSIS
+.B tempond [-p] [-c
+.I config-file
+.B ]
+.I file
+.B ...
+.SH DESCRIPTION
+.B tempmond
+monitor temperature
+.SH OPTIONS
+.IP -p
+Do not actually preform the action, just state what
+would have been done.
+.IP "-c config-file"
+Use the alternate system wide
+.I config-file
+instead of
+.IR /etc/main.conf .
+This overrides any
+.B MAINCONF
+environment variable.
+.SH FILES
+.I /etc/main.conf
+.RS
+The system wide configuration file. See
+.BR main.conf (5)
+for further details.
+.RE
+.I ~/.mainrc
+.RS
+Per user configuration file. See
+.BR main.conf (5)
+for further details.
+.SH ENVIRONMENT
+.IP MAINCONF
+If non-null the full pathname for an alternate system wide
+.IR main.conf .
+Overridden by the
+.B -c
+option.
+.SH DIAGNOSTICS
+The following diagnostics may be issued on stderr:
+ 
+Bad magic number.
+.RS
+The input file does not look like an archive file.
+.RE
+Old style baz segments.
+.RS
+.B foo
+can only handle new style baz segments. COBOL
+object libraries are not supported in this version.
+.SH BUGS
+Does not actually achieve its purpose; rather, it
+just prints some silly messages to the terminal.
+.SH AUTHOR
+Anthony G. Basile <basile at opensource dot dyc dot edu>
+.SH "SEE ALSO"
+.BR elf (5),
+.BR objcopy (1),
+.BR objdump (1)
+

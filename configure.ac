@@ -1,0 +1,5 @@
+AC_PREREQ([2.65])
+AC_INIT([tempond],[0.1])
+AM_INIT_AUTOMAKE([1.11 foreign])
+AC_CONFIG_FILES([Makefile])
+AC_OUTPUT
