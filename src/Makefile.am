@@ -1,2 +1,2 @@
 sbin_PROGRAMS = tempmond
-tempond_SOURCES = tempond.c
+tempmond_SOURCES = tempmond.c

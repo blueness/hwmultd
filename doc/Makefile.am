@@ -1,1 +1,1 @@
-man_MANS = tempmond.man
+man_MANS = tempmond.8
