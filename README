@@ -1,0 +1,15 @@
+
+The repository for the tempond project.
+
+This is a daemon which reads temperatures from a "Tempature Alert" usb probe
+and then multicasts the temperature to other computer on the LAN.  These
+can then decide to shutdown if the temperature gets above some acceptible
+limit.
+
+Authors:
+	Anthony G. Basile	<basile@opensource.dyc.edu>
+
+Reference:
+
+	http://www.temperaturealert.com/Temperature-Alarm.aspx
+
