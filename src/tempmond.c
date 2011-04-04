@@ -2,6 +2,9 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <unistd.h>
+#include <signal.h>
+
+#include <signalhandler.h>
 
 int
 main( int argc, char *argv[] )
@@ -25,9 +28,6 @@ main( int argc, char *argv[] )
 	close(STDOUT_FILENO);
 	close(STDERR_FILENO);
 
-	fprintf( stdout, "I am stdout\n") ;
-	fprintf( stderr, "I am stderr\n") ;
-
 	/* Create a new SID for the child process */
 	pid_t sid = setsid();
 	if (sid < 0)
@@ -35,7 +35,18 @@ main( int argc, char *argv[] )
 		exit(EXIT_FAILURE);
 	}
 
-	for(;;);
+	/* Handle signals */
+	int i ;
+	const int caught_signal[] = { SIGTERM, SIGINT, SIGHUP, 0 };
+
+	for (i = 0; caught_signal[i] != 0; i++)
+		signal(caught_signal[i],sighandler);
+
+	/* The big loop */
+	while(1)
+	{
+		sleep(30);
+	}
 
 	return 0;
 }
