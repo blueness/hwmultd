@@ -1,11 +1,13 @@
 
 #include <stdlib.h>
 #include <signal.h>
+#include <log.h>
 
 void
 clean_exit()
 {
-	exit(0) ;
+	close_log();
+	exit(0);
 }
 
 void
@@ -14,12 +16,13 @@ sighandler(int sig)
 	switch(sig)
 	{
 		case SIGHUP:
-			break ;
+			break;
 		case SIGTERM:
-			break ;
+			clean_exit();
+			break;
 		case SIGINT:
 			clean_exit();
-			break ;
+			break;
 		default:
 			break;
 	}

@@ -5,6 +5,7 @@
 #include <signal.h>
 
 #include <signalhandler.h>
+#include <log.h>
 
 int
 main( int argc, char *argv[] )
@@ -28,6 +29,8 @@ main( int argc, char *argv[] )
 	close(STDOUT_FILENO);
 	close(STDERR_FILENO);
 
+	open_log();
+
 	/* Create a new SID for the child process */
 	pid_t sid = setsid();
 	if (sid < 0)
@@ -46,6 +49,7 @@ main( int argc, char *argv[] )
 	while(1)
 	{
 		sleep(30);
+		write_log("hi there\n");
 	}
 
 	return 0;
