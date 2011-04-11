@@ -15,7 +15,7 @@ main( int argc, char *argv[] )
 
 	if (pid < 0)
 	{
-		fprintf( stderr, "Failed to fork\n") ;
+		fprintf( stderr, "Failed to fork.\n") ;
 		exit(EXIT_FAILURE);
 	}
 
@@ -24,20 +24,25 @@ main( int argc, char *argv[] )
 
 	pid = getpid() ;
 
-	/* Open log before closing file descriptors to get error message to stderr */
-	open_log();
+	/* Create a new SID for the child process */
+	pid_t sid = setsid();
+	if (sid < 0)
+	{
+		fprintf( stderr, "Failed to set session id.\n") ;
+		exit(EXIT_FAILURE);
+	}
+
+	/* Open log. */
+	if( !open_log() )
+	{
+		fprintf( stderr, "Failed to open log.\n") ;
+		exit(EXIT_FAILURE);
+	}
 
 	/* Close open files inherited from parent. */
 	close(STDIN_FILENO);
 	close(STDOUT_FILENO);
 	close(STDERR_FILENO);
-
-	/* Create a new SID for the child process */
-	pid_t sid = setsid();
-	if (sid < 0)
-	{
-		exit(EXIT_FAILURE);
-	}
 
 	/* Handle signals */
 	int i ;

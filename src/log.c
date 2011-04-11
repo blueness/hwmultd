@@ -1,6 +1,4 @@
 
-#include <stdio.h>
-#include <stdlib.h>
 #include <sys/types.h>
 #include <sys/stat.h>
 #include <fcntl.h>
@@ -13,21 +11,18 @@ int log_fd;
 const char *log_file_name = "/var/log/tempmond.log";
 
 
-/*
- * Open log before you close stderr otherwise there is not message for the user to read.
- */
 int
 open_log()
 {
-	if( log_fd = open( log_file_name, O_CREAT|O_WRONLY|O_APPEND, S_IRUSR|S_IWUSR|S_IRGRP|S_IROTH ) )
+	log_fd = open( log_file_name, O_CREAT|O_WRONLY|O_APPEND, S_IRUSR|S_IWUSR|S_IRGRP|S_IROTH );
+	if( log_fd >= 0 )
 	{
 		write_log("Daemon started: hello world\n") ;
 		return 1 ;
 	}
 	else
 	{
-		fprintf(stderr, "Can't open log file, bailing.");
-		exit(EXIT_FAILURE);
+		return 0 ;
 	}
 }
 
