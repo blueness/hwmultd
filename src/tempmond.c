@@ -24,12 +24,13 @@ main( int argc, char *argv[] )
 
 	pid = getpid() ;
 
+	/* Open log before closing file descriptors to get error message to stderr */
+	open_log();
+
 	/* Close open files inherited from parent. */
 	close(STDIN_FILENO);
 	close(STDOUT_FILENO);
 	close(STDERR_FILENO);
-
-	open_log();
 
 	/* Create a new SID for the child process */
 	pid_t sid = setsid();
@@ -49,7 +50,7 @@ main( int argc, char *argv[] )
 	while(1)
 	{
 		sleep(30);
-		write_log("hi there\n");
+		write_log("PING\n");
 	}
 
 	return 0;

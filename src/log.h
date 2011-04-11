@@ -1,5 +1,5 @@
 
-void open_log();
-void write_log(const char *);
-void close_log();
+int open_log();
+int write_log(const char *);
+int close_log();
 
