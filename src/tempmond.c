@@ -6,6 +6,7 @@
 
 #include <signalhandler.h>
 #include <log.h>
+#include <cmdargs.h>
 
 int
 main( int argc, char *argv[] )
@@ -39,6 +40,9 @@ main( int argc, char *argv[] )
 		exit(EXIT_FAILURE);
 	}
 
+	/* Set global parameters to determine mode of operation by server/client */
+	parse_cmd_args( argc, argv );
+
 	/* Close open files inherited from parent. */
 	close(STDIN_FILENO);
 	close(STDOUT_FILENO);
@@ -56,6 +60,10 @@ main( int argc, char *argv[] )
 	{
 		sleep(30);
 		write_log("PING\n");
+		if( server_mode )
+			write_log("\trunning in server mode\n");
+		else
+			write_log("\trunning in client mode\n");
 	}
 
 	return 0;
