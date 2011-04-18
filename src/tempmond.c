@@ -40,7 +40,10 @@ main( int argc, char *argv[] )
 		exit(EXIT_FAILURE);
 	}
 
-	/* Set global parameters to determine mode of operation by server/client */
+	/* Parse config file to set global parameters */
+	parse_cfg_file();
+
+	/* Parse command line arguments to set global parameters */
 	parse_cmd_args( argc, argv );
 
 	/* Close open files inherited from parent. */
