@@ -69,7 +69,7 @@ recv_mcast_msg()
 
 	int len = sizeof(caddr);
 	if(recvfrom( sd, msg, MSG_BUFFER, 0, (struct sockaddr *) &caddr, (socklen_t *) &len ) < 0)
-		return NUL;
+		return NULL;
 	else
 		return msg;
 
