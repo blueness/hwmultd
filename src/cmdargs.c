@@ -10,6 +10,7 @@
 void
 sanity_checks()
 {
+	// No sanity check for IP.  That's done in mserver.c
 	if(port < MIN_PORT || MAX_PORT < port)
 	{
 		port = DEFAULT_PORT;
@@ -40,9 +41,10 @@ parse_cfg_file()
 	char conf_line[CONF_LINE_BUFFER];
 	char first[CONF_LINE_BUFFER], second[CONF_LINE_BUFFER];
 
-	port        = DEFAULT_PORT;
-	log_level   = DEFAULT_LOG_LEVEL;
-	server_mode = DEFAULT_SERVER_MODE ;
+	strcpy(site_ip, DEFAULT_SITE_LOCAL_IP);
+	port          = DEFAULT_PORT;
+	log_level     = DEFAULT_LOG_LEVEL;
+	server_mode   = DEFAULT_SERVER_MODE ;
 
 	if( (myfile = fopen(DEFAULT_CONFIG_FILENAME,"r")) == NULL )
 	{
@@ -54,6 +56,8 @@ parse_cfg_file()
 	{
 		sscanf(conf_line,"%s %s", first, second ) ;
 
+		if(strcmp(first,"IP") == 0)
+			strcpy(site_ip, second);
 		if(strcmp(first,"Port") == 0)
 			port = atoi(second);
 		if(strcmp(first,"Debug") == 0)
@@ -76,15 +80,18 @@ parse_cmd_args( int argc, char *argv[] )
 	{
 		switch(oc)
 		{
+			case 'a':
+				strcpy(site_ip, optarg);
+				break;
 			case 'p':
-				port = (uint16_t) atoi(optarg) ;
-				break ;
+				port = (uint16_t) atoi(optarg);
+				break;
 			case 'd':
-				log_level = atoi(optarg) ;
-				break ;
+				log_level = atoi(optarg);
+				break;
 			case 's':
-				server_mode = 1 ;
-				break ;
+				server_mode = 1;
+				break;
 			case ':':
 				fprintf( stderr, "%s: option -%c requires argument\n", argv[0], optopt ) ;
 				break ;

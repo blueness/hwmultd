@@ -11,6 +11,8 @@
 int
 main( int argc, char *argv[] )
 {
+	char *msg;
+
 	// Fork into background
 	pid_t pid = fork();
 
@@ -64,15 +66,32 @@ main( int argc, char *argv[] )
 	write_log(INFO, "TESTING - %s %c %d %f\n", "hello world", 'x', 42, 3.14159);
 	write_log(DBUG, "TESTING - %s %c %d %f\n", "hello world", 'x', 42, 3.14159);
 
+	// tempmond server is a multicast client and
+	// tempmond client is a multicast server
+	if(server_mode == SERVER_MODE)
+		mclient_start();
+	else
+		mserver_start();
+
 	// The big loop
 	while(1)
 	{
-		sleep(30);
-		write_log(INFO, "%s\n", "PING");
-		if( server_mode )
-			write_log(INFO, "%s\n", "Running in server mode.");
+		sleep(5);
+		if(server_mode == SERVER_MODE)
+		{
+			if(send_mcast_msg("test"))
+				write_log(DBUG, "%s\n", "Server sent message");
+			else
+				write_log(DBUG, "%s\n", "Server FAILED sent message");
+
+		}
 		else
-			write_log(INFO, "%s\n", "Running in client mode.");
+		{
+			if(msg = recv_mcast_msg())
+				write_log(INFO, "Message received: %s\n", msg);
+			else
+				write_log(INFO, "No message received\n");
+		}
 	}
 
 	return 0;
