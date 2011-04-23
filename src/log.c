@@ -18,10 +18,7 @@ open_log()
 	log_level = EARLY_LOG_LEVEL;
 
 	if((log_stream = fopen(log_file_name, "a+")) != NULL)
-	{
 		write_log(CRIT, "START<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<\n") ;
-		write_log(DBUG, "TESTING - %s %c %d %f\n", "hello world", 'x', 42, 3.14159);
-	}
 	else
 		return 0;
 }
@@ -38,7 +35,7 @@ write_log(int level, const char *fmt,...)
 	char tmstr[TIME_BUFFER];
 	char tmstp[TIME_BUFFER];
 
-	if(log_level > level)
+	if(log_level < level)
 		return 1;
 
 	t = time(NULL);

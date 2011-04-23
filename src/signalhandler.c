@@ -6,7 +6,7 @@
 void
 clean_exit()
 {
-	write_log(INFO, "EXITING>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>\n");
+	write_log(CRIT, "EXITING>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>\n");
 	close_log();
 	exit(0);
 }

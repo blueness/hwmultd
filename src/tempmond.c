@@ -58,6 +58,12 @@ main( int argc, char *argv[] )
 	for (i = 0; caught_signal[i] != 0; i++)
 		signal(caught_signal[i],sighandler);
 
+	// Log test before jumping into the big loo
+	write_log(CRIT, "TESTING - %s %c %d %f\n", "hello world", 'x', 42, 3.14159);
+	write_log(ERRO, "TESTING - %s %c %d %f\n", "hello world", 'x', 42, 3.14159);
+	write_log(INFO, "TESTING - %s %c %d %f\n", "hello world", 'x', 42, 3.14159);
+	write_log(DBUG, "TESTING - %s %c %d %f\n", "hello world", 'x', 42, 3.14159);
+
 	// The big loop
 	while(1)
 	{
