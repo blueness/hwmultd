@@ -6,7 +6,7 @@
 void
 clean_exit()
 {
-	write_log("%s\n", "Ciao, adios, I'm out of here!");
+	write_log(INFO, "EXITING>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>\n");
 	close_log();
 	exit(0);
 }
@@ -17,19 +17,18 @@ sighandler(int sig)
 	switch(sig)
 	{
 		case SIGHUP:
-			write_log("%s\n", "HUP recieved.");
+			write_log(INFO, "%s\n", "HUP recieved.");
 			break;
 		case SIGTERM:
-			write_log("%s\n", "TERM recieved.");
+			write_log(INFO, "%s\n", "TERM recieved.");
 			clean_exit();
 			break;
 		case SIGINT:
-			write_log("%s\n", "INT recieved.");
+			write_log(INFO, "%s\n", "INT recieved.");
 			clean_exit();
 			break;
 		default:
-			write_log("%s\n", "UNKNOWN signal recieved recieved.");
+			write_log(INFO, "%s\n", "UNKNOWN signal recieved recieved.");
 			break;
 	}
 }
-
