@@ -62,11 +62,11 @@ main( int argc, char *argv[] )
 	while(1)
 	{
 		sleep(30);
-		write_log("PING\n");
+		write_log("%s\n", "PING");
 		if( server_mode )
-			write_log("\trunning in server mode\n");
+			write_log("%s\n", "Running in server mode.");
 		else
-			write_log("\trunning in client mode\n");
+			write_log("%s\n", "Running in client mode.");
 	}
 
 	return 0;

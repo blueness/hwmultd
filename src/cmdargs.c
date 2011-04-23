@@ -15,7 +15,7 @@ parse_cfg_file()
 
 	if( (myfile = fopen(DEFAULT_CONFIG_FILENAME,"r")) == NULL )
 	{
-		write_log("No config file found");
+		write_log("%s\n", "No config file found");
 		port = DEFAULT_PORT ;
 		server_mode = DEFAULT_SERVER_MODE ;
 		return ;
@@ -40,7 +40,7 @@ parse_cfg_file()
 	if( port == 0 )
 	{
 		port = 8000;
-		write_log("Garbled port found, defaulting.");
+		write_log("%s\n", "Garbled port found, defaulting.");
 	}
 }
 
