@@ -32,6 +32,7 @@ AC_TYPE_UINT16_T
 
 # Checks for library functions.
 AC_FUNC_FORK
+AC_FUNC_MALLOC
 AC_CHECK_FUNCS([gethostbyname])
 AC_CHECK_FUNCS([socket])
 
