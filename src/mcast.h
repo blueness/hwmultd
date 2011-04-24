@@ -3,6 +3,8 @@
  * for the choice of multicast address in Site Local Scope, RFC RFC2365.
  */
 
+#include <netinet/in.h>
+
 #define MSG_BUFFER 1000
 
 int sd, cd;
