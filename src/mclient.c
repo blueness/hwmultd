@@ -19,14 +19,14 @@ int
 mclient_start()
 {
 	struct hostent *host;
-   	struct in_addr iaddr;
+   	struct in_addr iaddr, aaddr;
 	unsigned char ttl = 1;
-	unsigned char one = 1;
+	//unsigned char one = 1;
 
 	memset(&caddr, 0, sizeof(struct sockaddr_in));
 	memset(&iaddr, 0, sizeof(struct in_addr));
+	memset(&aaddr, 0, sizeof(struct in_addr));
 
-/*	
 	if((host = gethostbyname(site_ip)) == NULL)
 	{
 		write_log(CRIT,"client invalid IP\n");
@@ -40,7 +40,6 @@ mclient_start()
 		write_log(CRIT,"client non-multicast IP");
 		return 0;
 	}
-*/
 
 	if((cd = socket(AF_INET, SOCK_DGRAM, 0)) < 0)
 	{
@@ -58,9 +57,9 @@ mclient_start()
 		return 0;
 	}
 
-	iaddr.s_addr = INADDR_ANY;
+	aaddr.s_addr = INADDR_ANY;
 
-	if(setsockopt(cd, IPPROTO_IP, IP_MULTICAST_IF, &iaddr, sizeof(struct in_addr)))
+	if(setsockopt(cd, IPPROTO_IP, IP_MULTICAST_IF, &aaddr, sizeof(struct in_addr)))
 	{
 		write_log(CRIT,"client cannot set iaddr");
 		return 0;
@@ -73,10 +72,6 @@ mclient_start()
 	}
 
 /*
-	caddr.sin_family = host->h_addrtype;
-	memcpy((char *) &caddr.sin_addr.s_addr, host->h_addr_list[0], host->h_length);
-	caddr.sin_port = htons(port);
-
 	if(setsockopt(cd, IPPROTO_IP, IP_MULTICAST_LOOP, &one, sizeof(unsigned char)))
 	{
 		write_log(CRIT,"client cannot set ttl");
@@ -85,7 +80,7 @@ mclient_start()
 */
 
 	caddr.sin_family = PF_INET;
-	caddr.sin_addr.s_addr = inet_addr(site_ip);
+	caddr.sin_addr.s_addr = iaddr.s_addr;
 	caddr.sin_port = htons(port);
 }
 

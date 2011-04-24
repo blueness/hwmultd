@@ -1,7 +1,9 @@
 
 #include <stdlib.h>
 #include <signal.h>
+
 #include <log.h>
+#include <cmdargs.h>
 
 void
 clean_exit()
