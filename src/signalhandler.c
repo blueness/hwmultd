@@ -7,6 +7,11 @@ void
 clean_exit()
 {
 	write_log(CRIT, "EXITING>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>\n");
+	if(server_mode == SERVER_MODE)
+		mclient_stop();
+	else
+		mclient_start();
+
 	close_log();
 	exit(0);
 }

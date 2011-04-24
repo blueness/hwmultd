@@ -12,48 +12,55 @@
 
 #include <log.h>
 #include <cmdargs.h>
-#include <mserver.h>
+#include <mcast.h>
 
 int
 mserver_start()
 {
 	struct hostent *host;
-	struct in_addr maddr;
-	struct ip_mreq mreq;
+	struct ip_mreq imreq;
+	struct in_addr iaddr;
+
+	memset(&saddr, 0, sizeof(struct sockaddr_in));
+	memset(&iaddr, 0, sizeof(struct in_addr));
+	memset(&imreq, 0, sizeof(struct ip_mreq));
 
 	if((host = gethostbyname(site_ip)) == NULL) 
 	{
-		write_log(CRIT,"invalid IP\n");
+		write_log(CRIT,"server invalid IP\n");
 		return 0;
 	}
 
-	memcpy( &maddr, host->h_addr_list[0], host->h_length );
-	if( !IN_MULTICAST(ntohl(maddr.s_addr)) )
+	memcpy(&iaddr, host->h_addr_list[0], host->h_length);
+
+	if( !IN_MULTICAST(ntohl(iaddr.s_addr)) )
 	{
-		write_log(CRIT,"non-multicast IP");
+		write_log(CRIT,"server non-multicast IP");
 		return 0;
 	}
 
-	if((sd = socket( AF_INET, SOCK_DGRAM, 0 )) < 0)
+	if((sd = socket(AF_INET, SOCK_DGRAM, 0)) < 0)
 	{
-		write_log(CRIT,"socket creation failed\n");
+		write_log(CRIT,"server socket creation failed\n");
 		return 0;
 	}
 
 	saddr.sin_family = AF_INET;
 	saddr.sin_addr.s_addr = htonl(INADDR_ANY);
 	saddr.sin_port = htons(port);  
-	if(bind( sd, (struct sockaddr *) &saddr, sizeof(saddr)) < 0)
+
+	if(bind(sd, (struct sockaddr *)&saddr, sizeof(struct sockaddr_in)) < 0)
 	{
-		write_log(CRIT,"socket bind failed");
+		write_log(CRIT,"server socket bind failed");
 		return 0;
 	}
 
-	mreq.imr_multiaddr.s_addr = maddr.s_addr;
-	mreq.imr_interface.s_addr = htonl(INADDR_ANY);
-	if(setsockopt(sd, IPPROTO_IP, IP_ADD_MEMBERSHIP, (void *) &mreq, sizeof(mreq)))
+	imreq.imr_multiaddr.s_addr = iaddr.s_addr;
+	imreq.imr_interface.s_addr = htonl(INADDR_ANY);
+
+	if(setsockopt(sd, IPPROTO_IP, IP_ADD_MEMBERSHIP, (const void *)&imreq, sizeof(struct ip_mreq)))
 	{
-		write_log(CRIT,"cannot join group");
+		write_log(CRIT,"server cannot join group");
 		return 0;
 	}
 
@@ -62,22 +69,21 @@ mserver_start()
 
 
 char *
-recv_mcast_msg()
+rcv_mcast_msg()
 {
-	struct sockaddr_in caddr;
 	char *msg = (char *)malloc(MSG_BUFFER);
+	int len = sizeof(struct sockaddr_in);
 
-	int len = sizeof(caddr);
-	if(recvfrom( sd, msg, MSG_BUFFER, 0, (struct sockaddr *) &caddr, (socklen_t *) &len ) < 0)
+	if(recvfrom(sd, msg, MSG_BUFFER, 0, (struct sockaddr *)&saddr, &len ) < 0)
 		return NULL;
 	else
 		return msg;
+}
 
-	/*
-	if(sendto(sd, msg, strlen(msg)+1, 0, (struct sockaddr *) &saddr, sizeof(saddr)) < 0)
-	{
-		write_log(ERRO,"msg sendto multicast addr failed");
-		return 0;
-	}
-	*/
+
+int
+mserver_stop()
+{
+	shutdown(sd, 2);
+	close(sd);
 }

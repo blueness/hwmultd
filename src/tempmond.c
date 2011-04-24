@@ -79,7 +79,7 @@ main( int argc, char *argv[] )
 		sleep(5);
 		if(server_mode == SERVER_MODE)
 		{
-			if(send_mcast_msg("test"))
+			if(snd_mcast_msg("test"))
 				write_log(DBUG, "%s\n", "Server sent message");
 			else
 				write_log(DBUG, "%s\n", "Server FAILED sent message");
@@ -87,7 +87,7 @@ main( int argc, char *argv[] )
 		}
 		else
 		{
-			if(msg = recv_mcast_msg())
+			if(msg = rcv_mcast_msg())
 				write_log(INFO, "Message received: %s\n", msg);
 			else
 				write_log(INFO, "No message received\n");
