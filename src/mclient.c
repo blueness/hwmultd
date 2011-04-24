@@ -33,7 +33,7 @@ mclient_start()
 		return 0;
 	}
 	else
-		write_log(DBUG,"client IP set");
+		write_log(DBUG,"client set IP");
 
 
 	memcpy(&iaddr, host->h_addr_list[0], host->h_length);
@@ -46,7 +46,7 @@ mclient_start()
 		return 0;
 	}
 	else
-		write_log(DBUG,"client mulitcast IP set");
+		write_log(DBUG,"client set mulitcast IP");
 
 	if((cd = socket(AF_INET, SOCK_DGRAM, 0)) < 0)
 	{

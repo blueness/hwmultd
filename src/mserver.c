@@ -30,7 +30,7 @@ mserver_start()
 		return 0;
 	}
 	else
-		write_log(DBUG,"server IP set");
+		write_log(DBUG,"server set IP");
 
 	memcpy(&iaddr, host->h_addr_list[0], host->h_length);
 
@@ -40,7 +40,7 @@ mserver_start()
 		return 0;
 	}
 	else
-		write_log(DBUG,"server multicast IP set");
+		write_log(DBUG,"server set multicast IP");
 
 	if((sd = socket(AF_INET, SOCK_DGRAM, 0)) < 0)
 	{

@@ -2,7 +2,7 @@
 #include <log.h>
 #include <cmdargs.h>
 #include <mcast.h>
-
+#include <service.h>
 
 void
 start_service()
@@ -31,7 +31,7 @@ start_service()
 	// The big loop
 	while(1)
 	{
-		sleep(5);
+		sleep(1);
 		if(server_mode == SERVER_MODE)
 		{
 			if( !snd_mcast_msg("test") )
