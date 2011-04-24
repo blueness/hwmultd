@@ -8,11 +8,72 @@
 #include <log.h>
 #include <cmdargs.h>
 
-int
-main( int argc, char *argv[] )
+
+void
+start_service()
 {
 	char *msg;
 
+	// tempmond server is a multicast client and
+	// tempmond client is a multicast server
+	if(server_mode == SERVER_MODE)
+	{
+		if( !mclient_start() )
+		{
+			write_log(CRIT, "mclient_start() failed");
+			clean_exit();
+		}
+	}
+	else
+	{
+		if( !mserver_start() )
+		{
+			write_log(CRIT, "mserver_start() failed");
+			clean_exit();
+		}
+	}
+
+	// The big loop
+	while(1)
+	{
+		sleep(5);
+		if(server_mode == SERVER_MODE)
+		{
+			if(snd_mcast_msg("test"))
+				write_log(DBUG, "server sent message");
+			else
+				write_log(CRIT, "server message send failed");
+		}
+		else
+		{
+			if(msg = rcv_mcast_msg())
+				write_log(DBUG, "message received: %s", msg);
+			else
+				write_log(CRIT, "message message receive failed");
+		}
+	}
+}
+
+
+void
+stop_service()
+{
+	if(server_mode == SERVER_MODE)
+	{
+		if( !mclient_stop() )
+			write_log(CRIT, "mclient_stop() failed");
+	}
+	else
+	{
+		if( !mserver_stop() )
+			write_log(CRIT, "mserver_start() failed");
+	}
+}
+
+
+int
+main( int argc, char *argv[] )
+{
 	// Fork into background
 	pid_t pid = fork();
 
@@ -61,38 +122,10 @@ main( int argc, char *argv[] )
 		signal(caught_signal[i],sighandler);
 
 	// Log test before jumping into the big loo
-	write_log(CRIT, "TESTING - %s %c %d %f\n", "hello world", 'x', 42, 3.14159);
-	write_log(ERRO, "TESTING - %s %c %d %f\n", "hello world", 'x', 42, 3.14159);
-	write_log(INFO, "TESTING - %s %c %d %f\n", "hello world", 'x', 42, 3.14159);
-	write_log(DBUG, "TESTING - %s %c %d %f\n", "hello world", 'x', 42, 3.14159);
+	write_log(CRIT, "TESTING - %s %c %d %f", "hello world", 'x', 42, 3.14159);
+	write_log(ERRO, "TESTING - %s %c %d %f", "hello world", 'x', 42, 3.14159);
+	write_log(INFO, "TESTING - %s %c %d %f", "hello world", 'x', 42, 3.14159);
+	write_log(DBUG, "TESTING - %s %c %d %f", "hello world", 'x', 42, 3.14159);
 
-	// tempmond server is a multicast client and
-	// tempmond client is a multicast server
-	if(server_mode == SERVER_MODE)
-		mclient_start();
-	else
-		mserver_start();
-
-	// The big loop
-	while(1)
-	{
-		sleep(5);
-		if(server_mode == SERVER_MODE)
-		{
-			if(snd_mcast_msg("test"))
-				write_log(DBUG, "%s\n", "Server sent message");
-			else
-				write_log(DBUG, "%s\n", "Server FAILED sent message");
-
-		}
-		else
-		{
-			if(msg = rcv_mcast_msg())
-				write_log(INFO, "Message received: %s\n", msg);
-			else
-				write_log(INFO, "No message received\n");
-		}
-	}
-
-	return 0;
+	start_service();
 }

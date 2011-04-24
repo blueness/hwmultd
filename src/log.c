@@ -18,9 +18,12 @@ open_log()
 	log_level = EARLY_LOG_LEVEL;
 
 	if((log_stream = fopen(log_file_name, "a+")) != NULL)
-		write_log(CRIT, "START<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<\n") ;
-	else
-		return 0;
+	{
+		write_log(CRIT, "START<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<") ;
+		return 1;
+	}
+
+	return 0;
 }
 
 
@@ -60,6 +63,8 @@ write_log(int level, const char *fmt,...)
 
 	if(fflush(log_stream) != 0)
 		return 0;
+
+	fprintf(log_stream, "\n");
 
 	return 1;
 }

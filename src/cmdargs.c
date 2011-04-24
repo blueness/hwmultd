@@ -10,27 +10,34 @@
 void
 sanity_checks()
 {
-	// No sanity check for IP.  That's done in mserver.c
+	// No sanity check for IP.  That's done in mserver.c/mclient.c
+
 	if(port < MIN_PORT || MAX_PORT < port)
 	{
 		port = DEFAULT_PORT;
-		write_log(ERRO, "Garbled port in %s.  Defaulting to %d.\n",
+		write_log(ERRO, "Garbled port in %s.  Defaulting to %d",
 			DEFAULT_CONFIG_FILENAME, DEFAULT_PORT );
 	}
+	else
+		write_log(INFO, "Port        = %d", port);
 
 	if(log_level < CRIT || DBUG < log_level)
 	{
 		log_level = DEFAULT_LOG_LEVEL;
-		write_log(ERRO, "Garbled log level in %s.  Defaulting to %d.\n",
+		write_log(ERRO, "Garbled log level in %s.  Defaulting to %d",
 			DEFAULT_CONFIG_FILENAME, DEFAULT_LOG_LEVEL);
 	}
+	else
+		write_log(INFO, "Log Level   = %d", log_level);
 
 	if((server_mode != SERVER_MODE ) && (server_mode != CLIENT_MODE))
 	{
 		server_mode = DEFAULT_SERVER_MODE;
-		write_log(ERRO, "Garbled server mode in %s.  Defaulting to %d.\n",
+		write_log(ERRO, "Garbled server mode in %s.  Defaulting to %d",
 			DEFAULT_CONFIG_FILENAME, DEFAULT_SERVER_MODE);
 	}
+	else
+		write_log(INFO, "Server Mode = %d", server_mode);
 }
 
 
@@ -48,7 +55,7 @@ parse_cfg_file()
 
 	if( (myfile = fopen(DEFAULT_CONFIG_FILENAME,"r")) == NULL )
 	{
-		write_log(INFO, "No config file found.\n");
+		write_log(INFO, "No config file found");
 		return ;
 	}
 
@@ -76,7 +83,7 @@ void
 parse_cmd_args( int argc, char *argv[] )
 {
 	int oc ;
-	while( ( oc = getopt( argc, argv, ":p:d:s") ) != -1 )
+	while( ( oc = getopt( argc, argv, ":a:p:d:s") ) != -1 )
 	{
 		switch(oc)
 		{

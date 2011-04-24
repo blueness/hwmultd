@@ -2,18 +2,14 @@
 #include <stdlib.h>
 #include <signal.h>
 
-#include <log.h>
 #include <cmdargs.h>
+#include <log.h>
 
 void
 clean_exit()
 {
-	write_log(CRIT, "EXITING>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>\n");
-	if(server_mode == SERVER_MODE)
-		mclient_stop();
-	else
-		mclient_start();
-
+	stop_service();
+	write_log(CRIT, "EXITING>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>");
 	close_log();
 	exit(0);
 }
@@ -24,18 +20,21 @@ sighandler(int sig)
 	switch(sig)
 	{
 		case SIGHUP:
-			write_log(INFO, "%s\n", "HUP recieved.");
+			parse_cfg_file();
+			stop_service();
+			start_service();
+			write_log(INFO, "HUP recieved.");
 			break;
 		case SIGTERM:
-			write_log(INFO, "%s\n", "TERM recieved.");
+			write_log(INFO, "TERM recieved.");
 			clean_exit();
 			break;
 		case SIGINT:
-			write_log(INFO, "%s\n", "INT recieved.");
+			write_log(INFO, "INT recieved.");
 			clean_exit();
 			break;
 		default:
-			write_log(INFO, "%s\n", "UNKNOWN signal recieved recieved.");
+			write_log(INFO, "UNKNOWN signal recieved recieved.");
 			break;
 	}
 }
