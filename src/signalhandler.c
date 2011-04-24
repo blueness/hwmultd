@@ -4,6 +4,7 @@
 
 #include <cmdargs.h>
 #include <log.h>
+#include <service.h>
 
 void
 clean_exit()
@@ -20,10 +21,10 @@ sighandler(int sig)
 	switch(sig)
 	{
 		case SIGHUP:
+			write_log(INFO, "HUP recieved.");
 			parse_cfg_file();
 			stop_service();
 			start_service();
-			write_log(INFO, "HUP recieved.");
 			break;
 		case SIGTERM:
 			write_log(INFO, "TERM recieved.");

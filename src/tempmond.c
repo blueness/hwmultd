@@ -4,72 +4,10 @@
 #include <unistd.h>
 #include <signal.h>
 
-#include <signalhandler.h>
-#include <log.h>
 #include <cmdargs.h>
-
-
-void
-start_service()
-{
-	char *msg;
-
-	// tempmond server is a multicast client and
-	// tempmond client is a multicast server
-	if(server_mode == SERVER_MODE)
-	{
-		if( !mclient_start() )
-		{
-			write_log(CRIT, "mclient_start() failed");
-			clean_exit();
-		}
-	}
-	else
-	{
-		if( !mserver_start() )
-		{
-			write_log(CRIT, "mserver_start() failed");
-			clean_exit();
-		}
-	}
-
-	// The big loop
-	while(1)
-	{
-		sleep(5);
-		if(server_mode == SERVER_MODE)
-		{
-			if(snd_mcast_msg("test"))
-				write_log(DBUG, "server sent message");
-			else
-				write_log(CRIT, "server message send failed");
-		}
-		else
-		{
-			if(msg = rcv_mcast_msg())
-				write_log(DBUG, "message received: %s", msg);
-			else
-				write_log(CRIT, "message message receive failed");
-		}
-	}
-}
-
-
-void
-stop_service()
-{
-	if(server_mode == SERVER_MODE)
-	{
-		if( !mclient_stop() )
-			write_log(CRIT, "mclient_stop() failed");
-	}
-	else
-	{
-		if( !mserver_stop() )
-			write_log(CRIT, "mserver_start() failed");
-	}
-}
-
+#include <log.h>
+#include <signalhandler.h>
+#include <service.h>
 
 int
 main( int argc, char *argv[] )

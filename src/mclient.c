@@ -20,13 +20,14 @@ mclient_start()
 	struct hostent *host;
    	struct in_addr iaddr, aaddr;
 	unsigned char ttl = 1;
-	//unsigned char one = 1;
 
 	memset(&caddr, 0, sizeof(struct sockaddr_in));
 	memset(&iaddr, 0, sizeof(struct in_addr));
 	memset(&aaddr, 0, sizeof(struct in_addr));
 
-	if((host = gethostbyname(site_ip)) == NULL)
+	// This has already been checked in cmdargs.c
+	// No harm in having it twice in case we change stuff
+	if( !(host = gethostbyname(site_ip)) )
 	{
 		write_log(ERRO,"client invalid IP");
 		return 0;
@@ -37,6 +38,8 @@ mclient_start()
 
 	memcpy(&iaddr, host->h_addr_list[0], host->h_length);
 
+	// This has already been checked in cmdargs.c
+	// No harm in having it twice in case we change stuff
 	if( !IN_MULTICAST(ntohl(iaddr.s_addr)) )
 	{
 		write_log(ERRO,"client non-multicast IP");
@@ -100,7 +103,7 @@ snd_mcast_msg(const char *msg)
 		return 0;
 	}
 	else
-		write_log(DBUG,"client sent msg %s: ", msg);
+		write_log(DBUG,"client sent msg: %s", msg);
 
 	return 1;
 }

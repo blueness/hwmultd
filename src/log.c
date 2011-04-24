@@ -5,8 +5,8 @@
 #include <string.h>
 #include <time.h>
 
-#include <log.h>
 #include <cmdargs.h>
+#include <log.h>
 
 FILE *log_stream;
 const char *log_file_name = "/var/log/tempmond/tempmond.log";

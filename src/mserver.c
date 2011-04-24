@@ -24,7 +24,7 @@ mserver_start()
 	memset(&iaddr, 0, sizeof(struct in_addr));
 	memset(&imreq, 0, sizeof(struct ip_mreq));
 
-	if((host = gethostbyname(site_ip)) == NULL) 
+	if( !(host = gethostbyname(site_ip)) ) 
 	{
 		write_log(ERRO,"server invalid IP");
 		return 0;
@@ -97,7 +97,7 @@ rcv_mcast_msg()
 		return NULL;
 	}
 	else
-		write_log(DBUG,"server recived msg %s: ", msg);
+		write_log(DBUG,"server recived msg: %s", msg);
 
 	return msg;
 }
