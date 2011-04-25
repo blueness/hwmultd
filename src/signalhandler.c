@@ -15,27 +15,47 @@ clean_exit()
 	exit(0);
 }
 
+
 void
-sighandler(int sig)
+handle_term()
 {
-	switch(sig)
+	write_log(INFO, "TERM recieved.");
+	clean_exit();
+}
+
+
+void
+handle_hup()
+{
+	write_log(INFO, "HUP recieved.");
+	parse_cfg_file();
+	stop_service();
+	start_service();
+}
+
+
+void
+sighandler()
+{
+	struct sigaction sa;
+
+	sa.sa_handler = handle_term;
+	sigemptyset(&sa.sa_mask);
+	sigaddset(&sa.sa_mask, SIGHUP);
+	sa.sa_flags = 0;
+	if (sigaction(SIGTERM, &sa, NULL) < 0)
 	{
-		case SIGHUP:
-			write_log(INFO, "HUP recieved.");
-			parse_cfg_file();
-			stop_service();
-			start_service();
-			break;
-		case SIGTERM:
-			write_log(INFO, "TERM recieved.");
-			clean_exit();
-			break;
-		case SIGINT:
-			write_log(INFO, "INT recieved.");
-			clean_exit();
-			break;
-		default:
-			write_log(INFO, "UNKNOWN signal recieved recieved.");
-			break;
+		write_log(ERRO, "can't catch TERM");
+		clean_exit();
+	}
+
+	sa.sa_handler = handle_hup;
+	sigemptyset(&sa.sa_mask);
+	sigaddset(&sa.sa_mask, SIGTERM);
+	sa.sa_flags = 0;
+	if(sigaction(SIGHUP, &sa, NULL) < 0)
+	{
+		write_log(ERRO, "can't catch TERM");
+		clean_exit();
 	}
 }

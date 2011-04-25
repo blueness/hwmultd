@@ -2,7 +2,6 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <unistd.h>
-#include <signal.h>
 
 #include <cmdargs.h>
 #include <log.h>
@@ -53,11 +52,7 @@ main( int argc, char *argv[] )
 	close(STDERR_FILENO);
 
 	// Handle signals
-	int i ;
-	const int caught_signal[] = { SIGTERM, SIGINT, SIGHUP, 0 };
-
-	for (i = 0; caught_signal[i] != 0; i++)
-		signal(caught_signal[i],sighandler);
+	sighandler();
 
 	// Log test before jumping into the big loo
 	write_log(CRIT, "TESTING - %s %c %d %f", "hello world", 'x', 42, 3.14159);
