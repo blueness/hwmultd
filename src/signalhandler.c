@@ -9,8 +9,9 @@
 void
 clean_exit()
 {
-	stop_service();
 	write_log(CRIT, "EXITING>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>");
+	stop_service();
+	close_pid();
 	close_log();
 	exit(0);
 }

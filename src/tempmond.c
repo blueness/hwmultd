@@ -72,7 +72,7 @@ main( int argc, char *argv[] )
 	parse_cmd_args( argc, argv );
 
 	// Create pid file
-	pid_create(pid);
+	open_pid(pid);
 
 	// Handle signals
 	sighandler();

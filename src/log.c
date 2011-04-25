@@ -8,8 +8,9 @@
 #include <cmdargs.h>
 #include <log.h>
 
+#define TIME_BUFFER 1000
+
 FILE *log_stream;
-const char *log_file_name = "/var/log/tempmond.log";
 
 
 int
@@ -17,7 +18,7 @@ open_log()
 {
 	log_level = EARLY_LOG_LEVEL;
 
-	if((log_stream = fopen(log_file_name, "a+")) != NULL)
+	if((log_stream = fopen(LOG_FILE, "a+")) != NULL)
 	{
 		write_log(CRIT, "START<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<") ;
 		return 1;

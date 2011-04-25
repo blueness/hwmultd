@@ -11,6 +11,9 @@
 #include <cmdargs.h>
 #include <log.h>
 
+#define CONF_LINE_BUFFER 1000
+
+
 void
 sanity_checks(char source_flag)
 {
@@ -22,8 +25,7 @@ sanity_checks(char source_flag)
 	if(source_flag == CMDLINE)
 		strcpy(source_name, "command line");
 	if(source_flag == CFGFILE)
-		strcpy(source_name, DEFAULT_CONFIG_FILENAME);
-	
+		strcpy(source_name, CONFIG_FILE);
 
 	if( !(host = gethostbyname(site_ip)) )
 	{
@@ -100,7 +102,7 @@ parse_cfg_file()
 	log_level     = DEFAULT_LOG_LEVEL;
 	server_mode   = DEFAULT_SERVER_MODE ;
 
-	if( !(myfile = fopen(DEFAULT_CONFIG_FILENAME,"r")) )
+	if( !(myfile = fopen(CONFIG_FILE,"r")) )
 	{
 		write_log(INFO, "No config file found");
 		return ;

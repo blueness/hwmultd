@@ -5,8 +5,9 @@
 #include <log.h>
 #include <pidfile.h>
 
+
 void
-pid_create(int pid)
+open_pid(int pid)
 {
 	FILE *fd = fopen(PID_FILE, "w");
 	if(!fd)
@@ -20,7 +21,7 @@ pid_create(int pid)
 
 
 void
-pid_destroy()
+close_pid()
 {
 	unlink(PID_FILE) ;
 }

@@ -12,7 +12,7 @@
 #define ERRO 1
 #define CRIT 0
 
-#define TIME_BUFFER 1000
+#define LOG_FILE "/var/log/tempmond.log"
 
 int open_log();
 int write_log(int, const char *,...);

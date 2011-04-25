@@ -53,12 +53,9 @@ struct passwd *pwd;
  * CMDLINE = one source of parameters
  * CFGFILE = another source
  */
-#define DEFAULT_CONFIG_FILENAME "/etc/tempmond.conf"
+#define CONFIG_FILE "/etc/tempmond.conf"
 #define CMDLINE 0
 #define CFGFILE 1
 
-#define CONF_LINE_BUFFER 1000
-
-void sanity_check(char);
 void parse_cfg_file();
 void parse_cmd_args( int, char ** );
