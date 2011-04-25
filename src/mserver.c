@@ -5,6 +5,7 @@
 #include <unistd.h>
 
 #include <netdb.h>
+#include <netinet/in.h>
 #include <arpa/inet.h>
 #include <sys/types.h>
 #include <sys/socket.h>
@@ -12,6 +13,11 @@
 #include <log.h>
 #include <cmdargs.h>
 #include <mcast.h>
+
+#define MSG_BUFFER 1000
+
+int sd;
+struct sockaddr_in saddr;
 
 int
 mserver_start()

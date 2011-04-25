@@ -5,6 +5,8 @@
 #include <unistd.h>
 #include <netdb.h>
 #include <arpa/inet.h>
+#include <sys/types.h>
+#include <pwd.h>
 
 #include <cmdargs.h>
 #include <log.h>
@@ -67,6 +69,22 @@ sanity_checks(char source_flag)
 	}
 	else
 		write_log(INFO, "Server Mode = %d", server_mode);
+
+	if( !(pwd = getpwnam(user_name)) )
+	{
+		strcpy(user_name, DEFAULT_USERNAME);
+		write_log(ERRO, "No such user name in %s.  Defaulting to %s",
+			source_name, DEFAULT_USERNAME);
+
+		if( !(pwd = getpwnam(user_name)) )
+		{
+			strcpy(user_name, FALLBACK_USERNAME);
+			write_log(ERRO, "No such user name in %s.  Defaulting to %s",
+				source_name, FALLBACK_USERNAME);
+		}
+	}
+	else
+		write_log(INFO, "User name = %s", user_name);
 }
 
 
@@ -100,6 +118,8 @@ parse_cfg_file()
 			log_level = atoi(second);
 		if(strcmp(first,"Server") == 0)
 			server_mode = SERVER_MODE;
+		if(strcmp(first,"User") == 0)
+			strcpy(user_name, second);
 	}
 
 	fclose(myfile) ;
@@ -112,7 +132,7 @@ void
 parse_cmd_args( int argc, char *argv[] )
 {
 	int oc ;
-	while( ( oc = getopt( argc, argv, ":a:p:d:s") ) != -1 )
+	while( ( oc = getopt( argc, argv, ":a:p:d:su:") ) != -1 )
 	{
 		switch(oc)
 		{
@@ -127,6 +147,9 @@ parse_cmd_args( int argc, char *argv[] )
 				break;
 			case 's':
 				server_mode = 1;
+				break;
+			case 'u':
+				strcpy(user_name, optarg);
 				break;
 			case ':':
 				fprintf( stderr, "%s: option -%c requires argument\n", argv[0], optopt ) ;

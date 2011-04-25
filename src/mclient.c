@@ -5,6 +5,7 @@
 #include <unistd.h>
 
 #include <netdb.h>
+#include <netinet/in.h>
 #include <arpa/inet.h>
 #include <sys/types.h>
 #include <sys/socket.h>
@@ -12,6 +13,9 @@
 #include <log.h>
 #include <cmdargs.h>
 #include <mcast.h>
+
+int cd;
+struct sockaddr_in caddr;
 
 
 int

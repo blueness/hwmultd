@@ -14,7 +14,10 @@ AC_PROG_CC
 
 # Checks for header files.
 AC_CHECK_HEADERS([arpa/inet.h])
+AC_CHECK_HEADERS([utmp.h])
 AC_CHECK_HEADERS([netdb.h])
+AC_CHECK_HEADERS([netinet/in.h])
+AC_CHECK_HEADERS([pwd.h])
 AC_CHECK_HEADERS([signal.h])
 AC_CHECK_HEADERS([stdarg.h])
 AC_CHECK_HEADERS([stdint.h])
@@ -22,13 +25,14 @@ AC_CHECK_HEADERS([stdio.h])
 AC_CHECK_HEADERS([stdlib.h])
 AC_CHECK_HEADERS([string.h])
 AC_CHECK_HEADERS([sys/socket.h])
+AC_CHECK_HEADERS([sys/stat.h])
 AC_CHECK_HEADERS([sys/types.h])
 AC_CHECK_HEADERS([time.h])
 AC_CHECK_HEADERS([unistd.h])
 
-
 # Checks for typedefs, structures, and compiler characteristics.
 AC_TYPE_PID_T
+AC_TYPE_UID_T
 AC_TYPE_UINT16_T
 
 # Checks for library functions.

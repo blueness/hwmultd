@@ -1,2 +1,2 @@
 sbin_PROGRAMS = tempmond
-tempmond_SOURCES = tempmond.c signalhandler.c signalhandler.h log.c log.h cmdargs.c cmdargs.h mserver.c mserver.h mclient.c mclient.h service.c serivce.h
+tempmond_SOURCES = tempmond.c cmdargs.c cmdargs.h log.c log.h mclient.c mserver.c mcast.h pidfile.c pidfile.h signalhandler.c signalhandler.h service.c serivce.h

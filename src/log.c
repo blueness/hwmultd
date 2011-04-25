@@ -9,7 +9,7 @@
 #include <log.h>
 
 FILE *log_stream;
-const char *log_file_name = "/var/log/tempmond/tempmond.log";
+const char *log_file_name = "/var/log/tempmond.log";
 
 
 int
