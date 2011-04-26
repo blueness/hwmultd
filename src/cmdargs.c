@@ -75,13 +75,13 @@ sanity_checks(char source_flag)
 	if( !(pwd = getpwnam(user_name)) )
 	{
 		strcpy(user_name, DEFAULT_USERNAME);
-		write_log(ERRO, "No such user name in %s.  Defaulting to %s",
+		write_log(INFO, "No such user name in %s.  Defaulting to %s",
 			source_name, DEFAULT_USERNAME);
 
 		if( !(pwd = getpwnam(user_name)) )
 		{
 			strcpy(user_name, FALLBACK_USERNAME);
-			write_log(ERRO, "No such user name in %s.  Defaulting to %s",
+			write_log(INFO, "No such user name in %s.  Defaulting to %s",
 				source_name, FALLBACK_USERNAME);
 		}
 	}
@@ -154,11 +154,11 @@ parse_cmd_args( int argc, char *argv[] )
 				strcpy(user_name, optarg);
 				break;
 			case ':':
-				fprintf( stderr, "%s: option -%c requires argument\n", argv[0], optopt ) ;
-				break ;
+				fprintf(stderr, "%s: option -%c requires argument\n", argv[0], optopt);
+				break;
 			case '?':
 			default:
-				fprintf( stderr, "%s: option -%c is invalid: ignored\n", argv[0], optopt ) ;
+				fprintf(stderr, "%s: option -%c is invalid: ignored\n", argv[0], optopt);
 		}
 	}
 

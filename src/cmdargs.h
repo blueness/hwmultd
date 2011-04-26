@@ -36,16 +36,17 @@ int log_level;
 #define SERVER_MODE 1
 #define DEFAULT_SERVER_MODE 0
 
-char server_mode;
+int server_mode;
 
 
 /*
  * username for privilege dropping
  */
-char user_name[UT_NAMESIZE];
-struct passwd *pwd;
 #define DEFAULT_USERNAME "tempmond"
 #define FALLBACK_USERNAME "root"
+
+char user_name[UT_NAMESIZE];
+struct passwd *pwd;
 
 
 /*

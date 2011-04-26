@@ -23,7 +23,7 @@ mclient_start()
 {
 	struct hostent *host;
    	struct in_addr iaddr, aaddr;
-	unsigned char ttl = 1;
+	unsigned int ttl = 1;
 
 	memset(&caddr, 0, sizeof(struct sockaddr_in));
 	memset(&iaddr, 0, sizeof(struct in_addr));
@@ -73,6 +73,7 @@ mclient_start()
 		write_log(DBUG,"client socket bound");
 
 	aaddr.s_addr = INADDR_ANY;
+	//aaddr.s_addr = inet_addr("192.168.100.2");
 
 	if(setsockopt(cd, IPPROTO_IP, IP_MULTICAST_IF, &aaddr, sizeof(struct in_addr)))
 	{

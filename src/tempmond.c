@@ -15,12 +15,13 @@
 int
 main( int argc, char *argv[] )
 {
-	// Fork into background
-	pid_t pid = fork();
+	pid_t pid; // pid of demonized process
+	pid_t sid; // sid of demonized process
 
-	if(pid < 0)
+	// Fork into background
+	if( (pid = fork()) < 0)
 	{
-		fprintf( stderr, "Failed to fork.\n") ;
+		fprintf(stderr, "fork failed\n") ;
 		exit(EXIT_FAILURE);
 	}
 
@@ -35,15 +36,9 @@ main( int argc, char *argv[] )
 	// Open log
 	if( !open_log() )
 	{
-		fprintf( stderr, "Failed to open log.\n") ;
+		fprintf( stderr, "open log failed\n") ;
 		exit(EXIT_FAILURE);
 	}
-
-	// Log test before jumping into the big loo
-	write_log(CRIT, "TESTING - %s %c %d %f", "hello world", 'x', 42, 3.14159);
-	write_log(ERRO, "TESTING - %s %c %d %f", "hello world", 'x', 42, 3.14159);
-	write_log(INFO, "TESTING - %s %c %d %f", "hello world", 'x', 42, 3.14159);
-	write_log(DBUG, "TESTING - %s %c %d %f", "hello world", 'x', 42, 3.14159);
 
 	// Close open files inherited from parent
 	close(STDIN_FILENO);
@@ -51,19 +46,22 @@ main( int argc, char *argv[] )
 	close(STDERR_FILENO);
 
 	// Create a new SID for the child process
-	pid_t sid = setsid();
-	if (sid < 0)
+	if( (sid = setsid()) < 0)
 	{
-		write_log(CRIT, "Failed to set session id.\n") ;
+		write_log(CRIT, "set session id failed") ;
 		clean_exit();
 	}
+	else
+		write_log(DBUG, "set session id %d", (int)sid) ;
 
         // chdir to root
-        if((chdir("/")) < 0)
+        if(chdir("/") < 0)
 	{
-		write_log(CRIT, "Failed to set session id.\n") ;
+		write_log(CRIT, "chdir / failed");
 		clean_exit();
         }
+	else
+		write_log(DBUG, "chdir /");
 
 	// Parse config file to set global parameters
 	parse_cfg_file();
@@ -71,17 +69,40 @@ main( int argc, char *argv[] )
 	// Parse command line arguments to set global parameters
 	parse_cmd_args( argc, argv );
 
-	// Create pid file
-	open_pid(pid);
-
 	// Handle signals
-	sighandler();
+	if( !sighandler() )
+	{
+		write_log(CRIT, "register signals failed");
+		clean_exit();
+	}
+	else
+		write_log(DBUG, "registered signals");
 
-	// Drop privileges
+	// Get my uid and gid
 	uid_t uid = pwd->pw_uid ;
 	gid_t gid = pwd->pw_gid ;
+
+	// Create pid directory
+	if( !dir_pid(uid, gid) )
+	{
+		write_log(CRIT, "create pid file dir failed");
+		clean_exit();
+	}
+	else
+		write_log(DBUG, "created pid file dir");
+
+	// Drop privileges
 	setuid(uid) ;
 	setgid(gid) ;
+
+	// Create pid file
+	if( !open_pid(pid) )
+	{
+		write_log(CRIT, "create pid file failed");
+		clean_exit();
+	}
+	else
+		write_log(DBUG, "created pid file");
 
 	start_service();
 }

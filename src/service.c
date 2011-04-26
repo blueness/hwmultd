@@ -2,9 +2,11 @@
 #include <log.h>
 #include <cmdargs.h>
 #include <mcast.h>
+
+#include <log.h>
 #include <service.h>
 
-void
+int
 start_service()
 {
 	char *msg;
@@ -15,16 +17,16 @@ start_service()
 	{
 		if( !mclient_start() )
 		{
-			write_log(CRIT, "mclient_start() failed");
-			clean_exit();
+			write_log(ERRO, "mclient_start() failed");
+			return 0;
 		}
 	}
 	else
 	{
 		if( !mserver_start() )
 		{
-			write_log(CRIT, "mserver_start() failed");
-			clean_exit();
+			write_log(ERRO, "mserver_start() failed");
+			return 0;
 		}
 	}
 
@@ -35,22 +37,22 @@ start_service()
 		if(server_mode == SERVER_MODE)
 		{
 			if( !snd_mcast_msg("test") )
-				write_log(CRIT, "server message send failed");
+				return 0;
 		}
 		else
 		{
 			if( !(msg = rcv_mcast_msg()) )
-				write_log(CRIT, "message message receive failed");
+				return 0;
 		}
 	}
 }
 
 
-void
+int
 stop_service()
 {
 	if(server_mode == SERVER_MODE)
-		mclient_stop();
+		return mclient_stop();
 	else
-		mserver_stop();
+		return mserver_stop();
 }

@@ -1,3 +1,3 @@
 
-void start_service();
-void stop_service();
+int start_service();
+int stop_service();

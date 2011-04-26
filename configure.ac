@@ -36,11 +36,14 @@ AC_TYPE_UID_T
 AC_TYPE_UINT16_T
 
 # Checks for library functions.
+AC_FUNC_CHOWN
 AC_FUNC_FORK
 AC_FUNC_MALLOC
 AC_CHECK_FUNCS([gethostbyname])
 AC_CHECK_FUNCS([memset])
+AC_CHECK_FUNCS([mkdir])
 AC_CHECK_FUNCS([socket])
+
 
 AC_CONFIG_FILES([Makefile
                  doc/Makefile

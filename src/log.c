@@ -20,7 +20,7 @@ open_log()
 
 	if((log_stream = fopen(LOG_FILE, "a+")) != NULL)
 	{
-		write_log(CRIT, "START<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<") ;
+		write_log(CRIT, "START<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<") ;
 		return 1;
 	}
 
@@ -74,9 +74,9 @@ write_log(int level, const char *fmt,...)
 int
 close_log()
 {
+	write_log(CRIT, "EXITING<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<") ;
 	if(fclose(log_stream))
                 return 1 ;
         else
                 return 0 ;
 }
-

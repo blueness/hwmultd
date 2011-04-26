@@ -9,7 +9,6 @@
 void
 clean_exit()
 {
-	write_log(CRIT, "EXITING>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>");
 	stop_service();
 	close_pid();
 	close_log();
@@ -35,7 +34,7 @@ handle_hup()
 }
 
 
-void
+int
 sighandler()
 {
 	struct sigaction sa;
@@ -46,9 +45,11 @@ sighandler()
 	sa.sa_flags = 0;
 	if (sigaction(SIGTERM, &sa, NULL) < 0)
 	{
-		write_log(ERRO, "can't catch TERM");
-		clean_exit();
+		write_log(ERRO, "register SIGTERM failed");
+		return 0;
 	}
+	else
+		write_log(DBUG, "registered SIGTERM");
 
 	sa.sa_handler = handle_hup;
 	sigemptyset(&sa.sa_mask);
@@ -56,7 +57,11 @@ sighandler()
 	sa.sa_flags = 0;
 	if(sigaction(SIGHUP, &sa, NULL) < 0)
 	{
-		write_log(ERRO, "can't catch TERM");
-		clean_exit();
+		write_log(ERRO, "register SIGHUP failed");
+		return 0;
 	}
+	else
+		write_log(DBUG, "registered SIGTHUP");
+
+	return 1;
 }
