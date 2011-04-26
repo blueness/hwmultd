@@ -15,8 +15,9 @@
 int
 main( int argc, char *argv[] )
 {
-	pid_t pid; // pid of demonized process
-	pid_t sid; // sid of demonized process
+	pid_t pid, sid;		// pid and sid of demonized process
+	uid_t uid;		// uid for drop privileges
+	gid_t gid;		// gid for drop privileges
 
 	// Fork into background
 	if( (pid = fork()) < 0)
@@ -31,12 +32,12 @@ main( int argc, char *argv[] )
 	pid = getpid() ;
 
 	// Set umask before opening any files
-	umask(0);
+	umask(022);
 
 	// Open log
 	if( !open_log() )
 	{
-		fprintf( stderr, "open log failed\n") ;
+		fprintf(stderr, "open log failed\n") ;
 		exit(EXIT_FAILURE);
 	}
 
@@ -79,8 +80,8 @@ main( int argc, char *argv[] )
 		write_log(DBUG, "registered signals");
 
 	// Get my uid and gid
-	uid_t uid = pwd->pw_uid ;
-	gid_t gid = pwd->pw_gid ;
+	uid = pwd->pw_uid ;
+	gid = pwd->pw_gid ;
 
 	// Create pid directory
 	if( !dir_pid(uid, gid) )
@@ -92,8 +93,24 @@ main( int argc, char *argv[] )
 		write_log(DBUG, "created pid file dir");
 
 	// Drop privileges
-	setuid(uid) ;
-	setgid(gid) ;
+	if(getuid() == 0)
+	{
+		if(setgid(gid))
+		{
+			write_log(CRIT, "drop to gid %d failed", (int)gid);
+			clean_exit();
+		}
+		else
+			write_log(DBUG, "droped to gid %d", (int)gid);
+
+		if(setuid(uid))
+		{
+			write_log(CRIT, "drop to uid %d failed", (int)uid);
+			clean_exit();
+		}
+		else
+			write_log(DBUG, "droped to uid %d", (int)uid);
+	}
 
 	// Create pid file
 	if( !open_pid(pid) )

@@ -24,8 +24,11 @@ sanity_checks(char source_flag)
 
 	if(source_flag == CMDLINE)
 		strcpy(source_name, "command line");
+
 	if(source_flag == CFGFILE)
 		strcpy(source_name, CONFIG_FILE);
+
+	write_log(INFO, ">>>>> Parameters from %s", source_name);
 
 	if( !(host = gethostbyname(site_ip)) )
 	{
@@ -87,6 +90,8 @@ sanity_checks(char source_flag)
 	}
 	else
 		write_log(INFO, "User name = %s", user_name);
+
+	write_log(INFO, "<<<<< Parameters from %s", source_name);
 }
 
 

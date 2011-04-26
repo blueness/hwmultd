@@ -18,13 +18,11 @@ open_log()
 {
 	log_level = EARLY_LOG_LEVEL;
 
-	if((log_stream = fopen(LOG_FILE, "a+")) != NULL)
-	{
-		write_log(CRIT, "START<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<") ;
-		return 1;
-	}
+	if( !(log_stream = fopen(LOG_FILE, "a+")) )
+		return 0;
 
-	return 0;
+	write_log(CRIT, "START<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<") ;
+	return 1;
 }
 
 
@@ -40,7 +38,7 @@ write_log(int level, const char *fmt,...)
 	char tmstp[TIME_BUFFER];
 
 	if(log_level < level)
-		return 1;
+		return 0;
 
 	t = time(NULL);
 	tmp = localtime(&t);
@@ -62,10 +60,10 @@ write_log(int level, const char *fmt,...)
 	vfprintf(log_stream, fmt, ap);
 	va_end(ap);
 
+	fprintf(log_stream, "\n");
+
 	if(fflush(log_stream) != 0)
 		return 0;
-
-	fprintf(log_stream, "\n");
 
 	return 1;
 }
@@ -76,7 +74,7 @@ close_log()
 {
 	write_log(CRIT, "EXITING<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<") ;
 	if(fclose(log_stream))
-                return 1 ;
-        else
                 return 0 ;
+        else
+                return 1 ;
 }
