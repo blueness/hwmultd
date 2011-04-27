@@ -2,7 +2,8 @@
 #include <unistd.h>
 
 pid_t wpid;
-int worker_mode;
+
+int sighandler_worker();
 
 void clean_exit();
-int sighandler();
+int sighandler_session_leader();
