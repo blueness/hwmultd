@@ -9,8 +9,8 @@
 #include <cmdargs.h>
 #include <log.h>
 #include <pidfile.h>
-#include <signalhandler.h>
 #include <service.h>
+#include <signalhandler.h>
 
 int
 main( int argc, char *argv[] )
@@ -46,7 +46,9 @@ main( int argc, char *argv[] )
 	close(STDOUT_FILENO);
 	close(STDERR_FILENO);
 
-	// Create a new SID for the child process
+	write_log(DBUG, "set process id %d", (int)pid) ;
+
+	// Create a new SID
 	if( (sid = setsid()) < 0)
 	{
 		write_log(CRIT, "set session id failed") ;
@@ -121,5 +123,20 @@ main( int argc, char *argv[] )
 	else
 		write_log(DBUG, "created pid file");
 
-	start_service();
+	// We are the session leader, not the worker
+	worker_mode = 0;
+
+	// We'll get the service started, but after this,
+	// we'll let signals drive when the service is
+	// stopped/started again
+	if( !start_service() )
+	{
+		write_log(CRIT, "start service failed");
+		clean_exit();
+	}
+	else
+		write_log(DBUG, "started service");
+
+	// The really big loop - sleep for 136 years or until woken
+	while(1) sleep(-1);
 }

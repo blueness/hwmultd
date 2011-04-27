@@ -1,15 +1,43 @@
 
+#include <stdlib.h>
+#include <unistd.h>
+
 #include <log.h>
 #include <cmdargs.h>
 #include <mcast.h>
-
-#include <log.h>
 #include <service.h>
+#include <signalhandler.h>
+
 
 int
 start_service()
 {
 	char *msg;
+
+	if((wpid = fork()) < 0)
+	{
+		write_log(ERRO, "worker fork failed") ;
+		return 0;
+	}
+
+	if(wpid > 0)
+		return 1;
+
+	write_log(DBUG, "worker forked");
+
+	if( !sighandler() )
+	{
+		write_log(CRIT, "register signals failed");
+		clean_exit();
+	}
+	else
+		write_log(DBUG, "registered signals");
+
+	// We are the worker process
+	worker_mode = 1 ;
+	wpid = getpid() ;
+
+	write_log(DBUG, "set worker process id %d", (int)(wpid)) ;
 
 	// tempmond server is a multicast client and
 	// tempmond client is a multicast server
@@ -20,6 +48,8 @@ start_service()
 			write_log(ERRO, "mclient_start() failed");
 			return 0;
 		}
+		else
+			write_log(DBUG, "mclient_start() started");
 	}
 	else
 	{
@@ -28,9 +58,11 @@ start_service()
 			write_log(ERRO, "mserver_start() failed");
 			return 0;
 		}
+		else
+			write_log(DBUG, "mserver_start() started");
 	}
 
-	// The big loop
+	// The small loop
 	while(1)
 	{
 		sleep(1);
@@ -55,4 +87,6 @@ stop_service()
 		return mclient_stop();
 	else
 		return mserver_stop();
+
+	exit(EXIT_SUCCESS);
 }

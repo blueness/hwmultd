@@ -21,7 +21,7 @@ open_log()
 	if( !(log_stream = fopen(LOG_FILE, "a+")) )
 		return 0;
 
-	write_log(CRIT, "START<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<") ;
+	write_log(CRIT, "START>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>") ;
 	return 1;
 }
 

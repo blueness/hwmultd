@@ -23,7 +23,7 @@ uint16_t port;
  *
  * Log level before log_level is read from command line or config file
  */
-#define EARLY_LOG_LEVEL 0
+#define EARLY_LOG_LEVEL 3
 #define DEFAULT_LOG_LEVEL 2
 
 int log_level;
