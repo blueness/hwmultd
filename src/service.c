@@ -14,30 +14,6 @@ start_service()
 {
 	char *msg;
 
-	if((wpid = fork()) < 0)
-	{
-		write_log(ERRO, "worker: fork failed") ;
-		return 0;
-	}
-
-	if(wpid > 0)
-		return 1;
-
-	write_log(DBUG, "worker: forked");
-
-	if( !sighandler_worker() )
-	{
-		write_log(CRIT, "worker: register signals failed");
-		return 0;
-	}
-	else
-		write_log(DBUG, "worker: registered signals");
-
-	// We are the worker process
-	wpid = getpid() ;
-
-	write_log(DBUG, "worker: set process id %d", (int)(wpid)) ;
-
 	// tempmond server is a multicast client and
 	// tempmond client is a multicast server
 	if(server_mode == SERVER_MODE)
@@ -61,7 +37,7 @@ start_service()
 			write_log(DBUG, "mserver_start()");
 	}
 
-	// The small loop
+	// The big loop
 	while(1)
 	{
 		sleep(1);
@@ -86,6 +62,4 @@ stop_service()
 		mclient_stop();
 	else
 		mserver_stop();
-
-	exit(EXIT_SUCCESS);
 }

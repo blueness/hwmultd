@@ -114,26 +114,23 @@ main( int argc, char *argv[] )
 	else
 		write_log(DBUG, "created pid file");
 
+	// Handle signals
+	if( !sighandler() )
+	{
+		write_log(CRIT, "register signals failed");
+		clean_exit();
+	}
+	else
+		write_log(DBUG, "registered signals");
+
 	// We'll get the service started, but after this,
 	// we'll let signals drive when the service is
 	// stopped/started again
 	if( !start_service() )
 	{
-		write_log(CRIT, "leader: initial start service failed");
+		write_log(CRIT, "initial start service failed");
 		clean_exit();
 	}
 	else
-		write_log(DBUG, "leader: initial started service");
-
-	// Handle signals
-	if( !sighandler_session_leader() )
-	{
-		write_log(CRIT, "leader: register signals failed");
-		clean_exit();
-	}
-	else
-		write_log(DBUG, "leader: registered signals");
-
-	// The really big loop - sleep for 136 years or until woken
-	while(1) sleep(-1);
+		write_log(DBUG, "initial started service");
 }

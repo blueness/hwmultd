@@ -11,110 +11,47 @@
 
 
 void
-handle_int_worker()
-{
-	write_log(INFO, "worker: SIGINT recieved");
-	write_log(DBUG, "worker: doing a stop_service()");
-	stop_service();
-}
-
-
-int
-sighandler_worker()
-{
-	struct sigaction sa;
-	sigset_t block_set;
-
-	// mask all signals except for those we pay attention to
-	sigfillset(&block_set);
-	sigdelset(&block_set, SIGINT);
-	sigprocmask(SIG_BLOCK, &block_set, NULL);
-
-	//SIGINT
-	memset(&sa, 0, sizeof(struct sigaction));
-
-	sa.sa_flags = 0;
-	sa.sa_handler = handle_int_worker;
-
-	if (sigaction(SIGINT, &sa, NULL) < 0)
-	{
-		write_log(ERRO, "worker: register SIGINT failed");
-		return 0;
-	}
-	else
-		write_log(DBUG, "worker: registered SIGINT");
-}
-
-
-
-
-void
 clean_exit()
 {
-	write_log(DBUG, "pid %d: doing clean_exit() ...", (int)getpid());
+	write_log(DBUG, "doing a clean_exit()");
+	stop_service();
 	close_pid();
 	close_log();
 	exit(EXIT_SUCCESS);
 }
 
 
-// Shutdown the session lead and worker
 void
-handle_term_session_leader()
+handle_term()
 {
-	write_log(INFO, "leader: SIGTERM recieved");
-
-	if( kill(wpid,SIGINT) )
-	{
-		write_log(CRIT, "leader: SIGINT sent to worker failed");
-		clean_exit();
-	}
-	else
-		write_log(DBUG, "leader: SIGINT sent to worker");
-
-	write_log(DBUG,"leader: doing a clean_exit()");
+	write_log(INFO, "SIGTERM recieved");
 	clean_exit();
 }
 
 
-
-
-// Reread the config file and stop/start the worker
 void
-handle_hup_session_leader()
+handle_hup()
 {
-	write_log(INFO, "leader: SIGHUP recieved");
+	write_log(INFO, "SIGHUP recieved");
 
-	if( kill(wpid,SIGINT) )
-	{
-		write_log(CRIT, "leader: SIGINT sent to worker failed");
-		clean_exit();
-	}
-	else
-		write_log(DBUG, "leader: SIGINT sent to worker");
+	//parse_cfg_file();
 
-	parse_cfg_file();
+	stop_service();
 
+	/*
 	if( !start_service() )
 	{
-		write_log(CRIT, "leader: start service failed");
+		write_log(CRIT, "start service failed");
 		clean_exit();
 	}
 	else
-		write_log(DBUG, "leader: started service");
-}
-
-
-// Reap the child
-void
-handle_chld_session_leader()
-{
-	write_log(INFO, "leader: SIGCHLD received");
+		write_log(DBUG, "started service");
+	*/
 }
 
 
 int
-sighandler_session_leader()
+sighandler()
 {
 	struct sigaction sa;
 	sigset_t block_set;
@@ -123,7 +60,6 @@ sighandler_session_leader()
 	sigfillset(&block_set);
 	sigdelset(&block_set, SIGTERM);
 	sigdelset(&block_set, SIGHUP);
-	sigdelset(&block_set, SIGCHLD);
 	sigprocmask(SIG_BLOCK, &block_set, NULL);
 
 	//SIGTERM
@@ -131,18 +67,17 @@ sighandler_session_leader()
 
 	sigemptyset(&sa.sa_mask);
 	sigaddset(&sa.sa_mask, SIGHUP);
-	sigaddset(&sa.sa_mask, SIGCHLD);
 
 	sa.sa_flags = 0;
-	sa.sa_handler = handle_term_session_leader;
+	sa.sa_handler = handle_term;
 
 	if (sigaction(SIGTERM, &sa, NULL) < 0)
 	{
-		write_log(ERRO, "leader: register SIGTERM failed");
+		write_log(ERRO, "register SIGTERM failed");
 		return 0;
 	}
 	else
-		write_log(DBUG, "leader: registered SIGTERM");
+		write_log(DBUG, "registered SIGTERM");
 
 
 	//SIGHUP
@@ -150,37 +85,18 @@ sighandler_session_leader()
 
 	sigemptyset(&sa.sa_mask);
 	sigaddset(&sa.sa_mask, SIGTERM);
-	sigaddset(&sa.sa_mask, SIGCHLD);
 
 	sa.sa_flags = 0;
-	sa.sa_handler = handle_hup_session_leader;
+	sa.sa_handler = handle_hup;
 
 	if(sigaction(SIGHUP, &sa, NULL) < 0)
 	{
-		write_log(ERRO, "leader: register SIGHUP failed");
+		write_log(ERRO, "register SIGHUP failed");
 		return 0;
 	}
 	else
-		write_log(DBUG, "leader: registered SIGTHUP");
+		write_log(DBUG, "registered SIGTHUP");
 
-
-	//SIGCHLD
-	memset(&sa, 0, sizeof(struct sigaction));
-
-	sigemptyset(&sa.sa_mask);
-	sigaddset(&sa.sa_mask, SIGHUP);
-	sigaddset(&sa.sa_mask, SIGTERM);
-
-	sa.sa_flags = SA_NOCLDWAIT;
-	sa.sa_handler = handle_chld_session_leader;
-
-	if(sigaction(SIGCHLD, &sa, NULL) < 0)
-	{
-		write_log(ERRO, "leader: register SIGCHLD failed");
-		return 0;
-	}
-	else
-		write_log(DBUG, "leader: registered SIGTCHLD");
 
 	return 1;
 }
