@@ -6,11 +6,11 @@
 #include <sys/stat.h>
 #include <unistd.h>
 
-//#include <cmdargs.h>
+#include <cmdargs.h>
 #include <log.h>
-//#include <pidfile.h>
-//#include <service.h>
-//#include <signalhandler.h>
+#include <pidfile.h>
+#include <service.h>
+#include <signalhandler.h>
 
 int
 main( int argc, char *argv[] )
