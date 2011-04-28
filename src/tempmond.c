@@ -6,11 +6,11 @@
 #include <sys/stat.h>
 #include <unistd.h>
 
-#include <cmdargs.h>
+//#include <cmdargs.h>
 #include <log.h>
-#include <pidfile.h>
-#include <service.h>
-#include <signalhandler.h>
+//#include <pidfile.h>
+//#include <service.h>
+//#include <signalhandler.h>
 
 int
 main( int argc, char *argv[] )
@@ -66,10 +66,8 @@ main( int argc, char *argv[] )
 	else
 		write_log(DBUG, "chdir /");
 
-	// Parse config file to set global parameters
+	// Read config file then override with command line
 	parse_cfg_file();
-
-	// Parse command line arguments to set global parameters
 	parse_cmd_args( argc, argv );
 
 	// Get my uid and gid
@@ -123,14 +121,27 @@ main( int argc, char *argv[] )
 	else
 		write_log(DBUG, "registered signals");
 
-	// We'll get the service started, but after this,
-	// we'll let signals drive when the service is
-	// stopped/started again
-	if( !start_service() )
+	// The big loop
+	while(1)
 	{
-		write_log(CRIT, "initial start service failed");
-		clean_exit();
+		if( !start_service() )
+		{
+			write_log(CRIT, "service start failed");
+			clean_exit();
+		}
+		else
+			write_log(DBUG, "service started");
+
+		do_service();
+
+		if( !stop_service() )
+		{
+			write_log(CRIT, "service stop failed");
+			clean_exit();
+		}
+		else
+			write_log(DBUG, "service stopped");
+
+		parse_cfg_file();
 	}
-	else
-		write_log(DBUG, "initial started service");
 }

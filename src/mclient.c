@@ -1,17 +1,15 @@
 
-#include <stdio.h>
-#include <stdlib.h>
 #include <string.h>
 #include <unistd.h>
 
+#include <arpa/inet.h>
 #include <netdb.h>
 #include <netinet/in.h>
-#include <arpa/inet.h>
 #include <sys/types.h>
 #include <sys/socket.h>
 
-#include <log.h>
 #include <cmdargs.h>
+#include <log.h>
 #include <mcast.h>
 
 int cd;
@@ -104,7 +102,7 @@ snd_mcast_msg(const char *msg)
 {
 	if((sendto(cd, msg, strlen(msg)+1, 0, (struct sockaddr *) &caddr, sizeof(struct sockaddr_in) ))  < 0)
 	{
-		write_log(ERRO,"client cannot send msg %s: ", msg);
+		write_log(ERRO,"client cannot send msg: %s", msg);
 		return 0;
 	}
 	else

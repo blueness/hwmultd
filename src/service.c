@@ -1,19 +1,15 @@
 
-#include <stdlib.h>
 #include <unistd.h>
 
 #include <cmdargs.h>
 #include <log.h>
 #include <mcast.h>
 #include <service.h>
-#include <signalhandler.h>
 
 
 int
 start_service()
 {
-	char *msg;
-
 	// tempmond server is a multicast client and
 	// tempmond client is a multicast server
 	if(server_mode == SERVER_MODE)
@@ -37,8 +33,18 @@ start_service()
 			write_log(DBUG, "mserver_start()");
 	}
 
-	// The big loop
-	while(1)
+	continue_big_loop = 1;
+
+	return 1;
+}
+
+
+int
+do_service()
+{
+	char *msg;
+
+	while(continue_big_loop)
 	{
 		sleep(1);
 		if(server_mode == SERVER_MODE)
@@ -52,14 +58,24 @@ start_service()
 				return 0;
 		}
 	}
+
+	return 1;
 }
 
 
-void
+int
 stop_service()
 {
+	/*
+	if(server_mode == SERVER_MODE)
+		return mclient_stop();
+	else
+		return mserver_stop();
+	*/
 	if(server_mode == SERVER_MODE)
 		mclient_stop();
 	else
 		mserver_stop();
+
+	return 1;
 }

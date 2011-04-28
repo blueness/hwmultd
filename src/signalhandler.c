@@ -33,20 +33,7 @@ void
 handle_hup()
 {
 	write_log(INFO, "SIGHUP recieved");
-
-	//parse_cfg_file();
-
-	stop_service();
-
-	/*
-	if( !start_service() )
-	{
-		write_log(CRIT, "start service failed");
-		clean_exit();
-	}
-	else
-		write_log(DBUG, "started service");
-	*/
+	continue_big_loop = 0;
 }
 
 
@@ -96,7 +83,6 @@ sighandler()
 	}
 	else
 		write_log(DBUG, "registered SIGTHUP");
-
 
 	return 1;
 }

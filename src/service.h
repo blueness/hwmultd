@@ -1,5 +1,8 @@
 
 #include <unistd.h>
 
+int continue_big_loop;
+
 int start_service();
-void stop_service();
+int do_service();
+int stop_service();
