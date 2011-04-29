@@ -19,17 +19,6 @@ uint16_t port;
 
 
 /*
- * Log parameters
- *
- * Log level before log_level is read from command line or config file
- */
-#define EARLY_LOG_LEVEL 3
-#define DEFAULT_LOG_LEVEL 2
-
-int log_level;
-
-
-/*
  * Client mode vs server mode
  */
 #define CLIENT_MODE 0
@@ -47,6 +36,27 @@ int server_mode;
 
 char user_name[UT_NAMESIZE];
 struct passwd *pwd;
+
+
+/*
+ * Timing parameter
+ */
+#define MIN_TIMING 5
+#define MAX_TIMING 300
+#define DEFAULT_TIMING 30
+
+int timing;
+
+
+/*
+ * Log parameters
+ *
+ * Log level before log_level is read from command line or config file
+ */
+#define EARLY_LOG_LEVEL 3
+#define DEFAULT_LOG_LEVEL 2
+
+int log_level;
 
 
 /*

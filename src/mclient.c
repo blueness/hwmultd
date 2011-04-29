@@ -71,7 +71,17 @@ mclient_start()
 		write_log(DBUG,"client socket bound");
 
 	aaddr.s_addr = INADDR_ANY;
+	//
 	//aaddr.s_addr = inet_addr("192.168.100.2");
+	//
+	//struct ifreq ifr;
+	//
+	//memset(&ifr, 0, sizeof(ifr));
+	//snprintf(ifr.ifr_name, sizeof(ifr.ifr_name), "eth0");
+	//if (setsockopt(s, SOL_SOCKET, SO_BINDTODEVICE, (void *)&ifr, sizeof(ifr)) < 0)
+	//{
+	//... error handling ...
+	//
 
 	if(setsockopt(cd, IPPROTO_IP, IP_MULTICAST_IF, &aaddr, sizeof(struct in_addr)))
 	{

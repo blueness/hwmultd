@@ -46,7 +46,7 @@ do_service()
 
 	while(continue_big_loop)
 	{
-		sleep(1);
+		sleep(timing);
 		if(server_mode == SERVER_MODE)
 		{
 			if( !snd_mcast_msg("test") )
