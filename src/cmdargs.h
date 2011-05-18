@@ -18,7 +18,7 @@ char multicast_ip[20];			// multicast address
 uint16_t port;				// multicast port
 
 #define DEFAULT_INTERFACE_IP "0.0.0.0"
-#define DEFAULT_INTERFACE_NAME "eth0"
+#define DEFAULT_INTERFACE_NAME "dummy0"
 
 int  interface_mode;			// 0, select multicast interface by ip address
 char interface_ip[20];			// 1, select multicast interface by name

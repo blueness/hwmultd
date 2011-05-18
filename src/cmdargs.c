@@ -131,7 +131,7 @@ parse_cfg_file()
 	strcpy(user_name, DEFAULT_USERNAME);
 	timing = DEFAULT_TIMING;
 	strcpy(interface_ip, DEFAULT_INTERFACE_IP);
-	//strcpy(interface_name, DEFAULT_INTERFACE_NAME);
+	strcpy(interface_name, DEFAULT_INTERFACE_NAME);
 	log_level = DEFAULT_LOG_LEVEL;
 
 	FILE *myfile;
