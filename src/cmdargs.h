@@ -50,7 +50,6 @@ struct passwd *pwd;
  */
 #define MIN_TIMING 1
 #define MAX_TIMING 300
-//#define DEFAULT_TIMING 30
 #define DEFAULT_TIMING 1
 
 int timing;

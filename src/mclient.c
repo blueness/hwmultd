@@ -32,11 +32,11 @@ mclient_start()
 	// No harm in having it twice in case we change stuff
 	if( !(host = gethostbyname(multicast_ip)) )
 	{
-		write_log(ERRO,"client invalid IP");
+		write_log(ERRO,"client invalid IP %s", multicast_ip);
 		return 0;
 	}
 	else
-		write_log(DBUG,"client set IP");
+		write_log(DBUG,"client set IP %s", multicast_ip);
 
 
 	memcpy(&iaddr, host->h_addr_list[0], host->h_length);
@@ -45,19 +45,19 @@ mclient_start()
 	// No harm in having it twice in case we change stuff
 	if( !IN_MULTICAST(ntohl(iaddr.s_addr)) )
 	{
-		write_log(ERRO,"client non-multicast IP");
+		write_log(ERRO,"client non-multicast IP %s", multicast_ip);
 		return 0;
 	}
 	else
-		write_log(DBUG,"client set mulitcast IP");
+		write_log(DBUG,"client set mulitcast IP %s", multicast_ip);
 
 	if((cd = socket(AF_INET, SOCK_DGRAM, 0)) < 0)
 	{
-		write_log(ERRO,"client socket creation failed");
+		write_log(ERRO,"client socket creation failed %d", cd);
 		return 0;
 	}
 	else
-		write_log(DBUG,"client socket created");
+		write_log(DBUG,"client socket created %d", cd);
 
 	caddr.sin_family = AF_INET;
 	caddr.sin_addr.s_addr = htonl(INADDR_ANY);
@@ -74,22 +74,22 @@ mclient_start()
 	loop = 1;
 	if(setsockopt(cd, IPPROTO_IP, IP_MULTICAST_LOOP, &loop, sizeof(unsigned char)))
 	{
-		write_log(ERRO,"client cannot set multicast loop");
+		write_log(ERRO,"client cannot set multicast loop %d", loop);
 		return 0;
 	}
 	else
-		write_log(DBUG,"client set multicast loop");
+		write_log(DBUG,"client set multicast loop %d", loop);
 
 
 	if( strcmp(interface_ip, DEFAULT_INTERFACE_IP) == 0 )
 	{
-		write_log(DBUG,"Using iterface_ip INADDR_ANY");
 		aaddr.s_addr = INADDR_ANY;
+		write_log(DBUG,"Using iterface_ip INADDR_ANY");
 	}
 	else
 	{
-		write_log(DBUG,"Using interface_ip, %s", interface_ip);
 		aaddr.s_addr = inet_addr(interface_ip);
+		write_log(DBUG,"Using interface_ip %s", interface_ip);
 	}
 
 	//struct ifreq ifr;
@@ -103,19 +103,19 @@ mclient_start()
 
 	if(setsockopt(cd, IPPROTO_IP, IP_MULTICAST_IF, &aaddr, sizeof(struct in_addr)))
 	{
-		write_log(ERRO,"client cannot set iaddr");
+		write_log(ERRO,"client cannot set iaddr %s", interface_ip);
 		return 0;
 	}
 	else
-		write_log(DBUG,"client set iaddr");
+		write_log(DBUG,"client set iaddr %s", interface_ip);
 
 	if(setsockopt(cd, IPPROTO_IP, IP_MULTICAST_TTL, &ttl,  sizeof(unsigned char)))
 	{
-		write_log(ERRO,"client cannot set ttl");
+		write_log(ERRO,"client cannot set ttl %d", (int)ttl);
 		return 0;
 	}
 	else
-		write_log(DBUG,"client set ttl");
+		write_log(DBUG,"client set ttl %d", (int)ttl);
 
 	caddr.sin_family = PF_INET;
 	caddr.sin_addr.s_addr = iaddr.s_addr;
@@ -147,19 +147,19 @@ mclient_stop()
 
 	if(shutdown(cd, SHUT_RDWR))
 	{
-		write_log(ERRO,"client cannot shutdown socket");
+		write_log(ERRO,"client cannot shutdown socket %d", cd);
 		ret = 0;
 	}
 	else
-		write_log(DBUG,"client shutdown socket");
+		write_log(DBUG,"client shutdown socket %d", cd);
 
 	if(close(cd))
 	{
-		write_log(ERRO,"client cannot close socket fd");
+		write_log(ERRO,"client cannot close socket fd %d", cd);
 		ret = 0;
 	}
 	else
-		write_log(DBUG,"client closed socket fd");
+		write_log(DBUG,"client closed socket fd %d", cd);
 
 	return ret;
 }

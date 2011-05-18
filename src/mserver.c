@@ -31,29 +31,29 @@ mserver_start()
 
 	if( !(host = gethostbyname(multicast_ip)) ) 
 	{
-		write_log(ERRO,"server invalid IP");
+		write_log(ERRO,"server invalid IP %s", multicast_ip);
 		return 0;
 	}
 	else
-		write_log(DBUG,"server set IP");
+		write_log(DBUG,"server set IP %s", multicast_ip);
 
 	memcpy(&iaddr, host->h_addr_list[0], host->h_length);
 
 	if( !IN_MULTICAST(ntohl(iaddr.s_addr)) )
 	{
-		write_log(ERRO,"server non-multicast IP");
+		write_log(ERRO,"server non-multicast IP %s", multicast_ip);
 		return 0;
 	}
 	else
-		write_log(DBUG,"server set multicast IP");
+		write_log(DBUG,"server set multicast IP %s", multicast_ip);
 
 	if((sd = socket(AF_INET, SOCK_DGRAM, 0)) < 0)
 	{
-		write_log(ERRO,"server socket creation failed");
+		write_log(ERRO,"server socket creation failed %d", sd);
 		return 0;
 	}
 	else
-		write_log(DBUG,"server socket created");
+		write_log(DBUG,"server socket created %d", sd);
 
 	saddr.sin_family = AF_INET;
 	saddr.sin_addr.s_addr = htonl(INADDR_ANY);
@@ -115,19 +115,19 @@ mserver_stop()
 
 	if(shutdown(sd, SHUT_RDWR))
 	{
-		write_log(ERRO,"server cannot shutdown socket");
+		write_log(ERRO,"server cannot shutdown socket %d", sd);
 		ret = 0;
 	}
 	else
-		write_log(DBUG,"server shutdown socket");
+		write_log(DBUG,"server shutdown socket %d", sd);
 
 	if(close(sd))
 	{
-		write_log(ERRO,"server cannot close socket fd");
+		write_log(ERRO,"server cannot close socket fd %d", sd);
 		ret = 0;
 	}
 	else
-		write_log(DBUG,"server closed socket fd");
+		write_log(DBUG,"server closed socket fd %d", sd);
 
 	return ret;
 }
