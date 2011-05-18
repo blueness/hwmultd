@@ -113,14 +113,6 @@ mserver_stop()
 {
 	int ret = 1;
 
-	if(shutdown(sd, SHUT_RDWR))
-	{
-		write_log(ERRO,"server cannot shutdown socket %d", sd);
-		ret = 0;
-	}
-	else
-		write_log(DBUG,"server shutdown socket %d", sd);
-
 	if(close(sd))
 	{
 		write_log(ERRO,"server cannot close socket fd %d", sd);

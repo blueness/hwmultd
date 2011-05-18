@@ -145,14 +145,6 @@ mclient_stop()
 {
 	int ret = 1;
 
-	if(shutdown(cd, SHUT_RDWR))
-	{
-		write_log(ERRO,"client cannot shutdown socket %d", cd);
-		ret = 0;
-	}
-	else
-		write_log(DBUG,"client shutdown socket %d", cd);
-
 	if(close(cd))
 	{
 		write_log(ERRO,"client cannot close socket fd %d", cd);
