@@ -21,7 +21,8 @@ mclient_start()
 {
 	struct hostent *host;
    	struct in_addr iaddr, aaddr;
-	unsigned int ttl = 1;
+	unsigned char ttl = 1;
+	unsigned char loop = 1;
 
 	memset(&caddr, 0, sizeof(struct sockaddr_in));
 	memset(&iaddr, 0, sizeof(struct in_addr));
@@ -29,7 +30,7 @@ mclient_start()
 
 	// This has already been checked in cmdargs.c
 	// No harm in having it twice in case we change stuff
-	if( !(host = gethostbyname(site_ip)) )
+	if( !(host = gethostbyname(multicast_ip)) )
 	{
 		write_log(ERRO,"client invalid IP");
 		return 0;
@@ -70,10 +71,27 @@ mclient_start()
 	else
 		write_log(DBUG,"client socket bound");
 
-	aaddr.s_addr = INADDR_ANY;
-	//
-	//aaddr.s_addr = inet_addr("192.168.100.2");
-	//
+	loop = 1;
+	if(setsockopt(cd, IPPROTO_IP, IP_MULTICAST_LOOP, &loop, sizeof(unsigned char)))
+	{
+		write_log(ERRO,"client cannot set multicast loop");
+		return 0;
+	}
+	else
+		write_log(DBUG,"client set multicast loop");
+
+
+	if( strcmp(interface_ip, DEFAULT_INTERFACE_IP) == 0 )
+	{
+		write_log(DBUG,"Using iterface_ip INADDR_ANY");
+		aaddr.s_addr = INADDR_ANY;
+	}
+	else
+	{
+		write_log(DBUG,"Using interface_ip, %s", interface_ip);
+		aaddr.s_addr = inet_addr(interface_ip);
+	}
+
 	//struct ifreq ifr;
 	//
 	//memset(&ifr, 0, sizeof(ifr));

@@ -9,13 +9,20 @@
  * See http://www.iana.org/assignments/multicast-addresses/multicast-addresses.xml
  * for the choice of multicast address in Site Local Scope, RFC RFC2365.
  */
-#define DEFAULT_SITE_LOCAL_IP "239.252.67.151"
+#define DEFAULT_MULTICAST_IP "239.252.67.151"
 #define DEFAULT_PORT 8000
 #define MIN_PORT 1024
 #define MAX_PORT 65535
 
-char site_ip[20];
-uint16_t port;
+char multicast_ip[20];			// multicast address
+uint16_t port;				// multicast port
+
+#define DEFAULT_INTERFACE_IP "0.0.0.0"
+#define DEFAULT_INTERFACE_NAME "eth0"
+
+int  interface_mode;			// 0, select multicast interface by ip address
+char interface_ip[20];			// 1, select multicast interface by name
+char interface_name[20];
 
 
 /*
@@ -41,9 +48,10 @@ struct passwd *pwd;
 /*
  * Timing parameter
  */
-#define MIN_TIMING 5
+#define MIN_TIMING 1
 #define MAX_TIMING 300
-#define DEFAULT_TIMING 30
+//#define DEFAULT_TIMING 30
+#define DEFAULT_TIMING 1
 
 int timing;
 

@@ -29,7 +29,7 @@ mserver_start()
 	memset(&iaddr, 0, sizeof(struct in_addr));
 	memset(&imreq, 0, sizeof(struct ip_mreq));
 
-	if( !(host = gethostbyname(site_ip)) ) 
+	if( !(host = gethostbyname(multicast_ip)) ) 
 	{
 		write_log(ERRO,"server invalid IP");
 		return 0;
