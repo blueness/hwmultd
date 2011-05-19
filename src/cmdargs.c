@@ -117,10 +117,10 @@ sanity_checks(char source_flag)
 		while( ifa != NULL )
 		{
 			saddr = (struct sockaddr_in *) ifa->ifa_addr;
-			if(saddr->sin_family == AF_INET && strcmp(ifa->ifa_name, interface_name))
+			if(saddr->sin_family == AF_INET && !strcmp(ifa->ifa_name, interface_name))
 			{
 				strncpy(interface_ip, inet_ntoa(saddr->sin_addr), MAX_IP_LEN);
-				write_log(DBUG, "Got IP %s for interface %s", interface_name);
+				write_log(DBUG, "Got IP %s from interface %s", interface_name, interface_name);
 			}
 			ifa=ifa->ifa_next;
 		}
