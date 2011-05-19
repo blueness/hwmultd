@@ -40,7 +40,7 @@ sanity_checks(char source_flag)
 	{
 		write_log(ERRO, "bad multicast IP %s in %s.  Defaulting to %s",
 			multicast_ip, source_name, DEFAULT_MULTICAST_IP );
-		strcpy(multicast_ip, DEFAULT_MULTICAST_IP);
+		strncpy(multicast_ip, DEFAULT_MULTICAST_IP, MAX_IP_LEN);
 	}
 	else
 	{
@@ -49,7 +49,7 @@ sanity_checks(char source_flag)
 		{
 			write_log(ERRO, "non-multicast IP %s in %s.  Defaulting to %s",
 				multicast_ip, source_name, DEFAULT_MULTICAST_IP );
-			strcpy(multicast_ip, DEFAULT_MULTICAST_IP);
+			strncpy(multicast_ip, DEFAULT_MULTICAST_IP, MAX_IP_LEN);
 		}
 		else
 			write_log(INFO, "mulitcast IP = %s", multicast_ip);
@@ -77,13 +77,13 @@ sanity_checks(char source_flag)
 	{
 		write_log(INFO, "No such user name %s in %s.  Defaulting to %s",
 			user_name, source_name, DEFAULT_USERNAME);
-		strcpy(user_name, DEFAULT_USERNAME);
+		strncpy(user_name, DEFAULT_USERNAME, UT_NAMESIZE);
 
 		if( !(pwd = getpwnam(user_name)) )
 		{
 			write_log(INFO, "No such user name %s in %s.  Defaulting to %s",
 				user_name, source_name, FALLBACK_USERNAME);
-			strcpy(user_name, FALLBACK_USERNAME);
+			strncpy(user_name, FALLBACK_USERNAME, UT_NAMESIZE);
 			pwd = getpwnam(user_name);
 		}
 	}
@@ -147,20 +147,20 @@ void
 parse_cfg_file()
 {
 	// Start with default values and let config file override
-	strcpy(multicast_ip, DEFAULT_MULTICAST_IP);
+	strncpy(multicast_ip, DEFAULT_MULTICAST_IP, MAX_IP_LEN);
 	port = DEFAULT_PORT;
 	server_mode = DEFAULT_SERVER_MODE;
-	strcpy(user_name, DEFAULT_USERNAME);
+	strncpy(user_name, DEFAULT_USERNAME, UT_NAMESIZE);
 	timing = DEFAULT_TIMING;
-	strcpy(interface_ip, DEFAULT_INTERFACE_IP);
-	strcpy(interface_name, DEFAULT_INTERFACE_NAME);
+	strncpy(interface_ip, DEFAULT_INTERFACE_IP, MAX_IP_LEN);
+	strncpy(interface_name, DEFAULT_INTERFACE_NAME, MAX_IF_LEN);
 	log_level = DEFAULT_LOG_LEVEL;
 
 	FILE *myfile;
 	char conf_line[CONF_LINE_BUFFER];
 	char first[CONF_LINE_BUFFER], second[CONF_LINE_BUFFER];
 
-	strcpy(multicast_ip, DEFAULT_MULTICAST_IP);
+	strncpy(multicast_ip, DEFAULT_MULTICAST_IP, MAX_IP_LEN);
 	port          = DEFAULT_PORT;
 	log_level     = DEFAULT_LOG_LEVEL;
 	server_mode   = DEFAULT_SERVER_MODE ;
@@ -176,19 +176,19 @@ parse_cfg_file()
 		sscanf(conf_line,"%s %s", first, second ) ;
 
 		if( !strcmp(first,"MulticastIP") )
-			strcpy(multicast_ip, second);
+			strncpy(multicast_ip, second, MAX_IP_LEN);
 		if( !strcmp(first,"Port") )
 			port = atoi(second);
 		if( !strcmp(first,"Server") )
 			server_mode = SERVER_MODE;
 		if( !strcmp(first,"User") )
-			strcpy(user_name, second);
+			strncpy(user_name, second, UT_NAMESIZE);
 		if( !strcmp(first,"Timing") )
 			timing = atoi(second);
 		if( !strcmp(first,"SourceIP") )
-			strcpy(interface_ip, second);
+			strncpy(interface_ip, second, MAX_IP_LEN);
 		if( !strcmp(first,"Interface") )
-			strcpy(interface_name, second);
+			strncpy(interface_name, second, MAX_IF_LEN);
 		if(strcmp(first,"Debug") == 0)
 			log_level = atoi(second);
 	}
@@ -208,7 +208,7 @@ parse_cmd_args( int argc, char *argv[] )
 		switch(oc)
 		{
 			case 'm':
-				strcpy(multicast_ip, optarg);
+				strncpy(multicast_ip, optarg, MAX_IP_LEN);
 				break;
 			case 'p':
 				port = (uint16_t) atoi(optarg);
@@ -217,16 +217,16 @@ parse_cmd_args( int argc, char *argv[] )
 				server_mode = 1;
 				break;
 			case 'u':
-				strcpy(user_name, optarg);
+				strncpy(user_name, optarg, UT_NAMESIZE);
 				break;
 			case 't':
 				timing = atoi(optarg);
 				break;
 			case 'a':
-				strcpy(interface_ip, optarg);
+				strncpy(interface_ip, optarg, MAX_IP_LEN);
 				break;
 			case 'i':
-				strcpy(interface_name, optarg);
+				strncpy(interface_name, optarg, MAX_IF_LEN);
 				break;
 			case 'd':
 				log_level = atoi(optarg);

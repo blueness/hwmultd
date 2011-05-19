@@ -3,7 +3,8 @@
 #include <pwd.h>
 #include <stdint.h>
 
-#define MAX_IP_LEN 50			// Max chars for an ip or interface --- anticipating ipv6
+#define MAX_IP_LEN 50			// Max chars for an ip --- anticipating ipv6
+#define MAX_IF_LEN 50			// Max chars for an interface
 
 /*
  * Network parameters
@@ -24,7 +25,7 @@ uint16_t port;				// multicast port
 
 int  interface_mode;			// 0, select multicast interface by ip address
 char interface_ip[MAX_IP_LEN];		// 1, select multicast interface by name
-char interface_name[MAX_IP_LEN];
+char interface_name[MAX_IF_LEN];
 
 
 /*
