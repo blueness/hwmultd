@@ -86,12 +86,12 @@ mclient_start()
 	if(strcmp(interface_ip, DEFAULT_INTERFACE_IP) == 0)
 	{
 		aaddr.s_addr = INADDR_ANY;
-		write_log(DBUG,"Using iterface_ip INADDR_ANY");
+		write_log(DBUG,"using iterface_ip INADDR_ANY");
 	}
 	else
 	{
 		aaddr.s_addr = inet_addr(interface_ip);
-		write_log(DBUG,"Using interface_ip %s", interface_ip);
+		write_log(DBUG,"using interface_ip %s", interface_ip);
 	}
 
 
