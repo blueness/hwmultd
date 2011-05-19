@@ -52,7 +52,7 @@ sanity_checks(char source_flag)
 			strncpy(multicast_ip, DEFAULT_MULTICAST_IP, MAX_IP_LEN);
 		}
 		else
-			write_log(INFO, "mulitcast IP = %s", multicast_ip);
+			write_log(INFO, "Mulitcast IP = %s", multicast_ip);
 	}
 
 	if(port < MIN_PORT || MAX_PORT < port)
@@ -75,13 +75,13 @@ sanity_checks(char source_flag)
 
 	if( !(pwd = getpwnam(user_name)) )
 	{
-		write_log(INFO, "no such user name %s in %s.  Defaulting to %s",
+		write_log(ERRO, "no such user name %s in %s.  Defaulting to %s",
 			user_name, source_name, DEFAULT_USERNAME);
 		strncpy(user_name, DEFAULT_USERNAME, UT_NAMESIZE);
 
 		if( !(pwd = getpwnam(user_name)) )
 		{
-			write_log(INFO, "no such user name %s in %s.  Defaulting to %s",
+			write_log(ERRO, "no such user name %s in %s.  Defaulting to %s",
 				user_name, source_name, FALLBACK_USERNAME);
 			strncpy(user_name, FALLBACK_USERNAME, UT_NAMESIZE);
 			pwd = getpwnam(user_name);
@@ -104,13 +104,13 @@ sanity_checks(char source_flag)
 		memcpy(&iaddr, host->h_addr_list[0], host->h_length);
 		if( !IN_CLASSA(ntohl(iaddr.s_addr)) && !IN_CLASSB(ntohl(iaddr.s_addr))
 				&& !IN_CLASSC(ntohl(iaddr.s_addr)) )
-			write_log(INFO, "non-class A, B or C IP %s in %s.  Defaulting.",
+			write_log(ERRO, "non-class A, B or C IP %s in %s.  Defaulting.",
 				interface_ip, source_name);
 		else
-			write_log(INFO, "interface IP = %s", interface_ip);
+			write_log(INFO, "Interface IP = %s", interface_ip);
 	}
 	else
-		write_log(INFO, "bad interface IP %s in %s.  Defaulting.", interface_ip, source_name);
+		write_log(ERRO, "bad interface IP %s in %s.  Defaulting.", interface_ip, source_name);
 
 	if( getifaddrs(&ifa) == 0 )
 	{
@@ -120,8 +120,8 @@ sanity_checks(char source_flag)
 			if(saddr->sin_family == AF_INET && !strcmp(ifa->ifa_name, interface_name))
 			{
 				strncpy(interface_ip, inet_ntoa(saddr->sin_addr), MAX_IP_LEN);
-				write_log(DBUG, "got IP %s from interface %s in %s", interface_name,
-					interface_name, source_name);
+				write_log(INFO, "Interface %s -> Interface IP = %s",
+					interface_name, interface_ip);
 			}
 			ifa=ifa->ifa_next;
 		}
