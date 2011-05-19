@@ -2,11 +2,12 @@
 #include <string.h>
 #include <unistd.h>
 
+#include <sys/types.h>
+#include <sys/socket.h>
+
 #include <arpa/inet.h>
 #include <netdb.h>
 #include <netinet/in.h>
-#include <sys/types.h>
-#include <sys/socket.h>
 
 #include <cmdargs.h>
 #include <log.h>

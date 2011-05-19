@@ -3,15 +3,18 @@
 #include <stdint.h>
 #include <string.h>
 #include <unistd.h>
+
+#include <sys/types.h>
+#include <sys/socket.h>
+
 #include <netdb.h>
 #include <arpa/inet.h>
-#include <sys/types.h>
+#include <ifaddrs.h>
+
 #include <pwd.h>
 
 #include <cmdargs.h>
 #include <log.h>
-
-#define CONF_LINE_BUFFER 1000
 
 
 void
@@ -19,6 +22,9 @@ sanity_checks(char source_flag)
 {
 	struct hostent *host;
 	struct in_addr iaddr;
+
+        struct ifaddrs *ifa;
+        struct sockaddr_in *saddr;
 
 	char source_name[30];
 
@@ -93,10 +99,7 @@ sanity_checks(char source_flag)
 	else
 		write_log(INFO, "Timing       = %d", timing);
 
-	if( !(host = gethostbyname(interface_ip)) )
-		write_log(INFO, "bad interface IP %s in %s ... skipping",
-			interface_ip, source_name );
-	else
+	if( host = gethostbyname(interface_ip) )
 	{
 		memcpy(&iaddr, host->h_addr_list[0], host->h_length);
 		if( !IN_CLASSA(ntohl(iaddr.s_addr)) && !IN_CLASSB(ntohl(iaddr.s_addr))
@@ -105,8 +108,25 @@ sanity_checks(char source_flag)
 		else
 			write_log(INFO, "interface IP = %s", multicast_ip);
 	}
+	else
+		write_log(INFO, "bad interface IP %s in %s ... skipping",
+			interface_ip, source_name );
 
-	//TODO - sanity check for interface
+	if( getifaddrs(&ifa) == 0 )
+	{
+		while( ifa != NULL )
+		{
+			saddr = (struct sockaddr_in *) ifa->ifa_addr;
+			if(saddr->sin_family == AF_INET && strcmp(ifa->ifa_name, interface_name))
+			{
+				strncpy(interface_ip, inet_ntoa(saddr->sin_addr), MAX_IP_LEN);
+				write_log(DBUG, "Got IP %s for interface %s", interface_name);
+			}
+			ifa=ifa->ifa_next;
+		}
+	}
+	else
+		write_log(ERRO, "Can't get IP for interface %s", interface_name);
 
 	if(log_level < CRIT || DBUG < log_level)
 	{
@@ -120,6 +140,8 @@ sanity_checks(char source_flag)
 	write_log(INFO, "<<<<< Parameters from %s", source_name);
 }
 
+
+#define CONF_LINE_BUFFER 1024
 
 void
 parse_cfg_file()

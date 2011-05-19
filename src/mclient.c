@@ -1,15 +1,13 @@
 
-#include <stdio.h>
 #include <string.h>
 #include <unistd.h>
+
+#include <sys/types.h>
+#include <sys/socket.h>
 
 #include <arpa/inet.h>
 #include <netdb.h>
 #include <netinet/in.h>
-#include <sys/types.h>
-#include <sys/socket.h>
-#include <sys/ioctl.h>
-#include <net/if.h>
 
 #include <cmdargs.h>
 #include <log.h>
@@ -24,7 +22,6 @@ mclient_start()
 {
 	struct hostent *host;
    	struct in_addr iaddr, aaddr;
-	struct ifreq ifr;
 
 	unsigned char ttl = 1;
 	unsigned char loop = 1;
@@ -32,7 +29,6 @@ mclient_start()
 	memset(&caddr, 0, sizeof(struct sockaddr_in));
 	memset(&iaddr, 0, sizeof(struct in_addr));
 	memset(&aaddr, 0, sizeof(struct in_addr));
-	memset(&ifr,   0, sizeof(struct ifreq));
 
 	// This has already been checked in cmdargs.c
 	// No harm in having it twice in case we change stuff
@@ -99,18 +95,6 @@ mclient_start()
 	}
 
 
-	if(strcmp(interface_name, DEFAULT_INTERFACE_NAME) != 0)
-	{
-		snprintf(ifr.ifr_name, sizeof(ifr.ifr_name), interface_name);
-		if (setsockopt(cd, SOL_SOCKET, SO_BINDTODEVICE, &ifr, sizeof(struct ifreq)) < 0)
-		{
-			write_log(ERRO,"failed bind to device %s", interface_name);
-			return 0;
-		}
-		else
-			write_log(DBUG,"bound to device %s", interface_name);
-	}
-
 	if(setsockopt(cd, IPPROTO_IP, IP_MULTICAST_IF, &aaddr, sizeof(struct in_addr)))
 	{
 		write_log(ERRO,"client cannot set iaddr %s", interface_ip);
@@ -127,7 +111,7 @@ mclient_start()
 	else
 		write_log(DBUG,"client set ttl %d", (int)ttl);
 
-	caddr.sin_family = PF_INET;
+	caddr.sin_family = AF_INET;
 	caddr.sin_addr.s_addr = iaddr.s_addr;
 	caddr.sin_port = htons(port);
 

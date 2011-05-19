@@ -3,6 +3,8 @@
 #include <pwd.h>
 #include <stdint.h>
 
+#define MAX_IP_LEN 50			// Max chars for an ip or interface --- anticipating ipv6
+
 /*
  * Network parameters
  *
@@ -14,15 +16,15 @@
 #define MIN_PORT 1024
 #define MAX_PORT 65535
 
-char multicast_ip[20];			// multicast address
+char multicast_ip[MAX_IP_LEN];		// multicast address
 uint16_t port;				// multicast port
 
 #define DEFAULT_INTERFACE_IP "0.0.0.0"
 #define DEFAULT_INTERFACE_NAME "dummy0"
 
 int  interface_mode;			// 0, select multicast interface by ip address
-char interface_ip[20];			// 1, select multicast interface by name
-char interface_name[20];
+char interface_ip[MAX_IP_LEN];		// 1, select multicast interface by name
+char interface_name[MAX_IP_LEN];
 
 
 /*
