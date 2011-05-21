@@ -120,7 +120,7 @@ sanity_checks(char source_flag)
 			if(saddr->sin_family == AF_INET && !strcmp(ifa->ifa_name, interface_name))
 			{
 				strncpy(interface_ip, inet_ntoa(saddr->sin_addr), MAX_IP_LEN);
-				write_log(INFO, "Interface %s -> Interface IP = %s",
+				write_log(INFO, "Interface %s IP = %s",
 					interface_name, interface_ip);
 			}
 			ifa=ifa->ifa_next;
@@ -128,6 +128,8 @@ sanity_checks(char source_flag)
 	}
 	else
 		write_log(ERRO, "can't get IP for interface %s in %s", interface_name, source_name);
+
+	//TODO - check for the existence of the the hw_plugin
 
 	if(log_level < CRIT || DBUG < log_level)
 	{
@@ -155,6 +157,7 @@ parse_cfg_file()
 	timing = DEFAULT_TIMING;
 	strncpy(interface_ip, DEFAULT_INTERFACE_IP, MAX_IP_LEN);
 	strncpy(interface_name, DEFAULT_INTERFACE_NAME, MAX_IF_LEN);
+	strncpy(hw_plugin_name, DEFAULT_HW_PLUGIN, MAX_PLUGIN_LEN);
 	log_level = DEFAULT_LOG_LEVEL;
 
 	FILE *myfile;
@@ -190,6 +193,8 @@ parse_cfg_file()
 			strncpy(interface_ip, second, MAX_IP_LEN);
 		if( !strcmp(first,"Interface") )
 			strncpy(interface_name, second, MAX_IF_LEN);
+		if( !strcmp(first,"HWPlugin") )
+			strncpy(hw_plugin_name, second, MAX_PLUGIN_LEN);
 		if(strcmp(first,"Debug") == 0)
 			log_level = atoi(second);
 	}
@@ -204,7 +209,7 @@ void
 parse_cmd_args( int argc, char *argv[] )
 {
 	int oc ;
-	while( ( oc = getopt( argc, argv, ":m:p:su:t:i:a:d:") ) != -1 )
+	while( ( oc = getopt( argc, argv, ":m:p:su:t:i:a:d:H:") ) != -1 )
 	{
 		switch(oc)
 		{
@@ -228,6 +233,9 @@ parse_cmd_args( int argc, char *argv[] )
 				break;
 			case 'i':
 				strncpy(interface_name, optarg, MAX_IF_LEN);
+				break;
+			case 'H':
+				strncpy(hw_plugin_name, optarg, MAX_PLUGIN_LEN);
 				break;
 			case 'd':
 				log_level = atoi(optarg);

@@ -9,6 +9,7 @@
 #include <cmdargs.h>
 #include <log.h>
 #include <pidfile.h>
+#include <plugins.h>
 #include <service.h>
 #include <signalhandler.h>
 
@@ -70,6 +71,9 @@ main( int argc, char *argv[] )
 	parse_cfg_file();
 	parse_cmd_args( argc, argv );
 
+	// Load plugins
+	load_plugins();
+
 	// Get my uid and gid
 	uid = pwd->pw_uid ;
 	gid = pwd->pw_gid ;
@@ -120,6 +124,14 @@ main( int argc, char *argv[] )
 	}
 	else
 		write_log(DBUG, "registered signals");
+
+	if( !((*init_hw)()) )
+	{
+		write_log(CRIT, "initialized hardware failed");
+		clean_exit();
+	}
+	else
+		write_log(DBUG, "initialized hardware");
 
 	// The big loop
 	while(1)

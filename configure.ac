@@ -3,9 +3,15 @@
 
 AC_PREREQ([2.65])
 AC_INIT([hwmultd],[0.1],[basile@opensource.dyc.edu])
+
 AM_INIT_AUTOMAKE([1.11 foreign])
+
+LT_PREREQ([2.2])
+LT_INIT([dlopen])
+
 AC_CONFIG_SRCDIR([src/hwmultd.c])
 AC_CONFIG_HEADERS([config.h])
+AC_CONFIG_MACRO_DIR([m4])
 
 # Checks for programs.
 AC_PROG_CC
@@ -46,6 +52,7 @@ AC_CHECK_FUNCS([socket])
 
 
 AC_CONFIG_FILES([Makefile
-                 doc/Makefile
-                 src/Makefile])
+                 plugins/Makefile
+                 src/Makefile
+                 doc/Makefile])
 AC_OUTPUT

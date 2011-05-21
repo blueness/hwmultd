@@ -4,6 +4,7 @@
 #include <cmdargs.h>
 #include <log.h>
 #include <mcast.h>
+#include <plugins.h>
 #include <service.h>
 
 
@@ -49,7 +50,8 @@ do_service()
 		sleep(timing);
 		if(server_mode == SERVER_MODE)
 		{
-			if( !snd_mcast_msg("test") )
+			msg = read_hw();
+			if( !snd_mcast_msg(msg) )
 				return 0;
 		}
 		else

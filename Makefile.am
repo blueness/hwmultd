@@ -1,1 +1,1 @@
-SUBDIRS = doc src
+SUBDIRS = plugins src doc

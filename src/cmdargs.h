@@ -70,6 +70,17 @@ int log_level;
 
 
 /*
+ * Hardware Plugins
+ *
+ */
+
+#define MAX_PLUGIN_LEN 128
+#define DEFAULT_HW_PLUGIN "null"
+
+char hw_plugin_name[MAX_PLUGIN_LEN];
+
+
+/*
  * Configure file name
  * CMDLINE = one source of parameters
  * CFGFILE = another source
