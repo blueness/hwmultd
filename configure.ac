@@ -2,9 +2,9 @@
 # Process this file with autoconf to produce a configure script.
 
 AC_PREREQ([2.65])
-AC_INIT([tempond],[0.1],[basile@opensource.dyc.edu])
+AC_INIT([hwmultd],[0.1],[basile@opensource.dyc.edu])
 AM_INIT_AUTOMAKE([1.11 foreign])
-AC_CONFIG_SRCDIR([src/tempmond.c])
+AC_CONFIG_SRCDIR([src/hwmultd.c])
 AC_CONFIG_HEADERS([config.h])
 
 # Checks for programs.

@@ -1,1 +1,1 @@
-man_MANS = tempmond.8
+man_MANS = hwmultd.8
