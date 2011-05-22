@@ -85,9 +85,12 @@ char hw_plugin_name[MAX_PLUGIN_LEN];
  * CMDLINE = one source of parameters
  * CFGFILE = another source
  */
-#define CONFIG_FILE "/etc/hwmultd.conf"
-#define CMDLINE 0
-#define CFGFILE 1
+#define MAX_CONFIG_FILE_LEN 1024
+#define DEFAULT_CONFIG_FILE "/etc/hwmultd.conf"
+
+char config_file[MAX_CONFIG_FILE_LEN];
+
+
 
 void parse_cfg_file();
 void parse_cmd_args( int, char ** );

@@ -8,6 +8,7 @@
 
 void *handle;
 
+
 int
 load_plugins()
 {
@@ -29,10 +30,16 @@ load_plugins()
 	reset_hw = dlsym(handle, "reset_hw");
 	read_hw = dlsym(handle, "read_hw");
 	close_hw = dlsym(handle, "close_hw");
+
+	if( init_hw == NULL || reset_hw == NULL || read_hw == NULL || close_hw == NULL )
+		return 0;
+
+	return 1;
 }
 
 int
 unload_plugins()
 {
-	dlclose(handle);
+	if(handle)
+		dlclose(handle);
 }

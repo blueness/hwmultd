@@ -16,7 +16,8 @@ clean_exit()
 {
 	write_log(DBUG, "doing a clean_exit()");
 	stop_service();
-	(*close_hw)();
+	if( close_hw != NULL )
+		(*close_hw)();
 	unload_plugins();
 	close_pid();
 	close_log();

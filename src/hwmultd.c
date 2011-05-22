@@ -16,6 +16,9 @@
 int
 main( int argc, char *argv[] )
 {
+	// Read the command line opts
+	parse_cmd_args( argc, argv );
+
 	pid_t pid, sid;		// pid and sid of demonized process
 	uid_t uid;		// uid for drop privileges
 	gid_t gid;		// gid for drop privileges
@@ -47,6 +50,9 @@ main( int argc, char *argv[] )
 	close(STDOUT_FILENO);
 	close(STDERR_FILENO);
 
+	// Read config file
+	parse_cfg_file();
+
 	write_log(DBUG, "set process id %d", (int)pid) ;
 
 	// Create a new SID
@@ -66,13 +72,6 @@ main( int argc, char *argv[] )
         }
 	else
 		write_log(DBUG, "chdir /");
-
-	// Read config file then override with command line
-	parse_cfg_file();
-	parse_cmd_args( argc, argv );
-
-	// Load plugins
-	load_plugins();
 
 	// Get my uid and gid
 	uid = pwd->pw_uid ;
@@ -124,6 +123,15 @@ main( int argc, char *argv[] )
 	}
 	else
 		write_log(DBUG, "registered signals");
+
+	// Load plugins
+	if( !load_plugins() )
+	{
+		write_log(CRIT, "load plugins failed");
+		clean_exit();
+	}
+	else
+		write_log(DBUG, "loaded plugins");
 
 	if( !((*init_hw)()) )
 	{
