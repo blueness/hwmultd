@@ -11,17 +11,21 @@
 #include <signalhandler.h>
 
 
+#undef ME
+#define ME "signalhandler.c"
+
+
 void
 clean_exit()
 {
-	write_log(DBUG, "doing a clean_exit()");
+	write_log(DBUG, ME, "doing a clean_exit()");
 	stop_service();
 	if( close_hw != NULL )
 	{
 		if(!(*close_hw)())
-			write_log(ERRO, "failed closed hardware");
+			write_log(ERRO, ME, "failed closed hardware");
 		else
-			write_log(DBUG, "closed hardware");
+			write_log(DBUG, ME, "closed hardware");
 	}
 	unload_plugins();
 	close_pid();
@@ -33,7 +37,7 @@ clean_exit()
 void
 handle_term()
 {
-	write_log(INFO, "SIGTERM recieved");
+	write_log(INFO, ME, "SIGTERM recieved");
 	clean_exit();
 }
 
@@ -41,7 +45,7 @@ handle_term()
 void
 handle_hup()
 {
-	write_log(INFO, "SIGHUP recieved");
+	write_log(INFO, ME, "SIGHUP recieved");
 	continue_big_loop = 0;
 }
 
@@ -69,11 +73,11 @@ sighandler()
 
 	if (sigaction(SIGTERM, &sa, NULL) < 0)
 	{
-		write_log(ERRO, "register SIGTERM failed");
+		write_log(ERRO, ME, "register SIGTERM failed");
 		return 0;
 	}
 	else
-		write_log(DBUG, "registered SIGTERM");
+		write_log(DBUG, ME, "registered SIGTERM");
 
 
 	//SIGHUP
@@ -87,11 +91,11 @@ sighandler()
 
 	if(sigaction(SIGHUP, &sa, NULL) < 0)
 	{
-		write_log(ERRO, "register SIGHUP failed");
+		write_log(ERRO, ME, "register SIGHUP failed");
 		return 0;
 	}
 	else
-		write_log(DBUG, "registered SIGTHUP");
+		write_log(DBUG, ME, "registered SIGTHUP");
 
 	return 1;
 }

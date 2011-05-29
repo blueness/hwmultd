@@ -13,6 +13,11 @@
 #include <log.h>
 #include <mcast.h>
 
+
+
+#undef ME
+#define ME "mserver.c"
+
 #define MSG_BUFFER 1000
 
 int sd;
@@ -32,29 +37,29 @@ mserver_start()
 
 	if( !(host = gethostbyname(multicast_ip)) ) 
 	{
-		write_log(ERRO,"server invalid IP %s", multicast_ip);
+		write_log(ERRO, ME, "server invalid IP %s", multicast_ip);
 		return 0;
 	}
 	else
-		write_log(DBUG,"server set IP %s", multicast_ip);
+		write_log(DBUG, ME, "server set IP %s", multicast_ip);
 
 	memcpy(&iaddr, host->h_addr_list[0], host->h_length);
 
 	if( !IN_MULTICAST(ntohl(iaddr.s_addr)) )
 	{
-		write_log(ERRO,"server non-multicast IP %s", multicast_ip);
+		write_log(ERRO, ME, "server non-multicast IP %s", multicast_ip);
 		return 0;
 	}
 	else
-		write_log(DBUG,"server set multicast IP %s", multicast_ip);
+		write_log(DBUG, ME, "server set multicast IP %s", multicast_ip);
 
 	if((sd = socket(AF_INET, SOCK_DGRAM, 0)) < 0)
 	{
-		write_log(ERRO,"server socket creation failed %d", sd);
+		write_log(ERRO, ME, "server socket creation failed %d", sd);
 		return 0;
 	}
 	else
-		write_log(DBUG,"server socket created %d", sd);
+		write_log(DBUG, ME, "server socket created %d", sd);
 
 	saddr.sin_family = AF_INET;
 	saddr.sin_addr.s_addr = htonl(INADDR_ANY);
@@ -62,22 +67,22 @@ mserver_start()
 
 	if(bind(sd, (struct sockaddr *)&saddr, sizeof(struct sockaddr_in)) < 0)
 	{
-		write_log(ERRO,"server socket bind failed");
+		write_log(ERRO, ME, "server socket bind failed");
 		return 0;
 	}
 	else
-		write_log(DBUG,"server socket bound");
+		write_log(DBUG, ME, "server socket bound");
 
 	imreq.imr_multiaddr.s_addr = iaddr.s_addr;
 	imreq.imr_interface.s_addr = htonl(INADDR_ANY);
 
 	if(setsockopt(sd, IPPROTO_IP, IP_ADD_MEMBERSHIP, (const void *)&imreq, sizeof(struct ip_mreq)))
 	{
-		write_log(ERRO,"server cannot join multicast group");
+		write_log(ERRO, ME, "server cannot join multicast group");
 		return 0;
 	}
 	else
-		write_log(DBUG,"server joined multicast group");
+		write_log(DBUG, ME, "server joined multicast group");
 
 	return 1;
 }
@@ -91,19 +96,19 @@ rcv_mcast_msg()
 	
 	if(!(msg = (char *)malloc(MSG_BUFFER)))
 	{
-		write_log(ERRO,"server cannot malloc message buffer");
+		write_log(ERRO, ME, "server cannot malloc message buffer");
 		return NULL;
 	}
 	else
-		write_log(DBUG,"server malloc-ed message buffer");
+		write_log(DBUG, ME, "server malloc-ed message buffer");
 
 	if(recvfrom(sd, msg, MSG_BUFFER, 0, (struct sockaddr *)&saddr, &len ) < 0)
 	{
-		write_log(ERRO,"server cannot receive msg");
+		write_log(ERRO, ME, "server cannot receive msg");
 		return NULL;
 	}
 	else
-		write_log(DBUG,"server recived msg: %s", msg);
+		write_log(DBUG, ME, "server recived msg: %s", msg);
 
 	return msg;
 }
@@ -116,11 +121,11 @@ mserver_stop()
 
 	if(close(sd))
 	{
-		write_log(ERRO,"server cannot close socket fd %d", sd);
+		write_log(ERRO, ME, "server cannot close socket fd %d", sd);
 		ret = 0;
 	}
 	else
-		write_log(DBUG,"server closed socket fd %d", sd);
+		write_log(DBUG, ME, "server closed socket fd %d", sd);
 
 	return ret;
 }

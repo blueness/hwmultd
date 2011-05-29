@@ -13,6 +13,11 @@
 #include <log.h>
 #include <mcast.h>
 
+
+
+#undef ME
+#define ME "mclient.c"
+
 int cd;
 struct sockaddr_in caddr;
 
@@ -34,11 +39,11 @@ mclient_start()
 	// No harm in having it twice in case we change stuff
 	if( !(host = gethostbyname(multicast_ip)) )
 	{
-		write_log(ERRO,"client invalid IP %s", multicast_ip);
+		write_log(ERRO, ME,"client invalid IP %s", multicast_ip);
 		return 0;
 	}
 	else
-		write_log(DBUG,"client set IP %s", multicast_ip);
+		write_log(DBUG, ME,"client set IP %s", multicast_ip);
 
 
 	memcpy(&iaddr, host->h_addr_list[0], host->h_length);
@@ -47,19 +52,19 @@ mclient_start()
 	// No harm in having it twice in case we change stuff
 	if( !IN_MULTICAST(ntohl(iaddr.s_addr)) )
 	{
-		write_log(ERRO,"client non-multicast IP %s", multicast_ip);
+		write_log(ERRO, ME,"client non-multicast IP %s", multicast_ip);
 		return 0;
 	}
 	else
-		write_log(DBUG,"client set mulitcast IP %s", multicast_ip);
+		write_log(DBUG, ME,"client set mulitcast IP %s", multicast_ip);
 
 	if((cd = socket(AF_INET, SOCK_DGRAM, 0)) < 0)
 	{
-		write_log(ERRO,"client socket creation failed %d", cd);
+		write_log(ERRO, ME,"client socket creation failed %d", cd);
 		return 0;
 	}
 	else
-		write_log(DBUG,"client socket created %d", cd);
+		write_log(DBUG, ME,"client socket created %d", cd);
 
 	caddr.sin_family = AF_INET;
 	caddr.sin_addr.s_addr = htonl(INADDR_ANY);
@@ -67,49 +72,49 @@ mclient_start()
 
 	if(bind(cd,(struct sockaddr *)&caddr, sizeof(struct sockaddr_in)) < 0)
 	{
-		write_log(ERRO,"client socket bind failed");
+		write_log(ERRO, ME,"client socket bind failed");
 		return 0;
 	}
 	else
-		write_log(DBUG,"client socket bound");
+		write_log(DBUG, ME,"client socket bound");
 
 	loop = 1;
 	if(setsockopt(cd, IPPROTO_IP, IP_MULTICAST_LOOP, &loop, sizeof(unsigned char)))
 	{
-		write_log(ERRO,"client cannot set multicast loop %d", loop);
+		write_log(ERRO, ME,"client cannot set multicast loop %d", loop);
 		return 0;
 	}
 	else
-		write_log(DBUG,"client set multicast loop %d", loop);
+		write_log(DBUG, ME,"client set multicast loop %d", loop);
 
 
 	if(strcmp(interface_ip, DEFAULT_INTERFACE_IP) == 0)
 	{
 		aaddr.s_addr = INADDR_ANY;
-		write_log(DBUG,"using iterface_ip INADDR_ANY");
+		write_log(DBUG, ME,"using iterface_ip INADDR_ANY");
 	}
 	else
 	{
 		aaddr.s_addr = inet_addr(interface_ip);
-		write_log(DBUG,"using interface_ip %s", interface_ip);
+		write_log(DBUG, ME,"using interface_ip %s", interface_ip);
 	}
 
 
 	if(setsockopt(cd, IPPROTO_IP, IP_MULTICAST_IF, &aaddr, sizeof(struct in_addr)))
 	{
-		write_log(ERRO,"client cannot set iaddr %s", interface_ip);
+		write_log(ERRO, ME,"client cannot set iaddr %s", interface_ip);
 		return 0;
 	}
 	else
-		write_log(DBUG,"client set iaddr %s", interface_ip);
+		write_log(DBUG, ME,"client set iaddr %s", interface_ip);
 
 	if(setsockopt(cd, IPPROTO_IP, IP_MULTICAST_TTL, &ttl,  sizeof(unsigned char)))
 	{
-		write_log(ERRO,"client cannot set ttl %d", (int)ttl);
+		write_log(ERRO, ME,"client cannot set ttl %d", (int)ttl);
 		return 0;
 	}
 	else
-		write_log(DBUG,"client set ttl %d", (int)ttl);
+		write_log(DBUG, ME,"client set ttl %d", (int)ttl);
 
 	caddr.sin_family = AF_INET;
 	caddr.sin_addr.s_addr = iaddr.s_addr;
@@ -124,11 +129,11 @@ snd_mcast_msg(const char *msg)
 {
 	if((sendto(cd, msg, strlen(msg)+1, 0, (struct sockaddr *) &caddr, sizeof(struct sockaddr_in) ))  < 0)
 	{
-		write_log(ERRO,"client cannot send msg: %s", msg);
+		write_log(ERRO, ME,"client cannot send msg: %s", msg);
 		return 0;
 	}
 	else
-		write_log(DBUG,"client sent msg: %s", msg);
+		write_log(DBUG, ME,"client sent msg: %s", msg);
 
 	return 1;
 }
@@ -141,11 +146,11 @@ mclient_stop()
 
 	if(close(cd))
 	{
-		write_log(ERRO,"client cannot close socket fd %d", cd);
+		write_log(ERRO, ME,"client cannot close socket fd %d", cd);
 		ret = 0;
 	}
 	else
-		write_log(DBUG,"client closed socket fd %d", cd);
+		write_log(DBUG, ME,"client closed socket fd %d", cd);
 
 	return ret;
 }

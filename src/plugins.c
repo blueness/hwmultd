@@ -6,6 +6,10 @@
 #include <log.h>
 #include <plugins.h>
 
+
+#undef ME
+#define ME "plugins.c"
+
 void *handle_hw;
 
 int
@@ -13,7 +17,7 @@ load_plugins()
 {
 	char lib_name[MAX_PLUGIN_LEN+9];		// Add "lib" + hw_plugin_name + {"_hw","_ci"} + ".so"
 
-	write_log(DBUG,"loading plugins");
+	write_log(DBUG, ME, "loading plugins");
 
 	if(server_mode == SERVER_MODE)
 	{
@@ -23,11 +27,11 @@ load_plugins()
 	
 		if( !(handle_hw = dlopen(lib_name, RTLD_LAZY)) )
 		{
-			write_log(ERRO,"failed dlopen hw plugin %s -> %s", lib_name, hw_plugin_name);
+			write_log(ERRO, ME, "failed dlopen hw plugin %s -> %s", lib_name, hw_plugin_name);
 			return 0;
 		}
 		else
-			write_log(DBUG,"dlopened hw plugin %s -> %s", lib_name, hw_plugin_name);
+			write_log(DBUG, ME, "dlopened hw plugin %s -> %s", lib_name, hw_plugin_name);
 
 
 		already_init_hw = 0 ;
@@ -39,11 +43,11 @@ load_plugins()
 
 		if( init_hw == NULL || reset_hw == NULL || read_hw == NULL || close_hw == NULL )
 		{
-			write_log(ERRO,"failed to register hw funcs init_hw || reset_hw || read_hw || close_hw");
+			write_log(ERRO, ME, "failed to register hw funcs init_hw || reset_hw || read_hw || close_hw");
 			return 0;
 		}
 		else
-			write_log(DBUG,"registered hw funcs init_hw && reset_hw && read_hw && close_hw");
+			write_log(DBUG, ME, "registered hw funcs init_hw && reset_hw && read_hw && close_hw");
 	}
 
 	return 1;
@@ -57,14 +61,14 @@ unload_plugins()
 	{
 		if( dlclose(handle_hw) )
 		{
-			write_log(ERRO,"failed unload hw plugin");
+			write_log(ERRO, ME, "failed unload hw plugin");
 			return 0;
 		}
 		else
-			write_log(DBUG,"unloaded hw plugin");
+			write_log(DBUG, ME, "unloaded hw plugin");
 	}
 	else
-		write_log(DBUG,"no hw plugin to unload");
+		write_log(DBUG, ME, "no hw plugin to unload");
 
 	return 1;
 }

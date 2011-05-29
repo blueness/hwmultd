@@ -8,6 +8,10 @@
 #include <service.h>
 
 
+#undef ME
+#define ME "service.c"
+
+
 int
 start_service()
 {
@@ -19,51 +23,51 @@ start_service()
 		{
 			if( !((*init_hw)()) )
 			{
-				write_log(CRIT, "initialized hardware failed");
+				write_log(CRIT, ME, "initialized hardware failed");
 				clean_exit();
 			}
 			else
 			{
-				write_log(DBUG, "initialized hardware");
+				write_log(DBUG, ME, "initialized hardware");
 				already_init_hw = 1;
 			}
 		}
 		else
-			write_log(DBUG, "already initialized hardware");
+			write_log(DBUG, ME, "already initialized hardware");
 
 		if( !mclient_start() )
 		{
-			write_log(ERRO, "mclient_start() failed");
+			write_log(ERRO, ME, "mclient_start() failed");
 			return 0;
 		}
 		else
-			write_log(DBUG, "mclient_start()");
+			write_log(DBUG, ME, "mclient_start()");
 	}
 	else
 	{
 		// We are switching from server to client, so close hw
 		if( already_init_hw )
 		{
-			write_log(INFO, "switching from server to client and closing already initialized hardware");
+			write_log(INFO, ME, "switching from server to client and closing already initialized hardware");
 			if(!(*close_hw)())
 			{
-				write_log(ERRO, "failed closed hardware");
+				write_log(ERRO, ME, "failed closed hardware");
 				return 0;
 			}
 			else
 			{
 				already_init_hw = 0;
-				write_log(DBUG, "closed hardware");
+				write_log(DBUG, ME, "closed hardware");
 			}
 		}
 
 		if( !mserver_start() )
 		{
-			write_log(ERRO, "mserver_start() failed");
+			write_log(ERRO, ME, "mserver_start() failed");
 			return 0;
 		}
 		else
-			write_log(DBUG, "mserver_start()");
+			write_log(DBUG, ME, "mserver_start()");
 	}
 
 	continue_big_loop = 1;
@@ -95,11 +99,11 @@ do_service()
 
 	if( !((*reset_hw)()) )
 	{
-		write_log(CRIT, "reset hardware failed");
+		write_log(CRIT, ME, "reset hardware failed");
 		clean_exit();
 	}
 	else
-		write_log(DBUG, "reset hardware");
+		write_log(DBUG, ME, "reset hardware");
 
 	return 1;
 }
@@ -108,7 +112,7 @@ do_service()
 int
 stop_service()
 {
-	write_log(DBUG, "stopping service");
+	write_log(DBUG, ME, "stopping service");
 	if(server_mode == SERVER_MODE)
 		mclient_stop();
 	else

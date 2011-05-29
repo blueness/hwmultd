@@ -20,6 +20,11 @@
 #include <config.h>
 
 
+
+#undef ME
+#define ME "cmdargs.c"
+
+
 void
 sanity_checks()
 {
@@ -29,11 +34,11 @@ sanity_checks()
         struct ifaddrs *ifa;
         struct sockaddr_in *saddr;
 
-	write_log(INFO, ">>>>> Parameters set");
+	write_log(INFO, ME, ">>>>> Parameters set");
 
 	if( !(host = gethostbyname(multicast_ip)) )
 	{
-		write_log(ERRO, "bad multicast IP %s.  Defaulting to %s",
+		write_log(ERRO, ME, "bad multicast IP %s.  Defaulting to %s",
 			multicast_ip, DEFAULT_MULTICAST_IP );
 		strncpy(multicast_ip, DEFAULT_MULTICAST_IP, MAX_IP_LEN);
 	}
@@ -42,69 +47,69 @@ sanity_checks()
 		memcpy(&iaddr, host->h_addr_list[0], host->h_length);
 		if( !IN_MULTICAST(ntohl(iaddr.s_addr)) )
 		{
-			write_log(ERRO, "non-multicast IP %s.  Defaulting to %s",
+			write_log(ERRO, ME, "non-multicast IP %s.  Defaulting to %s",
 				multicast_ip, DEFAULT_MULTICAST_IP );
 			strncpy(multicast_ip, DEFAULT_MULTICAST_IP, MAX_IP_LEN);
 		}
 		else
-			write_log(INFO, "Mulitcast IP = %s", multicast_ip);
+			write_log(INFO, ME, "Mulitcast IP = %s", multicast_ip);
 	}
 
 	if(port < MIN_PORT || MAX_PORT < port)
 	{
-		write_log(ERRO, "bad port %d.  Defaulting to %d",
+		write_log(ERRO, ME, "bad port %d.  Defaulting to %d",
 			port, DEFAULT_PORT );
 		port = DEFAULT_PORT;
 	}
 	else
-		write_log(INFO, "Port         = %d", port);
+		write_log(INFO, ME, "Port         = %d", port);
 
 	if((server_mode != SERVER_MODE ) && (server_mode != CLIENT_MODE))
 	{
-		write_log(ERRO, "bad server mode %d.  Defaulting to %d",
+		write_log(ERRO, ME, "bad server mode %d.  Defaulting to %d",
 			server_mode, DEFAULT_SERVER_MODE);
 		server_mode = DEFAULT_SERVER_MODE;
 	}
 	else
-		write_log(INFO, "Server Mode  = %d", server_mode);
+		write_log(INFO, ME, "Server Mode  = %d", server_mode);
 
 	if( !(pwd = getpwnam(user_name)) )
 	{
-		write_log(ERRO, "no such user name %s.  Defaulting to %s",
+		write_log(ERRO, ME, "no such user name %s.  Defaulting to %s",
 			user_name, DEFAULT_USERNAME);
 		strncpy(user_name, DEFAULT_USERNAME, UT_NAMESIZE);
 
 		if( !(pwd = getpwnam(user_name)) )
 		{
-			write_log(ERRO, "no such user name %s.  Defaulting to %s",
+			write_log(ERRO, ME, "no such user name %s.  Defaulting to %s",
 				user_name, FALLBACK_USERNAME);
 			strncpy(user_name, FALLBACK_USERNAME, UT_NAMESIZE);
 			pwd = getpwnam(user_name);
 		}
 	}
 	else
-		write_log(INFO, "User name    = %s", user_name);
+		write_log(INFO, ME, "User name    = %s", user_name);
 
 	if( (timing < MIN_TIMING) || (MAX_TIMING < timing) )
 	{
-		write_log(ERRO, "bad timing %d.  Defaulting to %d",
+		write_log(ERRO, ME, "bad timing %d.  Defaulting to %d",
 			timing, DEFAULT_TIMING);
 		timing = DEFAULT_TIMING;
 	}
 	else
-		write_log(INFO, "Timing       = %d", timing);
+		write_log(INFO, ME, "Timing       = %d", timing);
 
 	if( host = gethostbyname(interface_ip) )
 	{
 		memcpy(&iaddr, host->h_addr_list[0], host->h_length);
 		if( !IN_CLASSA(ntohl(iaddr.s_addr)) && !IN_CLASSB(ntohl(iaddr.s_addr))
 				&& !IN_CLASSC(ntohl(iaddr.s_addr)) )
-			write_log(ERRO, "non-class A, B or C IP %s.  Defaulting.", interface_ip);
+			write_log(ERRO, ME, "non-class A, B or C IP %s.  Defaulting.", interface_ip);
 		else
-			write_log(INFO, "Interface IP = %s", interface_ip);
+			write_log(INFO, ME, "Interface IP = %s", interface_ip);
 	}
 	else
-		write_log(ERRO, "bad interface IP %s.  Defaulting.", interface_ip);
+		write_log(ERRO, ME, "bad interface IP %s.  Defaulting.", interface_ip);
 
 	if( getifaddrs(&ifa) == 0 )
 	{
@@ -114,26 +119,26 @@ sanity_checks()
 			if(saddr->sin_family == AF_INET && !strcmp(ifa->ifa_name, interface_name))
 			{
 				strncpy(interface_ip, inet_ntoa(saddr->sin_addr), MAX_IP_LEN);
-				write_log(INFO, "Interface %s IP = %s",
+				write_log(INFO, ME, "Interface %s IP = %s",
 					interface_name, interface_ip);
 			}
 			ifa=ifa->ifa_next;
 		}
 	}
 	else
-		write_log(ERRO, "can't get IP for interface %s", interface_name);
+		write_log(ERRO, ME, "can't get IP for interface %s", interface_name);
 
 	//TODO - check for the existence of the the hw_plugin
 
 	if(log_level < CRIT || DBUG < log_level)
 	{
-		write_log(ERRO, "bad log level %d.  Defaulting to %d", log_level, DEFAULT_LOG_LEVEL);
+		write_log(ERRO, ME, "bad log level %d.  Defaulting to %d", log_level, DEFAULT_LOG_LEVEL);
 		log_level = DEFAULT_LOG_LEVEL;
 	}
 	else
-		write_log(INFO, "Log Level    = %d", log_level);
+		write_log(INFO, ME, "Log Level    = %d", log_level);
 
-	write_log(INFO, "<<<<< Parameters set");
+	write_log(INFO, ME, "<<<<< Parameters set");
 }
 
 
@@ -163,7 +168,7 @@ parse_cfg_file()
 	server_mode   = DEFAULT_SERVER_MODE ;
 
 	if( !(myfile = fopen(config_file, "r")) )
-		write_log(INFO, "No config file found");
+		write_log(INFO, ME, "No config file found");
 	else
 	{
 		while( fgets(conf_line, CONF_LINE_BUFFER, myfile) )

@@ -15,5 +15,5 @@
 #define LOG_FILE "/var/log/hwmultd.log"
 
 int open_log();
-int write_log(int, const char *,...);
+int write_log(int, const char *, const char *,...);
 int close_log();

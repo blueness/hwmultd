@@ -7,6 +7,10 @@
 #include <cmdargs.h>
 #include <log.h>
 
+
+#undef ME
+#define ME "log.c"
+
 #define TIME_BUFFER 1000
 
 FILE *log_stream;
@@ -20,13 +24,13 @@ open_log()
 	if( !(log_stream = fopen(LOG_FILE, "a+")) )
 		return 0;
 
-	write_log(CRIT, "START>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>") ;
+	write_log(CRIT, ME, "START>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>") ;
 	return 1;
 }
 
 
 int
-write_log(int level, const char *fmt,...)
+write_log(int level, const char *code, const char *fmt,...)
 {
 	va_list ap;
 	const char *level_name[] = { "CRIT", "ERRO", "INFO", "DBUG" } ;
@@ -54,6 +58,7 @@ write_log(int level, const char *fmt,...)
 	strcat( tmstp, level_name[ level ] ) ;
 
 	fprintf(log_stream, "%s: ", tmstp);
+	fprintf(log_stream, "%s: ", code );
 
 	va_start(ap, fmt);
 	vfprintf(log_stream, fmt, ap);
@@ -71,7 +76,7 @@ write_log(int level, const char *fmt,...)
 int
 close_log()
 {
-	write_log(CRIT, "EXITING<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<") ;
+	write_log(CRIT, ME, "EXITING<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<") ;
 	if(fclose(log_stream))
                 return 0 ;
         else
