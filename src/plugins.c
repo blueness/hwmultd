@@ -27,14 +27,12 @@ load_plugins()
 	
 		if( !(handle_hw = dlopen(lib_name, RTLD_LAZY)) )
 		{
-			write_log(ERRO, ME, "failed dlopen hw plugin %s -> %s", lib_name, hw_plugin_name);
+			write_log(ERRO, ME, "failed dlopen hw plugin %s -> %s", hw_plugin_name, lib_name);
 			return 0;
 		}
 		else
-			write_log(DBUG, ME, "dlopened hw plugin %s -> %s", lib_name, hw_plugin_name);
+			write_log(DBUG, ME, "dlopened hw plugin %s -> %s", hw_plugin_name, lib_name);
 
-
-		already_init_hw = 0 ;
 
 		init_hw = dlsym(handle_hw, "init_hw");
 		reset_hw = dlsym(handle_hw, "reset_hw");

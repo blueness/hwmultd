@@ -129,18 +129,17 @@ main( int argc, char *argv[] )
 	else
 		write_log(DBUG, ME, "registered signals");
 
-	// Load plugins
-	if( !load_plugins() )
-	{
-		write_log(CRIT, ME, "load plugins failed");
-		clean_exit();
-	}
-	else
-		write_log(DBUG, ME, "loaded plugins");
-
 	// The big loop
 	while(1)
 	{
+		if( !load_plugins() )
+		{
+			write_log(CRIT, ME, "load plugins failed");
+			clean_exit();
+		}
+		else
+			write_log(DBUG, ME, "loaded plugins");
+
 		if( !start_service() )
 		{
 			write_log(CRIT, ME, "service start failed");
@@ -158,6 +157,14 @@ main( int argc, char *argv[] )
 		}
 		else
 			write_log(DBUG, ME, "service stopped");
+
+		if( !unload_plugins() )
+		{
+			write_log(CRIT, ME, "unload plugins failed");
+			clean_exit();
+		}
+		else
+			write_log(DBUG, ME, "unloaded plugins");
 
 		parse_cfg_file();
 	}

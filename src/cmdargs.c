@@ -129,6 +129,7 @@ sanity_checks()
 		write_log(ERRO, ME, "can't get IP for interface %s", interface_name);
 
 	//TODO - check for the existence of the the hw_plugin
+	write_log(INFO, ME, "HW Plugin    = %s", hw_plugin_name);
 
 	if(log_level < CRIT || DBUG < log_level)
 	{
