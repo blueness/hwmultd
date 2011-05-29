@@ -15,6 +15,14 @@ start_service()
 	// the hwmultd client is a multicast server
 	if(server_mode == SERVER_MODE)
 	{
+		if( !((*init_hw)()) )
+		{
+			write_log(CRIT, "initialized hardware failed");
+			clean_exit();
+		}
+		else
+			write_log(DBUG, "initialized hardware");
+
 		if( !mclient_start() )
 		{
 			write_log(ERRO, "mclient_start() failed");
@@ -68,12 +76,6 @@ do_service()
 int
 stop_service()
 {
-	/*
-	if(server_mode == SERVER_MODE)
-		return mclient_stop();
-	else
-		return mserver_stop();
-	*/
 	if(server_mode == SERVER_MODE)
 		mclient_stop();
 	else

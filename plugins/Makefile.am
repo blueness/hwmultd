@@ -1,2 +1,2 @@
-lib_LTLIBRARIES = libnull.la
-libnull_la_SOURCES = libnull.c null.h
+lib_LTLIBRARIES = libnull_hw.la
+libnull_hw_la_SOURCES = libnull_hw.c hwcommon.h

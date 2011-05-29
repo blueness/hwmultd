@@ -133,14 +133,6 @@ main( int argc, char *argv[] )
 	else
 		write_log(DBUG, "loaded plugins");
 
-	if( !((*init_hw)()) )
-	{
-		write_log(CRIT, "initialized hardware failed");
-		clean_exit();
-	}
-	else
-		write_log(DBUG, "initialized hardware");
-
 	// The big loop
 	while(1)
 	{
