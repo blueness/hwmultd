@@ -17,7 +17,12 @@ clean_exit()
 	write_log(DBUG, "doing a clean_exit()");
 	stop_service();
 	if( close_hw != NULL )
-		(*close_hw)();
+	{
+		if(!(*close_hw)())
+			write_log(ERRO, "failed closed hardware");
+		else
+			write_log(DBUG, "closed hardware");
+	}
 	unload_plugins();
 	close_pid();
 	close_log();

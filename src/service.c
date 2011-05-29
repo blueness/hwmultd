@@ -15,13 +15,21 @@ start_service()
 	// the hwmultd client is a multicast server
 	if(server_mode == SERVER_MODE)
 	{
-		if( !((*init_hw)()) )
+		if( !already_init_hw )
 		{
-			write_log(CRIT, "initialized hardware failed");
-			clean_exit();
+			if( !((*init_hw)()) )
+			{
+				write_log(CRIT, "initialized hardware failed");
+				clean_exit();
+			}
+			else
+			{
+				write_log(DBUG, "initialized hardware");
+				already_init_hw = 1;
+			}
 		}
 		else
-			write_log(DBUG, "initialized hardware");
+			write_log(DBUG, "already initialized hardware");
 
 		if( !mclient_start() )
 		{
@@ -33,6 +41,22 @@ start_service()
 	}
 	else
 	{
+		// We are switching from server to client, so close hw
+		if( already_init_hw )
+		{
+			write_log(INFO, "switching from server to client and closing already initialized hardware");
+			if(!(*close_hw)())
+			{
+				write_log(ERRO, "failed closed hardware");
+				return 0;
+			}
+			else
+			{
+				already_init_hw = 0;
+				write_log(DBUG, "closed hardware");
+			}
+		}
+
 		if( !mserver_start() )
 		{
 			write_log(ERRO, "mserver_start() failed");
@@ -69,6 +93,14 @@ do_service()
 		}
 	}
 
+	if( !((*reset_hw)()) )
+	{
+		write_log(CRIT, "reset hardware failed");
+		clean_exit();
+	}
+	else
+		write_log(DBUG, "reset hardware");
+
 	return 1;
 }
 
@@ -76,6 +108,7 @@ do_service()
 int
 stop_service()
 {
+	write_log(DBUG, "stopping service");
 	if(server_mode == SERVER_MODE)
 		mclient_stop();
 	else

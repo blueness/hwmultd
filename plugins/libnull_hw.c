@@ -3,12 +3,12 @@
 
 void my_init()
 {
-	printf("Initialize libprint.\n"); 
+	return ;
 }
 
 void my_fini()
 {
-	printf("Finalize libprint.\n"); 
+	return ;
 }
 
 int
