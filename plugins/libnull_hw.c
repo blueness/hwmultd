@@ -1,12 +1,14 @@
 
 #include <hwcommon.h>
 
-void my_init()
+void
+my_init()
 {
 	return ;
 }
 
-void my_fini()
+void
+my_fini()
 {
 	return ;
 }
@@ -23,7 +25,8 @@ reset_hw()
 	return 1;
 }
 
-char *read_hw()
+char *
+read_hw()
 {
 	return "NULL PLUGIN";
 }

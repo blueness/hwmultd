@@ -128,8 +128,9 @@ sanity_checks()
 	else
 		write_log(ERRO, ME, "can't get IP for interface %s", interface_name);
 
-	//TODO - check for the existence of the the hw_plugin
+	//TODO - check for the existence of the the hw_plugin and/or cl_plugin
 	write_log(INFO, ME, "HW Plugin    = %s", hw_plugin_name);
+	write_log(INFO, ME, "CL Plugin    = %s", cl_plugin_name);
 
 	if(log_level < CRIT || DBUG < log_level)
 	{
@@ -157,6 +158,7 @@ parse_cfg_file()
 	strncpy(interface_ip, DEFAULT_INTERFACE_IP, MAX_IP_LEN);
 	strncpy(interface_name, DEFAULT_INTERFACE_NAME, MAX_IF_LEN);
 	strncpy(hw_plugin_name, DEFAULT_HW_PLUGIN, MAX_PLUGIN_LEN);
+	strncpy(cl_plugin_name, DEFAULT_CL_PLUGIN, MAX_PLUGIN_LEN);
 	log_level = DEFAULT_LOG_LEVEL;
 
 	FILE *myfile;
@@ -192,6 +194,8 @@ parse_cfg_file()
 				strncpy(interface_name, second, MAX_IF_LEN);
 			if( !strcmp(first,"HWPlugin") )
 				strncpy(hw_plugin_name, second, MAX_PLUGIN_LEN);
+			if( !strcmp(first,"CLPlugin") )
+				strncpy(cl_plugin_name, second, MAX_PLUGIN_LEN);
 			if(strcmp(first,"Debug") == 0)
 				log_level = atoi(second);
 		}

@@ -1,4 +1,5 @@
 
+#include <stdlib.h>
 #include <unistd.h>
 
 #include <cmdargs.h>
@@ -21,11 +22,11 @@ start_service()
 	{
 		if( !((*init_hw)()) )
 		{
-			write_log(CRIT, ME, "initialized hardware failed");
+			write_log(CRIT, ME, "initialized hardware plugin failed");
 			clean_exit();
 		}
 		else
-			write_log(DBUG, ME, "initialized hardware");
+			write_log(DBUG, ME, "initialized hardware plugin");
 
 		if( !mclient_start() )
 		{
@@ -37,6 +38,14 @@ start_service()
 	}
 	else
 	{
+		if( !((*init_cl)()) )
+		{
+			write_log(CRIT, ME, "initialized client plugin failed");
+			clean_exit();
+		}
+		else
+			write_log(DBUG, ME, "initialized client plugin");
+
 		if( !mserver_start() )
 		{
 			write_log(ERRO, ME, "mserver_start() failed");
@@ -55,7 +64,7 @@ start_service()
 int
 do_service()
 {
-	char *msg;
+	char *msg, *rmsg;
 
 	while(continue_big_loop)
 	{
@@ -68,18 +77,44 @@ do_service()
 		}
 		else
 		{
-			if( !(msg = rcv_mcast_msg()) )
+			if( !(msg = rcv_mcast_msg()) )		//caller must free buffer
 				return 0;
+
+			if( !( rmsg = (*act_cl)(msg) ) )	//caller must free buffer
+			{
+				write_log(CRIT, ME, "client action failed");
+				clean_exit();
+			}
+			else
+			{
+				write_log(DBUG, ME, "client action: %s", rmsg);
+			}
+
+			free(rmsg);
+			free(msg);
 		}
 	}
 
-	if( !((*close_hw)()) )
+	if(server_mode == SERVER_MODE)
 	{
-		write_log(CRIT, ME, "close hardware failed");
-		clean_exit();
+		if( !((*close_hw)()) )
+		{
+			write_log(CRIT, ME, "close hardware plugin failed");
+			clean_exit();
+		}
+		else
+			write_log(DBUG, ME, "closed hardware plugin");
 	}
 	else
-		write_log(DBUG, ME, "closed hardware");
+	{
+		if( !((*close_cl)()) )
+		{
+			write_log(CRIT, ME, "close client plugin failed");
+			clean_exit();
+		}
+		else
+			write_log(DBUG, ME, "closed client plugin");
+	}
 
 	return 1;
 }

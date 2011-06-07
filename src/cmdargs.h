@@ -70,14 +70,16 @@ int log_level;
 
 
 /*
- * Hardware Plugins
+ * Plugins
  *
  */
 
 #define MAX_PLUGIN_LEN 128
 #define DEFAULT_HW_PLUGIN "null"
+#define DEFAULT_CL_PLUGIN "null"
 
 char hw_plugin_name[MAX_PLUGIN_LEN];
+char cl_plugin_name[MAX_PLUGIN_LEN];
 
 
 /*

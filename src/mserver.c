@@ -18,8 +18,6 @@
 #undef ME
 #define ME "mserver.c"
 
-#define MSG_BUFFER 1000
-
 int sd;
 struct sockaddr_in saddr;
 
@@ -94,7 +92,7 @@ rcv_mcast_msg()
 	char *msg;
 	int len = sizeof(struct sockaddr_in);
 	
-	if(!(msg = (char *)malloc(MSG_BUFFER)))
+	if(!(msg = (char *)malloc(MSG_BUFFER)))					//caller must free buffer
 	{
 		write_log(ERRO, ME, "server cannot malloc message buffer");
 		return NULL;
