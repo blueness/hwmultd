@@ -86,7 +86,7 @@ char hw_plugin_name[MAX_PLUGIN_LEN];
  * CFGFILE = another source
  */
 #define MAX_CONFIG_FILE_LEN 1024
-#define DEFAULT_CONFIG_FILE "/usr/local/etc/hwmultd.conf"
+#define DEFAULT_CONFIG_FILE "/usr/local/etc/hwmultd/hwmultd.conf"
 
 char config_file[MAX_CONFIG_FILE_LEN];
 

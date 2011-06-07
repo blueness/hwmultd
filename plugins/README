@@ -1,0 +1,13 @@
+
+Plugins are installed in a subdirectory of your library dir:
+
+	$(libdir)/hwmultd
+
+By default, libdir is /usr/local/lib
+
+To make sure that hwmultd can find them, you may need to add
+a line like
+
+	/usr/local/lib/hwmultd
+
+to /etc/ld.so.conf and then run ldconfig.
