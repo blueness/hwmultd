@@ -2,13 +2,13 @@
 #include <hwcommon.h>
 
 void
-my_init()
+hwplugin_init()
 {
 	return ;
 }
 
 void
-my_fini()
+hwplugin_fini()
 {
 	return ;
 }

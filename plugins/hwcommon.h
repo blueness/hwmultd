@@ -1,6 +1,6 @@
 
-void __attribute__ ((constructor)) my_init(void);
-void __attribute__ ((destructor)) my_fini(void);
+void __attribute__ ((constructor)) hwplugin_init(void);
+void __attribute__ ((destructor)) hwplugin_fini(void);
 
 int init_hw();
 int reset_hw();

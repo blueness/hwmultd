@@ -1,6 +1,6 @@
 
-void __attribute__ ((constructor)) my_init(void);
-void __attribute__ ((destructor)) my_fini(void);
+void __attribute__ ((constructor)) clplugin_init(void);
+void __attribute__ ((destructor)) clplugin_fini(void);
 
 int init_cl();
 int reset_cl();
