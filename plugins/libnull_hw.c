@@ -28,7 +28,7 @@ reset_hw()
 char *
 read_hw()
 {
-	return "NULL PLUGIN";
+	return "HW NULL PLUGIN";
 }
 
 int

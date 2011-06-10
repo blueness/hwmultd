@@ -59,7 +59,7 @@ load_plugins()
 			return 0;
 		}
 		else
-			write_log(DBUG, ME, "dlopened hw plugin %s -> %s", cl_plugin_name, lib_name);
+			write_log(DBUG, ME, "dlopened cl plugin %s -> %s", cl_plugin_name, lib_name);
 
 		init_cl = dlsym(handle_cl, "init_cl");
 		reset_cl = dlsym(handle_cl, "reset_cl");
