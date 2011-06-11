@@ -36,10 +36,10 @@ init_hw()
 	const char *dev = "/dev/ttyUSB0" ;
 	struct termios ios;
 
-	if( !(fd = open( dev, O_RDWR | O_NONBLOCK | O_NOCTTY )) )
+	if((fd = open( dev, O_RDWR | O_NONBLOCK | O_NOCTTY )) < 0)
 		return -1;
 
-	if( tcgetattr(fd, &ios) < 0 )
+	if(tcgetattr(fd, &ios) < 0)
 	{
 		close(fd);
 		return -2;
@@ -48,19 +48,30 @@ init_hw()
 	cfsetispeed(&ios, B9600);
 	cfsetospeed(&ios, B9600);
 	cfmakeraw  (&ios);
-	if( tcsetattr(fd, TCSANOW, &ios) < 0 )
+	if(tcsetattr(fd, TCSANOW, &ios) < 0)
 	{
 		close(fd);
 		return -3;
 	}
 
-	if(write(fd, 'X', 1) < 1)
+	usleep(DELAY);
+	if(write(fd, "X", 1) < 1)
 		return -4;
+
+	usleep(DELAY);		// Don't check for error on read since
+	read(fd, data, 1024);	// errno=EAGAIN may result from O_NONBLOCK
+
+	usleep(DELAY);
+	if(write(fd, "P", 1) < 1)
+		return -6;
+
 	usleep(DELAY);
 	read(fd, data, 1024);
 
-	if(write(fd, 'P', 1) < 1)
-		return -5;
+	usleep(DELAY);
+	if(write(fd, "R", 1) < 1)
+		return -6;
+
 	usleep(DELAY);
 	read(fd, data, 1024);
 
@@ -70,31 +81,50 @@ init_hw()
 int
 reset_hw()
 {
+	usleep(DELAY);
 	if(close_hw() != 1)
 		return -1;
+
 	usleep(DELAY);
 	if(init_hw() != 1)
 		return -2;
+
 	return 1;
 }
 
 char *
 read_hw()
 {
+	int i;
 	unsigned char data[18];
 	double temp;
+	char *stemp;
 
-	if(write(fd, 'R', 1) < 1)
-		return "NULL";
+	usleep(DELAY);
+	if(write(fd, "R", 1) < 1)
+		return "NULL WRITE";
+
 	usleep(DELAY);
 	if(read(fd, data, 18) < 18)
-		return "NULL";
+		return "NULL READ";
 
-	temp = data[9] + 256 * data[10];
+	for(i = 0; i < 18; i++)
+		if(data[i])
+			break;
+
+	temp = data[i] + 256.0 * data[i+1];
 	temp /= 16.0;
 
-	char *stemp = (char *)malloc(32);
+	stemp = (char *)malloc(32);
 	sprintf(stemp, "%lf", temp);
+
+	/*
+	char *stemp = (char *)malloc(1024);
+	sprintf(stemp, "%u %u %u %u %u %u %u %u %u %u %u %u %u %u %u %u %u %u %lf",
+		data[0], data[1], data[2], data[3], data[4], data[5], data[6], data[7],
+		data[8], data[9], data[10], data[11], data[12], data[13], data[14], data[15],
+		data[16], data[17], temp);
+	*/
 
 	return stemp;
 }
