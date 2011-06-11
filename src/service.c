@@ -16,13 +16,15 @@
 int
 start_service()
 {
+	int ret ;
+
 	// the hwmultd server is a multicast client and
 	// the hwmultd client is a multicast server
 	if(server_mode == SERVER_MODE)
 	{
-		if( !((*init_hw)()) )
+		if((ret=(*init_hw)()) != 1)
 		{
-			write_log(CRIT, ME, "initialized hardware plugin failed");
+			write_log(CRIT, ME, "initialized hardware plugin failed: %d", ret);
 			clean_exit();
 		}
 		else
@@ -38,9 +40,9 @@ start_service()
 	}
 	else
 	{
-		if( !((*init_cl)()) )
+		if((ret=(*init_cl)()) != 1)
 		{
-			write_log(CRIT, ME, "initialized client plugin failed");
+			write_log(CRIT, ME, "initialized client plugin failed: %d", ret);
 			clean_exit();
 		}
 		else
@@ -64,6 +66,7 @@ start_service()
 int
 do_service()
 {
+	int ret ;
 	char *msg, *rmsg;
 
 	while(continue_big_loop)
@@ -97,9 +100,9 @@ do_service()
 
 	if(server_mode == SERVER_MODE)
 	{
-		if( !((*close_hw)()) )
+		if((ret=(*close_hw)()) == 1)
 		{
-			write_log(CRIT, ME, "close hardware plugin failed");
+			write_log(CRIT, ME, "close hardware plugin failed: %d", ret);
 			clean_exit();
 		}
 		else
@@ -107,9 +110,9 @@ do_service()
 	}
 	else
 	{
-		if( !((*close_cl)()) )
+		if((ret=(*close_cl)()) == 1)
 		{
-			write_log(CRIT, ME, "close client plugin failed");
+			write_log(CRIT, ME, "close client plugin failed: %d", ret);
 			clean_exit();
 		}
 		else

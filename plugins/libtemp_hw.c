@@ -4,6 +4,8 @@
 #include <stdlib.h>
 #include <sys/types.h>
 #include <sys/stat.h>
+#include <termios.h>
+#include <unistd.h>
 
 #include <hwcommon.h>
 
@@ -32,17 +34,33 @@ init_hw()
 {
 	unsigned char data[1024];
 	const char *dev = "/dev/ttyUSB0" ;
+	struct termios ios;
 
 	if( !(fd = open( dev, O_RDWR | O_NONBLOCK | O_NOCTTY )) )
-		return 0;
+		return -1;
+
+	if( tcgetattr(fd, &ios) < 0 )
+	{
+		close(fd);
+		return -2;
+	}
+
+	cfsetispeed(&ios, B9600);
+	cfsetospeed(&ios, B9600);
+	cfmakeraw  (&ios);
+	if( tcsetattr(fd, TCSANOW, &ios) < 0 )
+	{
+		close(fd);
+		return -3;
+	}
 
 	if(write(fd, 'X', 1) < 1)
-		return 0;
+		return -4;
 	usleep(DELAY);
 	read(fd, data, 1024);
 
 	if(write(fd, 'P', 1) < 1)
-		return 0;
+		return -5;
 	usleep(DELAY);
 	read(fd, data, 1024);
 
@@ -52,11 +70,11 @@ init_hw()
 int
 reset_hw()
 {
-	if(!close_hw())
-		return 0;
+	if(close_hw() != 1)
+		return -1;
 	usleep(DELAY);
-	if(!init_hw())
-		return 0;
+	if(init_hw() != 1)
+		return -2;
 	return 1;
 }
 
@@ -67,10 +85,10 @@ read_hw()
 	double temp;
 
 	if(write(fd, 'R', 1) < 1)
-		return 0;
+		return "NULL";
 	usleep(DELAY);
 	if(read(fd, data, 18) < 18)
-		return 0;
+		return "NULL";
 
 	temp = data[9] + 256 * data[10];
 	temp /= 16.0;
@@ -85,7 +103,7 @@ int
 close_hw()
 {
 	if(close(fd))
-		return 0;
+		return -1;
 	else
 		return 1;
 }
