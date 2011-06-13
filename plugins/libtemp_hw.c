@@ -115,7 +115,7 @@ read_hw()
 	temp = data[i] + 256.0 * data[i+1];
 	temp /= 16.0;
 
-	stemp = (char *)malloc(32);
+	stemp = (char *)malloc(1024);
 	sprintf(stemp, "%lf", temp);
 
 	/*

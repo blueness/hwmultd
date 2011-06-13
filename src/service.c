@@ -80,7 +80,7 @@ do_service()
 		}
 		else
 		{
-			if( !(msg = rcv_mcast_msg()) )		//caller must free buffer
+			if( !(msg = rcv_mcast_msg()) )		//caller=ME must free buffer
 				return 0;
 
 			if( !( rmsg = (*act_cl)(msg) ) )	//caller must free buffer
@@ -93,8 +93,8 @@ do_service()
 				write_log(DBUG, ME, "client action: %s", rmsg);
 			}
 
-			free(rmsg);
-			free(msg);
+			free(rmsg);				//freeing buffer
+			free(msg);				//freeing buffer
 		}
 	}
 

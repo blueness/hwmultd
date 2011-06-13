@@ -144,7 +144,7 @@ sanity_checks()
 }
 
 
-#define CONF_LINE_BUFFER 1024
+#define CONF_LINE_BUFFER 4096
 
 void
 parse_cfg_file()

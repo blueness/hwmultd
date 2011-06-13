@@ -3,7 +3,7 @@
  * for the choice of multicast address in Site Local Scope, RFC RFC2365.
  */
 
-#define MSG_BUFFER 1000
+#define MSG_BUFFER 4096
 
 int mserver_start();
 char *rcv_mcast_msg();

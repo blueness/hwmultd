@@ -37,5 +37,6 @@ AC_CONFIG_FILES([Makefile
                  plugins/Makefile
                  src/Makefile
                  etc/Makefile
+                 etc/scripts/Makefile
                  doc/Makefile])
 AC_OUTPUT
