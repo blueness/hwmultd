@@ -236,7 +236,8 @@ parse_cmd_args( int argc, char *argv[] )
 {
 	int oc ;
 
-	strncpy(config_file, DEFAULT_CONFIG_FILE, MAX_CONFIG_FILE_LEN);
+	strncpy(config_file, DEFAULT_CONF_DIR, MAX_CONF_DIR_LEN);
+	strcat(config_file, "/hwmultd.conf");
 
 	while( ( oc = getopt( argc, argv, ":hvc:") ) != -1 )
 	{
@@ -249,7 +250,7 @@ parse_cmd_args( int argc, char *argv[] )
 				print_version();
 				exit(EXIT_SUCCESS);
 			case 'c':
-				strncpy(config_file, optarg, MAX_CONFIG_FILE_LEN);
+				strncpy(config_file, optarg, MAX_CONF_DIR_LEN+MAX_CONF_FILE_LEN);
 				break;
 			case ':':
 				fprintf(stderr, "%s: option -%c requires argument\n", argv[0], optopt);

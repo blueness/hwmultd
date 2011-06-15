@@ -5,8 +5,10 @@
 
 #include <clcommon.h>
 
-#ifndef DEFAULT_SCRIPTS_DIR
-#define DEFAULT_SCRIPTS_DIR "/usr/local/etc/hwmultd/scripts"
+#define MAX_CONF_DIR_LEN 1024
+
+#ifndef DEFAULT_CONF_DIR
+#define DEFAULT_CONF_DIR "/usr/local/etc/hwmultd"
 #endif
 
 void
@@ -43,13 +45,11 @@ act_cl(char *msg)
 	memset(buf, 0, SCRIPT_BUFFER);
 
 	char script[PATH_BUFFER];
-	//char *script = (char *)malloc(SCRIPT_BUFFER*sizeof(char));
-	//memset(buf, 0, PATH_BUFFER);
 
 	memset(script, 0, PATH_BUFFER);
-	strncpy(script, DEFAULT_SCRIPTS_DIR, strlen(DEFAULT_SCRIPTS_DIR));
-	strncat(script, "/", 1);
-	strncat(script, "null.sh", 7);
+	strncpy(script, DEFAULT_CONF_DIR, MAX_CONF_DIR_LEN);
+	strcat(script, "/scripts");
+	strcat(script, "/null.sh");
 
 	f = popen(script, "r");
 	fread(buf, sizeof(char), 4096, f);

@@ -83,17 +83,16 @@ char cl_plugin_name[MAX_PLUGIN_LEN];
 
 
 /*
- * Configure file name
- * CMDLINE = one source of parameters
- * CFGFILE = another source
+ * Directory for configure files
  */
-#define MAX_CONFIG_FILE_LEN 1024
+#define MAX_CONF_DIR_LEN 1024
+#define MAX_CONF_FILE_LEN 1024
 
-#ifndef DEFAULT_CONFIG_FILE
-#define DEFAULT_CONFIG_FILE "/usr/local/etc/hwmultd/hwmultd.conf"
+#ifndef DEFAULT_CONF_DIR
+#define DEFAULT_CONF_DIR "/usr/local/etc/hwmultd"
 #endif
 
-char config_file[MAX_CONFIG_FILE_LEN];
+char config_file[MAX_CONF_DIR_LEN+MAX_CONF_FILE_LEN];
 
 
 
