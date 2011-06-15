@@ -142,15 +142,13 @@ snd_mcast_msg(const char *msg)
 int
 mclient_stop()
 {
-	int ret = 1;
-
 	if(close(cd))
 	{
 		write_log(ERRO, ME,"client cannot close socket fd %d", cd);
-		ret = 0;
+		return 0;
 	}
 	else
 		write_log(DBUG, ME,"client closed socket fd %d", cd);
 
-	return ret;
+	return 1;
 }

@@ -25,7 +25,7 @@ start_service()
 		if((ret = (*init_hw)()) != 1)
 		{
 			write_log(CRIT, ME, "initialized hardware plugin failed: %d", ret);
-			clean_exit();
+			return 0;
 		}
 		else
 			write_log(DBUG, ME, "initialized hardware plugin");
@@ -43,7 +43,7 @@ start_service()
 		if((ret = (*init_cl)()) != 1)
 		{
 			write_log(CRIT, ME, "initialized client plugin failed: %d", ret);
-			clean_exit();
+			return 0;
 		}
 		else
 			write_log(DBUG, ME, "initialized client plugin");
@@ -66,7 +66,6 @@ start_service()
 int
 do_service()
 {
-	int ret ;
 	char *msg, *rmsg;
 
 	while(continue_big_loop)
@@ -95,27 +94,6 @@ do_service()
 		}
 	}
 
-	if(server_mode == SERVER_MODE)
-	{
-		if((ret = (*close_hw)()) == 1)
-		{
-			write_log(CRIT, ME, "close hardware plugin failed: %d", ret);
-			clean_exit();
-		}
-		else
-			write_log(DBUG, ME, "closed hardware plugin");
-	}
-	else
-	{
-		if((ret = (*close_cl)()) == 1)
-		{
-			write_log(CRIT, ME, "close client plugin failed: %d", ret);
-			clean_exit();
-		}
-		else
-			write_log(DBUG, ME, "closed client plugin");
-	}
-
 	return 1;
 }
 
@@ -123,11 +101,49 @@ do_service()
 int
 stop_service()
 {
-	write_log(DBUG, ME, "stopping service");
-	if(server_mode == SERVER_MODE)
-		mclient_stop();
-	else
-		mserver_stop();
+	int ret ;
 
+	if(server_mode == SERVER_MODE)
+	{
+		if((ret = (*close_hw)()) != 1)
+		{
+			write_log(CRIT, ME, "close hardware plugin failed: %d", ret);
+			return 0;
+		}
+		else
+			write_log(DBUG, ME, "closed hardware plugin");
+	}
+	else
+	{
+		if((ret = (*close_cl)()) != 1)
+		{
+			write_log(CRIT, ME, "close client plugin failed: %d", ret);
+			return 0;
+		}
+		else
+			write_log(DBUG, ME, "closed client plugin");
+	}
+
+	if(server_mode == SERVER_MODE)
+	{
+		if( !mclient_stop() )
+		{
+			write_log(CRIT, ME, "close multicast client failed");
+			return 0;
+		}
+		else
+			write_log(DBUG, ME, "closed multicast client");
+	}
+	else
+	{
+		if( !mserver_stop() )
+		{
+			write_log(CRIT, ME, "close multicast server failed");
+			return 0;
+		}
+		else
+			write_log(DBUG, ME, "closed multicast server");
+	}
+	
 	return 1;
 }

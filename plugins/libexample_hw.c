@@ -1,4 +1,6 @@
 
+#include <string.h>
+
 #include <hwcommon.h>
 
 void
@@ -14,9 +16,18 @@ hwplugin_fini()
 }
 
 
+
+char *buf;
+
 int
 init_hw()
 {
+	if( !(buf = (char *)malloc(MSG_BUFFER*sizeof(char))) )
+		return 0;
+
+	memset(buf, 0, MSG_BUFFER*sizeof(char));
+	strcpy(buf, "HW EXAMPLE PLUGIN");
+
 	return 1;
 }
 
@@ -29,11 +40,12 @@ reset_hw()
 char *
 read_hw()
 {
-	return "";
+	return buf;
 }
 
 int
 close_hw()
 {
+	free(buf);
 	return 1;
 }

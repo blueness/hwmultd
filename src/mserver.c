@@ -36,7 +36,7 @@ mserver_start()
 	if( !(msg = (char *)malloc(MSG_BUFFER*sizeof(char))) )
 	{
 		write_log(ERRO, ME, "server cannot malloc message buffer");
-		return NULL;
+		return 0;
 	}
 	else
 		write_log(DBUG, ME, "server malloc-ed message buffer");
@@ -106,7 +106,7 @@ rcv_mcast_msg()
 	if(recvfrom(sd, msg, MSG_BUFFER, 0, (struct sockaddr *)&saddr, &len ) < 0)
 	{
 		write_log(ERRO, ME, "server cannot receive msg");
-		return NULL;
+		return "";
 	}
 	else
 		write_log(DBUG, ME, "server recived msg: %s", msg);
@@ -118,17 +118,15 @@ rcv_mcast_msg()
 int
 mserver_stop()
 {
-	int ret = 1;
-
 	free(msg);
 
 	if(close(sd))
 	{
 		write_log(ERRO, ME, "server cannot close socket fd %d", sd);
-		ret = 0;
+		return 0;
 	}
 	else
 		write_log(DBUG, ME, "server closed socket fd %d", sd);
 
-	return ret;
+	return 1;
 }
