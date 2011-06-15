@@ -18,9 +18,9 @@
 #undef ME
 #define ME "mserver.c"
 
+char *msg;
 int sd;
 struct sockaddr_in saddr;
-
 
 int
 mserver_start()
@@ -32,6 +32,16 @@ mserver_start()
 	memset(&saddr, 0, sizeof(struct sockaddr_in));
 	memset(&iaddr, 0, sizeof(struct in_addr));
 	memset(&imreq, 0, sizeof(struct ip_mreq));
+
+	if( !(msg = (char *)malloc(MSG_BUFFER*sizeof(char))) )
+	{
+		write_log(ERRO, ME, "server cannot malloc message buffer");
+		return NULL;
+	}
+	else
+		write_log(DBUG, ME, "server malloc-ed message buffer");
+
+	memset(msg, 0, MSG_BUFFER*sizeof(char));
 
 	if( !(host = gethostbyname(multicast_ip)) ) 
 	{
@@ -89,16 +99,7 @@ mserver_start()
 char *
 rcv_mcast_msg()
 {
-	char *msg;
 	int len = sizeof(struct sockaddr_in);
-	
-	if(!(msg = (char *)malloc(MSG_BUFFER*sizeof(char))))			//caller must free buffer
-	{
-		write_log(ERRO, ME, "server cannot malloc message buffer");
-		return NULL;
-	}
-	else
-		write_log(DBUG, ME, "server malloc-ed message buffer");
 
 	memset(msg, 0, MSG_BUFFER*sizeof(char));
 
@@ -118,6 +119,8 @@ int
 mserver_stop()
 {
 	int ret = 1;
+
+	free(msg);
 
 	if(close(sd))
 	{

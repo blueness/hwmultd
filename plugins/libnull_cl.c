@@ -15,9 +15,19 @@ clplugin_fini()
 	return ;
 }
 
+
+
+char *buf;
+
 int
 init_cl()
 {
+	if( !(buf = (char *)malloc(MSG_BUFFER*sizeof(char))) )
+		return 0;
+	
+	memset(buf, 0, MSG_BUFFER*sizeof(char));
+	strcpy(buf, "CL NULL PLUGIN");
+
 	return 1;
 }
 
@@ -30,14 +40,12 @@ reset_cl()
 char *
 act_cl(char *msg)
 {
-	char *buf = (char *)malloc(MSG_BUFFER*sizeof(char)) ;
-	memset(buf, 0, MSG_BUFFER*sizeof(char));
-	strcpy(buf, "CL NULL PLUGIN");
 	return buf;
 }
 
 int
 close_cl()
 {
+	free(buf);
 	return 1;
 }

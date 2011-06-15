@@ -25,9 +25,10 @@ hwplugin_fini()
 
 
 
-int fd ;
-
 #define DELAY 15000
+
+int fd ;
+char *buf;
 
 int
 init_hw()
@@ -35,6 +36,10 @@ init_hw()
 	unsigned char data[1024];
 	const char *dev = "/dev/ttyUSB0" ;
 	struct termios ios;
+
+	if( !(buf = (char *)malloc(MSG_BUFFER*sizeof(char))) )
+		return 0;
+	memset(buf, 0, MSG_BUFFER*sizeof(char));
 
 	if((fd = open( dev, O_RDWR | O_NONBLOCK | O_NOCTTY )) < 0)
 		return -1;
@@ -98,8 +103,6 @@ read_hw()
 	int i;
 	unsigned char data[18];
 	double temp;
-	char *stemp = (char *)malloc(MSG_BUFFER*sizeof(char));
-	memset( stemp, 0, MSG_BUFFER*sizeof(char));
 
 	usleep(DELAY);
 	if(write(fd, "R", 1) < 1)
@@ -116,22 +119,23 @@ read_hw()
 	temp = data[i] + 256.0 * data[i+1];
 	temp /= 16.0;
 
-	sprintf(stemp, "%lf", temp);
+	sprintf(buf, "%lf", temp);
 
 	/*
-	stemp = (char *)malloc(MSG_BUFFER*sizeof(char));
-	sprintf(stemp, "%u %u %u %u %u %u %u %u %u %u %u %u %u %u %u %u %u %u %lf",
+	buf = (char *)malloc(MSG_BUFFER*sizeof(char));
+	sprintf(buf, "%u %u %u %u %u %u %u %u %u %u %u %u %u %u %u %u %u %u %lf",
 		data[0], data[1], data[2], data[3], data[4], data[5], data[6], data[7],
 		data[8], data[9], data[10], data[11], data[12], data[13], data[14], data[15],
 		data[16], data[17], temp);
 	*/
 
-	return stemp;
+	return buf;
 }
 
 int
 close_hw()
 {
+	free(buf);
 	if(close(fd))
 		return -1;
 	else

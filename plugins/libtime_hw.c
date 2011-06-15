@@ -18,10 +18,16 @@ void my_fini()
 
 
 
+char *buf;
 
 int
 init_hw()
 {
+	if( !(buf = (char *)malloc(MSG_BUFFER*sizeof(char))) )
+		return 0;
+
+	memset(buf, 0, MSG_BUFFER*sizeof(char));
+
 	return 1;
 }
 
@@ -39,25 +45,23 @@ char *read_hw()
 	time_t t;
 	struct tm *tmp;
 
-	char *tmstr = (char *)malloc(MSG_BUFFER*sizeof(char));
-	memset(tmstr, 0, MSG_BUFFER*sizeof(char));
-
 	t = time(NULL);
 	tmp = localtime(&t);
 
 	if(tmp != NULL)
 	{
-		if(!strftime(tmstr, MSG_BUFFER*sizeof(char), "[%d/%b/%Y:%X %z]", tmp))
-			strcpy( tmstr, "[NO TIME]" ) ;
+		if(!strftime(buf, MSG_BUFFER*sizeof(char), "[%d/%b/%Y:%X %z]", tmp))
+			strcpy(buf, "[NO TIME]" ) ;
 	}
 	else
-		strcpy( tmstr, "[NO TIME]" ) ;
+		strcpy(buf, "[NO TIME]" ) ;
 
-	return tmstr;
+	return buf;
 }
 
 int
 close_hw()
 {
+	free(buf);
 	return 1;
 }
