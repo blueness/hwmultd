@@ -98,7 +98,8 @@ read_hw()
 	int i;
 	unsigned char data[18];
 	double temp;
-	char *stemp;
+	char *stemp = (char *)malloc(MSG_BUFFER*sizeof(char));
+	memset( stemp, 0, MSG_BUFFER*sizeof(char));
 
 	usleep(DELAY);
 	if(write(fd, "R", 1) < 1)
@@ -115,11 +116,10 @@ read_hw()
 	temp = data[i] + 256.0 * data[i+1];
 	temp /= 16.0;
 
-	stemp = (char *)malloc(1024);
 	sprintf(stemp, "%lf", temp);
 
 	/*
-	char *stemp = (char *)malloc(1024);
+	stemp = (char *)malloc(MSG_BUFFER*sizeof(char));
 	sprintf(stemp, "%u %u %u %u %u %u %u %u %u %u %u %u %u %u %u %u %u %u %lf",
 		data[0], data[1], data[2], data[3], data[4], data[5], data[6], data[7],
 		data[8], data[9], data[10], data[11], data[12], data[13], data[14], data[15],

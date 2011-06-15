@@ -92,13 +92,15 @@ rcv_mcast_msg()
 	char *msg;
 	int len = sizeof(struct sockaddr_in);
 	
-	if(!(msg = (char *)malloc(MSG_BUFFER)))					//caller must free buffer
+	if(!(msg = (char *)malloc(MSG_BUFFER*sizeof(char))))			//caller must free buffer
 	{
 		write_log(ERRO, ME, "server cannot malloc message buffer");
 		return NULL;
 	}
 	else
 		write_log(DBUG, ME, "server malloc-ed message buffer");
+
+	memset(msg, 0, MSG_BUFFER*sizeof(char));
 
 	if(recvfrom(sd, msg, MSG_BUFFER, 0, (struct sockaddr *)&saddr, &len ) < 0)
 	{

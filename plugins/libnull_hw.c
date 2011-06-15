@@ -28,7 +28,10 @@ reset_hw()
 char *
 read_hw()
 {
-	return "HW NULL PLUGIN";
+	char *buf = (char *)malloc(MSG_BUFFER*sizeof(char)) ;
+	memset(buf, 0, MSG_BUFFER*sizeof(char));
+	strcpy(buf, "HW NULL PLUGIN");
+	return buf;
 }
 
 int

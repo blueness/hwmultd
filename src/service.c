@@ -83,7 +83,7 @@ do_service()
 			if( !(msg = rcv_mcast_msg()) )		//caller=ME must free buffer
 				return 0;
 
-			if( !( rmsg = (*act_cl)(msg) ) )	//caller must free buffer
+			if( !(rmsg = (*act_cl)(msg)) )		//caller must free buffer
 			{
 				write_log(CRIT, ME, "client action failed");
 				clean_exit();

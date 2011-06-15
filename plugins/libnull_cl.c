@@ -1,4 +1,6 @@
 
+#include <string.h>
+
 #include <clcommon.h>
 
 void
@@ -28,7 +30,10 @@ reset_cl()
 char *
 act_cl(char *msg)
 {
-	return "CL NULL PLUGIN";
+	char *buf = (char *)malloc(MSG_BUFFER*sizeof(char)) ;
+	memset(buf, 0, MSG_BUFFER*sizeof(char));
+	strcpy(buf, "CL NULL PLUGIN");
+	return buf;
 }
 
 int

@@ -6,6 +6,7 @@
 #include <clcommon.h>
 
 #define MAX_CONF_DIR_LEN 1024
+#define MAX_CONF_FILE_LEN 1024
 
 #ifndef DEFAULT_CONF_DIR
 #define DEFAULT_CONF_DIR "/usr/local/etc/hwmultd"
@@ -35,18 +36,14 @@ reset_cl()
 	return 1;
 }
 
-#define SCRIPT_BUFFER 4096
-#define PATH_BUFFER 4096
 char *
 act_cl(char *msg)
 {
 	FILE *f;
-	char *buf = (char *)malloc(SCRIPT_BUFFER*sizeof(char));
-	memset(buf, 0, SCRIPT_BUFFER);
+	char script[MAX_CONF_DIR_LEN+MAX_CONF_FILE_LEN];
+	char *buf = (char *)malloc(MSG_BUFFER*sizeof(char));
+	memset(buf, 0, MSG_BUFFER*sizeof(char));
 
-	char script[PATH_BUFFER];
-
-	memset(script, 0, PATH_BUFFER);
 	strncpy(script, DEFAULT_CONF_DIR, MAX_CONF_DIR_LEN);
 	strcat(script, "/scripts");
 	strcat(script, "/null.sh");
