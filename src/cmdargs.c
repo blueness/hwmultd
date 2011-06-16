@@ -170,6 +170,7 @@ parse_cfg_file()
 	log_level     = DEFAULT_LOG_LEVEL;
 	server_mode   = DEFAULT_SERVER_MODE ;
 
+	write_log(INFO, ME, "Looking for config file %s", config_file);
 	if( !(myfile = fopen(config_file, "r")) )
 		write_log(INFO, ME, "No config file found");
 	else

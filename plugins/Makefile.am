@@ -1,3 +1,5 @@
+AM_CPPFLAGS = -DDEFAULT_CONF_DIR='"$(sysconfdir)/hwmultd"'
+
 pkglib_LTLIBRARIES = libnull_cl.la libexample_cl.la libscript_cl.la libnull_hw.la libexample_hw.la libtemp_hw.la libtime_hw.la
 
 libnull_cl_la_SOURCES = libnull_cl.c clcommon.h
