@@ -63,7 +63,6 @@ init_cl()
 		fclose(myfile);
 	}
 
-
 	return 1;
 }
 
