@@ -1,0 +1,7 @@
+Before we release for the first time:
+
+1. Change the Message option in libexample_{cl,hw}.conf to variadic
+
+2. Make server optionally a pure server (as it is now) or server+client
+
+3. Set aside another signal to reset hardware - probably SIGUSR1

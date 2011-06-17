@@ -145,10 +145,15 @@ sanity_checks()
 
 
 #define CONF_LINE_BUFFER 4096
+char conf_file[MAX_CONF_DIR_LEN+MAX_CONF_FILE_LEN];
 
 void
 parse_cfg_file()
 {
+	FILE *myfile;
+	char conf_line[CONF_LINE_BUFFER];
+	char first[CONF_LINE_BUFFER], second[CONF_LINE_BUFFER];
+
 	// Start with default values and let config file override
 	strncpy(multicast_ip, DEFAULT_MULTICAST_IP, MAX_IP_LEN);
 	port = DEFAULT_PORT;
@@ -161,17 +166,13 @@ parse_cfg_file()
 	strncpy(cl_plugin_name, DEFAULT_CL_PLUGIN, MAX_PLUGIN_LEN);
 	log_level = DEFAULT_LOG_LEVEL;
 
-	FILE *myfile;
-	char conf_line[CONF_LINE_BUFFER];
-	char first[CONF_LINE_BUFFER], second[CONF_LINE_BUFFER];
-
 	strncpy(multicast_ip, DEFAULT_MULTICAST_IP, MAX_IP_LEN);
 	port          = DEFAULT_PORT;
 	log_level     = DEFAULT_LOG_LEVEL;
 	server_mode   = DEFAULT_SERVER_MODE ;
 
-	write_log(INFO, ME, "Looking for config file %s", config_file);
-	if( !(myfile = fopen(config_file, "r")) )
+	write_log(INFO, ME, "Looking for config file %s", conf_file);
+	if( !(myfile = fopen(conf_file, "r")) )
 		write_log(INFO, ME, "No config file found");
 	else
 	{
@@ -237,8 +238,8 @@ parse_cmd_args( int argc, char *argv[] )
 {
 	int oc ;
 
-	strncpy(config_file, DEFAULT_CONF_DIR, MAX_CONF_DIR_LEN);
-	strcat(config_file, "/hwmultd.conf");
+	strncpy(conf_file, DEFAULT_CONF_DIR, MAX_CONF_DIR_LEN);
+	strcat(conf_file, "/hwmultd.conf");
 
 	while( ( oc = getopt( argc, argv, ":hvc:") ) != -1 )
 	{
@@ -251,7 +252,7 @@ parse_cmd_args( int argc, char *argv[] )
 				print_version();
 				exit(EXIT_SUCCESS);
 			case 'c':
-				strncpy(config_file, optarg, MAX_CONF_DIR_LEN+MAX_CONF_FILE_LEN);
+				strncpy(conf_file, optarg, MAX_CONF_DIR_LEN+MAX_CONF_FILE_LEN);
 				break;
 			case ':':
 				fprintf(stderr, "%s: option -%c requires argument\n", argv[0], optopt);

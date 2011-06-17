@@ -36,8 +36,8 @@ int
 init_hw()
 {
 	FILE *myfile;
-	char config_file[MAX_CONF_DIR_LEN+MAX_CONF_FILE_LEN];
-	char config_line[CONF_LINE_BUFFER], first[CONF_LINE_BUFFER], second[CONF_LINE_BUFFER];
+	char conf_file[MAX_CONF_DIR_LEN+MAX_CONF_FILE_LEN];
+	char conf_line[CONF_LINE_BUFFER], first[CONF_LINE_BUFFER], second[CONF_LINE_BUFFER];
 
 	if( !(buf = (char *)malloc(MSG_BUFFER*sizeof(char))) )
 		return 0;
@@ -45,16 +45,16 @@ init_hw()
 	memset(buf, 0, MSG_BUFFER*sizeof(char));
 	strcpy(buf, "HW_EXAMPLE_PLUGIN_DEFAULT_MSG");
 
-	strncpy(config_file, DEFAULT_CONF_DIR, MAX_CONF_DIR_LEN);
-	strcat(config_file, "/");
-	strcat(config_file, ME);
-	strcat(config_file, ".conf");
+	strncpy(conf_file, DEFAULT_CONF_DIR, MAX_CONF_DIR_LEN);
+	strcat(conf_file, "/");
+	strcat(conf_file, ME);
+	strcat(conf_file, ".conf");
 
-	if(myfile = fopen(config_file, "r"))
+	if(myfile = fopen(conf_file, "r"))
 	{
-		while(fgets(config_line, CONF_LINE_BUFFER, myfile))
+		while(fgets(conf_line, CONF_LINE_BUFFER, myfile))
 		{
-			sscanf(config_line,"%s %s", first, second ) ;
+			sscanf(conf_line,"%s %s", first, second ) ;
 			if( !strcmp(first,"Message") )
 				strncpy(buf, second, MSG_BUFFER);
 		}

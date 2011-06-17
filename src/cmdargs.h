@@ -23,8 +23,7 @@ uint16_t port;				// multicast port
 #define DEFAULT_INTERFACE_IP "0.0.0.0"
 #define DEFAULT_INTERFACE_NAME "dummy0"
 
-int  interface_mode;			// 0, select multicast interface by ip address
-char interface_ip[MAX_IP_LEN];		// 1, select multicast interface by name
+char interface_ip[MAX_IP_LEN];
 char interface_name[MAX_IF_LEN];
 
 
@@ -91,8 +90,6 @@ char cl_plugin_name[MAX_PLUGIN_LEN];
 #ifndef DEFAULT_CONF_DIR
 #define DEFAULT_CONF_DIR "/usr/local/etc/hwmultd"
 #endif
-
-char config_file[MAX_CONF_DIR_LEN+MAX_CONF_FILE_LEN];
 
 
 
