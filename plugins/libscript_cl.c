@@ -39,6 +39,7 @@ init_cl()
 	FILE *myfile;
 	char conf_file[MAX_CONF_DIR_LEN+MAX_CONF_FILE_LEN];
 	char conf_line[CONF_LINE_BUFFER], first[CONF_LINE_BUFFER], second[CONF_LINE_BUFFER];
+	char script_file[MAX_CONF_FILE_LEN];
 
 	if( !(buf = (char *)malloc(MSG_BUFFER*sizeof(char))) )
 		return 0;
@@ -53,19 +54,20 @@ init_cl()
 	strcat(conf_file, ME);
 	strcat(conf_file, ".conf");
 
+	strcpy(script_file, "null.sh");
 	if(myfile = fopen(conf_file, "r"))
 	{
 		while(fgets(conf_line, CONF_LINE_BUFFER, myfile))
 		{
 			sscanf(conf_line,"%s %s", first, second ) ;
 			if( !strcmp(first,"Script") )
-				strncat(script, second, MAX_CONF_FILE_LEN);
+				strncpy(script_file, second, MAX_CONF_FILE_LEN);
 		}
 
 		fclose(myfile);
 	}
-	else
-		strcat(script, "null.sh");
+
+	strcat(script, script_file);
 
 	return 1;
 }
