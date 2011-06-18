@@ -1,2 +1,2 @@
 #!/bin/sh
-echo "NULL SCRIPT PLUGIN"
+echo -n "NULL SCRIPT PLUGIN"

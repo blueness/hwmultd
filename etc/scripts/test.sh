@@ -1,2 +1,2 @@
 #!/bin/sh
-echo "TEST SCRIPT PLUGIN"
+echo -n "TEST SCRIPT PLUGIN"

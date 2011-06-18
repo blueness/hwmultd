@@ -1,3 +1,6 @@
 confdir = $(sysconfdir)/hwmultd
-conf_DATA = hwmultd.conf libexample_cl.conf libexample_hw.conf libscript_cl.conf libtemp_hw.conf
+MAIN_CONFIG = hwmultd.conf
+CLIENT_CONFIG = libexample_cl.conf libscript_cl.conf
+SERVER_CONFIG = libexample_hw.conf libscript_hw.conf libtemp_hw.conf
+conf_DATA = $(MAIN_CONFIG) $(CLIENT_CONFIG) $(SERVER_CONFIG)
 SUBDIRS = scripts
