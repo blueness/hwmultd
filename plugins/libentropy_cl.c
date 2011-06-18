@@ -1,28 +1,26 @@
 
-#include <fcntl.h>
+//#include <linux/random.h>
 #include <stdio.h>
 #include <stdint.h>
 #include <stdlib.h>
 #include <string.h>
-#include <sys/types.h>
-#include <sys/stat.h>
 #include <unistd.h>
 
-#include <hwcommon.h>
+#include <clcommon.h>
 
 #undef ME
-#define ME "libentropy_hw"
+#define ME "libentropy_cl"
 
 
 
 void
-hwplugin_init()
+clplugin_init()
 {
 	return ;
 }
 
 void
-hwplugin_fini()
+clplugin_fini()
 {
 	return ;
 }
@@ -38,15 +36,12 @@ hwplugin_fini()
 #endif
 
 #define MAX_NBYTES 32
-#define DEFAULT_NBYTES 4
 #define DELAY 1000
 
-int fd ;
 char *buf;
-int nbytes;
 
 int
-init_hw()
+init_cl()
 {
 	FILE *myfile;
 	char conf_file[MAX_CONF_DIR_LEN+MAX_CONF_FILE_LEN];
@@ -63,8 +58,7 @@ init_hw()
 	strcat(conf_file, ME);
 	strcat(conf_file, ".conf");
 
-	strcpy(dev, "/dev/urandom");
-	nbytes = DEFAULT_NBYTES;
+	strcpy(dev, "/dev/random");
 
 	if(myfile = fopen(conf_file, "r"))
 	{
@@ -73,81 +67,73 @@ init_hw()
 			sscanf(conf_line,"%s %s", first, second ) ;
 			if( !strcmp(first, "Device") )
 				strncpy(dev, second, CONF_LINE_BUFFER);
-			if( !strcmp(first, "Bytes") )
-			{
-				nbytes = atoi(second);
-				if(nbytes > MAX_NBYTES)
-					nbytes = MAX_NBYTES;
-			}
 		}
 
 		fclose(myfile);
 	}
 
-	if((fd = open( dev, O_RDONLY | O_NONBLOCK | O_NOCTTY )) < 0)
-		return -1;
-
 	return 1;
 }
 
 int
-reset_hw()
+reset_cl()
 {
 	usleep(DELAY);
-	if(close_hw() != 1)
+	if(close_cl() != 1)
 		return -1;
 
 	usleep(DELAY);
-	if(init_hw() != 1)
+	if(init_cl() != 1)
 		return -2;
 
 	return 1;
 }
 
-uint32_t
-dec_encode(unsigned char *data)
+void
+dec_dencode(unsigned int rbytes, uint32_t value, unsigned char *data)
 {
 	int i ;
-	uint32_t value = 0, place = 1;
 
-	for(i = 0; i < nbytes; i++ )
+	for(i = 0; i < rbytes; i++)
 	{
-		value += place*data[i] ;
-		place <<= 1;
+		data[i] = value % 256;
+		value /= 256;
 	}
-	return value;
 }
 
 char *
-read_hw()
+act_cl(char *msg)
 {
-	unsigned int i, rbytes;
-	unsigned char data[MAX_NBYTES];
+/*	struct rand_pool_info output;
+ *	output.buf_size = nbytes;
+ *	output.entropy_count = nbytes * 8;
+ *	memcpy(output.buf, buffer_rand_datat_source, output.buf_size);
+ *	if(ioctl(random_fd, RNDADDENTROPY, output) == -1)
+ *		error_exit("RNDADDENTROPY failed!");
+ */
+	int i;
+	unsigned int rbytes;
 	uint32_t value;
+	unsigned char data[MAX_NBYTES];
+	char tmp[100];
 
-	memset( data, 0, MAX_NBYTES*sizeof(char) );
+	sscanf(msg,"%u %u", &rbytes, &value) ;
+	dec_dencode(rbytes, value, data);
 
-	rbytes = 0;
-	for(;;)
+	memset(buf, 0, MSG_BUFFER*sizeof(char));
+
+	for(i = 0; i < rbytes; i++)
 	{
-		usleep(DELAY);
-		if((rbytes = read(fd, data, nbytes)) != -1)
-			break;
+		sprintf(tmp, " %u", data[i]);
+		strcat(buf, tmp);
 	}
-
-	value = dec_encode(data);
-
-	sprintf(buf, "%u %u", rbytes, value);
 
 	return buf;
 }
 
 int
-close_hw()
+close_cl()
 {
 	free(buf);
-	if(close(fd))
-		return -1;
-	else
-		return 1;
+	return 1;
 }
