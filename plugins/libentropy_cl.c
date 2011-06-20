@@ -38,7 +38,7 @@ clplugin_fini()
 #define MAX_NBYTES 32
 #define DELAY 1000
 
-char *buf;
+char *buf, *hex;
 
 int
 init_cl()
@@ -49,6 +49,9 @@ init_cl()
 	char dev[CONF_LINE_BUFFER];
 
 	if( !(buf = (char *)malloc(MSG_BUFFER*sizeof(char))) )
+		return 0;
+
+	if( !(hex = (char *)malloc(MSG_BUFFER*sizeof(char))) )
 		return 0;
 
 	memset(buf, 0, MSG_BUFFER*sizeof(char));
@@ -90,14 +93,25 @@ reset_cl()
 }
 
 void
-dec_dencode(unsigned int rbytes, uint32_t value, unsigned char *data)
+hex_decode(unsigned char *data, unsigned int rbytes)
 {
-	int i ;
+	int i, j;
+	char *digit[] =
+	{
+		"0", "1", "2", "3", "4", "5", "6", "7", 
+		"8", "9", "A", "B", "C", "D", "E", "F"
+	};
 
 	for(i = 0; i < rbytes; i++)
 	{
-		data[i] = value % 256;
-		value /= 256;
+		data[i] = 0;
+		for(j = 0; j < 16; j++)
+		{
+			if( hex[2*i] == digit[j][0] )
+				data[i] += 16*j;
+			if( hex[2*i+1] == digit[j][0] )
+				data[i] += j;
+		}
 	}
 }
 
@@ -113,16 +127,16 @@ act_cl(char *msg)
  */
 	int i;
 	unsigned int rbytes;
-	uint32_t value;
 	unsigned char data[MAX_NBYTES];
-	char tmp[100];
+	char tmp[8];
 
-	sscanf(msg,"%u %u", &rbytes, &value) ;
-	dec_dencode(rbytes, value, data);
+	sscanf(msg,"%u %s", &rbytes, hex) ;
+	hex_decode(data, rbytes);
 
 	memset(buf, 0, MSG_BUFFER*sizeof(char));
+	memset(hex, 0, MSG_BUFFER*sizeof(char));
 
-	for(i = 0; i < rbytes; i++)
+	for(i = 0; i < rbytes ; i++)
 	{
 		sprintf(tmp, " %u", data[i]);
 		strcat(buf, tmp);
@@ -134,6 +148,7 @@ act_cl(char *msg)
 int
 close_cl()
 {
+	free(hex);
 	free(buf);
 	return 1;
 }
