@@ -54,10 +54,10 @@ init_hw()
 	char dev[CONF_LINE_BUFFER];
 
 	if( !(buf = (char *)malloc(MSG_BUFFER*sizeof(char))) )
-		return 0;
+		return -1;
 
 	if( !(hex = (char *)malloc(MSG_BUFFER*sizeof(char))) )
-		return 0;
+		return -1;
 
 	memset(buf, 0, MSG_BUFFER*sizeof(char));
 
@@ -88,7 +88,7 @@ init_hw()
 	}
 
 	if((fd = open( dev, O_RDONLY | O_NONBLOCK | O_NOCTTY )) < 0)
-		return -1;
+		return -2;
 
 	return 1;
 }
@@ -108,10 +108,10 @@ reset_hw()
 }
 
 void
-hex_encode(unsigned char *data, unsigned int rbytes)
+hex_encode(uint8_t *data, int rbytes)
 {
 	int i ;
-	unsigned int low, high;
+	uint8_t low, high;
 	char *digit[] =
 	{
 		"0", "1", "2", "3", "4", "5", "6", "7", 
@@ -132,9 +132,8 @@ hex_encode(unsigned char *data, unsigned int rbytes)
 char *
 read_hw()
 {
-	unsigned int i, rbytes;
-	unsigned char data[MAX_NBYTES];
-	uint32_t value;
+	int i, rbytes;
+	uint8_t data[MAX_NBYTES];
 
 	memset( data, 0, MAX_NBYTES*sizeof(char) );
 

@@ -1,10 +1,15 @@
 
-//#include <linux/random.h>
+#include <linux/random.h>
+#include <fcntl.h>
 #include <stdio.h>
 #include <stdint.h>
 #include <stdlib.h>
 #include <string.h>
+#include <sys/types.h>
+#include <sys/stat.h>
 #include <unistd.h>
+
+#include <errno.h>
 
 #include <clcommon.h>
 
@@ -38,7 +43,11 @@ clplugin_fini()
 #define MAX_NBYTES 32
 #define DELAY 1000
 
+int fd;
 char *buf, *hex;
+
+struct rand_pool_info *random_pool;
+int size_random_pool;
 
 int
 init_cl()
@@ -49,12 +58,15 @@ init_cl()
 	char dev[CONF_LINE_BUFFER];
 
 	if( !(buf = (char *)malloc(MSG_BUFFER*sizeof(char))) )
-		return 0;
+		return -1;
 
 	if( !(hex = (char *)malloc(MSG_BUFFER*sizeof(char))) )
-		return 0;
+		return -1;
 
-	memset(buf, 0, MSG_BUFFER*sizeof(char));
+	size_random_pool = sizeof(struct rand_pool_info *) + MAX_NBYTES*sizeof(uint8_t) ;
+
+	if( !(random_pool = (struct rand_pool_info *)malloc(size_random_pool)) )
+		return -1;
 
 	strncpy(conf_file, DEFAULT_CONF_DIR, MAX_CONF_DIR_LEN);
 	strcat(conf_file, "/");
@@ -75,6 +87,9 @@ init_cl()
 		fclose(myfile);
 	}
 
+	if((fd = open( dev, O_WRONLY | O_NONBLOCK | O_NOCTTY )) < 0)
+		return -2;
+
 	return 1;
 }
 
@@ -93,7 +108,7 @@ reset_cl()
 }
 
 void
-hex_decode(unsigned char *data, unsigned int rbytes)
+hex_decode(uint32_t *data, int rbytes)
 {
 	int i, j;
 	char *digit[] =
@@ -118,23 +133,27 @@ hex_decode(unsigned char *data, unsigned int rbytes)
 char *
 act_cl(char *msg)
 {
-/*	struct rand_pool_info output;
- *	output.buf_size = nbytes;
- *	output.entropy_count = nbytes * 8;
- *	memcpy(output.buf, buffer_rand_datat_source, output.buf_size);
- *	if(ioctl(random_fd, RNDADDENTROPY, output) == -1)
- *		error_exit("RNDADDENTROPY failed!");
- */
 	int i;
-	unsigned int rbytes;
-	unsigned char data[MAX_NBYTES];
+	int rbytes;
+	uint32_t data[MAX_NBYTES];
 	char tmp[8];
+
+	memset(buf, 0, MSG_BUFFER*sizeof(char));
+	memset(hex, 0, MSG_BUFFER*sizeof(char));
+	memset(random_pool, 0, size_random_pool);
 
 	sscanf(msg,"%u %s", &rbytes, hex) ;
 	hex_decode(data, rbytes);
 
-	memset(buf, 0, MSG_BUFFER*sizeof(char));
-	memset(hex, 0, MSG_BUFFER*sizeof(char));
+	random_pool->buf_size = rbytes;
+	random_pool->entropy_count = rbytes * 8;
+	memcpy(random_pool->buf, data, rbytes);
+
+	if(ioctl(fd, RNDADDENTROPY, random_pool) == -1)
+	{
+		sprintf(buf, "RNDADDENTROPY failed: %d", errno);
+		return buf;
+	}
 
 	for(i = 0; i < rbytes ; i++)
 	{
@@ -142,6 +161,7 @@ act_cl(char *msg)
 		strcat(buf, tmp);
 	}
 
+	free(random_pool);
 	return buf;
 }
 
@@ -150,5 +170,8 @@ close_cl()
 {
 	free(hex);
 	free(buf);
-	return 1;
+	if(close(fd))
+		return -1;
+	else
+		return 1;
 }

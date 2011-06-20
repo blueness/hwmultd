@@ -1,6 +1,7 @@
 
 #include <fcntl.h>
 #include <stdio.h>
+#include <stdint.h>
 #include <stdlib.h>
 #include <string.h>
 #include <sys/types.h>
@@ -50,7 +51,7 @@ init_hw()
 	char conf_line[CONF_LINE_BUFFER], first[CONF_LINE_BUFFER], second[CONF_LINE_BUFFER];
 	char dev[CONF_LINE_BUFFER];
 
-	unsigned char data[1024];
+	uint8_t data[1024];
 	struct termios ios;
 
 	if( !(buf = (char *)malloc(MSG_BUFFER*sizeof(char))) )
@@ -137,7 +138,7 @@ char *
 read_hw()
 {
 	int i;
-	unsigned char data[18];
+	uint8_t data[18];
 	double temp;
 
 	usleep(DELAY);
