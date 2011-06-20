@@ -42,7 +42,7 @@ hwplugin_fini()
 #define DELAY 1000
 
 int fd ;
-char *buf;
+char *buf, *hex;
 int nbytes;
 
 int
@@ -54,6 +54,9 @@ init_hw()
 	char dev[CONF_LINE_BUFFER];
 
 	if( !(buf = (char *)malloc(MSG_BUFFER*sizeof(char))) )
+		return 0;
+
+	if( !(hex = (char *)malloc(MSG_BUFFER*sizeof(char))) )
 		return 0;
 
 	memset(buf, 0, MSG_BUFFER*sizeof(char));
@@ -104,18 +107,26 @@ reset_hw()
 	return 1;
 }
 
-uint32_t
-dec_encode(unsigned char *data)
+void
+hex_encode(unsigned char *data, unsigned int rbytes)
 {
 	int i ;
-	uint32_t value = 0, place = 1;
-
-	for(i = 0; i < nbytes; i++ )
+	unsigned int low, high;
+	char *digit[] =
 	{
-		value += place*data[i] ;
-		place <<= 1;
+		"0", "1", "2", "3", "4", "5", "6", "7", 
+		"8", "9", "A", "B", "C", "D", "E", "F"
+	};
+
+	memset(hex, 0, MSG_BUFFER*sizeof(char));
+
+	for(i = 0; i < rbytes; i++ )
+	{
+		low = data[i] % 16;
+		high = data[i] / 16;
+		strcat(hex, digit[low]);
+		strcat(hex, digit[high]);
 	}
-	return value;
 }
 
 char *
@@ -135,9 +146,9 @@ read_hw()
 			break;
 	}
 
-	value = dec_encode(data);
+	hex_encode(data, rbytes);
 
-	sprintf(buf, "%u %u", rbytes, value);
+	sprintf(buf, "%u %s", rbytes, hex);
 
 	return buf;
 }
@@ -145,6 +156,7 @@ read_hw()
 int
 close_hw()
 {
+	free(hex);
 	free(buf);
 	if(close(fd))
 		return -1;
