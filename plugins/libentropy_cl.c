@@ -40,6 +40,7 @@ clplugin_fini()
 #define DEFAULT_CONF_DIR "/usr/local/etc/hwmultd"
 #endif
 
+#define RNDDEVICE "/dev/random"
 #define MAX_NBYTES 32
 #define DELAY 1000
 
@@ -73,7 +74,7 @@ init_cl()
 	strcat(conf_file, ME);
 	strcat(conf_file, ".conf");
 
-	strcpy(dev, "/dev/random");
+	strcpy(dev, RNDDEVICE);
 
 	if(myfile = fopen(conf_file, "r"))
 	{
@@ -161,13 +162,13 @@ act_cl(char *msg)
 		strcat(buf, tmp);
 	}
 
-	free(random_pool);
 	return buf;
 }
 
 int
 close_cl()
 {
+	free(random_pool);
 	free(hex);
 	free(buf);
 	if(close(fd))
