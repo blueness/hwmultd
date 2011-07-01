@@ -157,6 +157,7 @@ parse_cfg_file()
 	FILE *myfile;
 	char conf_line[CONF_LINE_BUFFER];
 	char first[CONF_LINE_BUFFER], second[CONF_LINE_BUFFER];
+	int i, selection, tmp_int;
 
 	// Start with default values and let config file override
 	strncpy(multicast_ip, DEFAULT_MULTICAST_IP, MAX_IP_LEN);
@@ -182,28 +183,71 @@ parse_cfg_file()
 	{
 		while( fgets(conf_line, CONF_LINE_BUFFER, myfile) )
 		{
-			sscanf(conf_line,"%s %s", first, second ) ;
+			//Don't parse anything past #
+			for( i = 0; i < strlen(conf_line); i++ )
+				if( conf_line[i] == '#' )
+				{
+					conf_line[i] = 0;
+					break;
+				}
+
+			if( sscanf(conf_line, "%s %s", first, second ) != 2 )
+			{
+				write_log(ERRO, ME, "malformed config line %s", conf_line);
+				continue;
+			}
 
 			if( !strcmp(first,"MulticastIP") )
 				strncpy(multicast_ip, second, MAX_IP_LEN);
+
 			if( !strcmp(first,"Port") )
-				port = atoi(second);
+			{
+				//port = atoi(second);
+				if( sscanf(second, "%d", &tmp_int) == 1 )
+					port = tmp_int;
+			}
+
 			if( !strcmp(first,"Server") )
-				server_mode = SERVER_MODE;
+			{
+				//selection = atoi(second);
+				if(sscanf(second, "%d", &tmp_int) == 1)
+				{
+					selection = tmp_int;
+					if( selection == 1 )
+						server_mode = SERVER_MODE;
+					else
+						server_mode = !SERVER_MODE;
+				}
+			}
+
 			if( !strcmp(first,"User") )
 				strncpy(user_name, second, UT_NAMESIZE);
+
 			if( !strcmp(first,"Timing") )
-				timing = atoi(second);
+			{
+				//timing = atoi(second);
+				if(sscanf(second, "%d", &tmp_int) == 1)
+					timing = tmp_int;
+			}
+
 			if( !strcmp(first,"SourceIP") )
 				strncpy(interface_ip, second, MAX_IP_LEN);
+
 			if( !strcmp(first,"Interface") )
 				strncpy(interface_name, second, MAX_IF_LEN);
+
 			if( !strcmp(first,"HWPlugin") )
 				strncpy(hw_plugin_name, second, MAX_PLUGIN_LEN);
+
 			if( !strcmp(first,"CLPlugin") )
 				strncpy(cl_plugin_name, second, MAX_PLUGIN_LEN);
+
 			if(strcmp(first,"Debug") == 0)
-				log_level = atoi(second);
+			{
+				//log_level = atoi(second);
+				if( sscanf(second, "%d", &tmp_int) == 1 )
+					log_level = tmp_int;
+			}
 		}
 
 		fclose(myfile) ;
