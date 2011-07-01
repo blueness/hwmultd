@@ -35,6 +35,7 @@ AC_CHECK_FUNCS([gethostbyname inet_ntoa memset mkdir socket], [], [AC_MSG_ERROR(
 
 AC_CONFIG_FILES([Makefile
                  plugins/Makefile
+                 include/Makefile
                  src/Makefile
                  etc/Makefile
                  etc/scripts/Makefile

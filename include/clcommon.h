@@ -1,3 +1,5 @@
+#ifndef CLCOMMON_H_INCLUDED
+#define CLCOMMON_H_INCLUDED
 
 #define MSG_BUFFER 4096
 
@@ -8,3 +10,5 @@ int init_cl();
 int reset_cl();
 char *act_cl(char *);
 int close_cl();
+
+#endif

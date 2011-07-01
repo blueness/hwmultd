@@ -1,3 +1,5 @@
+#ifndef HWCOMMON_H_INCLUDED
+#define HWCOMMON_H_INCLUDED
 
 #define MSG_BUFFER 4096
 
@@ -8,3 +10,5 @@ int init_hw();
 int reset_hw();
 char *read_hw();
 int close_hw();
+
+#endif
