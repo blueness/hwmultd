@@ -1,4 +1,15 @@
 
+
+
+#include "cmdargs.h"
+#include "log.h"
+#include "pidfile.h"
+#include "plugins.h"
+#include "service.h"
+#include "signalhandler.h"
+
+
+
 #include <pwd.h>
 #include <stdio.h>
 #include <stdlib.h>
@@ -6,17 +17,12 @@
 #include <sys/stat.h>
 #include <unistd.h>
 
-#include <cmdargs.h>
-#include <log.h>
-#include <pidfile.h>
-#include <plugins.h>
-#include <service.h>
-#include <signalhandler.h>
-
 
 
 #undef ME
 #define ME "hwmultd.c"
+
+
 
 int
 main( int argc, char *argv[] )

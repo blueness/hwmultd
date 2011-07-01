@@ -1,4 +1,12 @@
 
+
+
+#include "cmdargs.h"
+#include "log.h"
+#include <config.h>
+
+
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <stdint.h>
@@ -14,15 +22,11 @@
 
 #include <pwd.h>
 
-#include <cmdargs.h>
-#include <log.h>
-
-#include <config.h>
-
 
 
 #undef ME
 #define ME "cmdargs.c"
+
 
 
 void

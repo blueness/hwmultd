@@ -1,14 +1,19 @@
 
+
+
+#include "log.h"
+#include "plugins.h"
+#include "service.h"
+#include "signalhandler.h"
+
+
+
 #include <signal.h>
 #include <stdlib.h>
 #include <string.h>
 #include <sys/types.h>
 #include <unistd.h>
 
-#include <log.h>
-#include <plugins.h>
-#include <service.h>
-#include <signalhandler.h>
 
 
 #undef ME
