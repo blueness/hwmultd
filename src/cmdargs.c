@@ -155,7 +155,7 @@ void
 parse_cfg_file()
 {
 	FILE *myfile;
-	char conf_line[CONF_LINE_BUFFER];
+	char conf_line[CONF_LINE_BUFFER], conf_line_orig[CONF_LINE_BUFFER];
 	char first[CONF_LINE_BUFFER], second[CONF_LINE_BUFFER];
 	int i, selection, tmp_int;
 
@@ -183,6 +183,8 @@ parse_cfg_file()
 	{
 		while( fgets(conf_line, CONF_LINE_BUFFER, myfile) )
 		{
+			strncpy(conf_line_orig, conf_line, CONF_LINE_BUFFER);
+
 			//Don't parse anything past #
 			for( i = 0; i < strlen(conf_line); i++ )
 				if( conf_line[i] == '#' )
@@ -193,7 +195,7 @@ parse_cfg_file()
 
 			if( sscanf(conf_line, "%s %s", first, second ) != 2 )
 			{
-				write_log(ERRO, ME, "malformed config line %s", conf_line);
+				write_log(DBUG, ME, "skipping config line: %s", conf_line_orig);
 				continue;
 			}
 
