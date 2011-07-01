@@ -1,4 +1,11 @@
 
+
+
+#include <clcommon.h>
+
+
+
+#include <errno.h>
 #include <linux/random.h>
 #include <fcntl.h>
 #include <stdio.h>
@@ -9,9 +16,7 @@
 #include <sys/stat.h>
 #include <unistd.h>
 
-#include <errno.h>
 
-#include <clcommon.h>
 
 #undef ME
 #define ME "libentropy_cl"
@@ -57,6 +62,7 @@ init_cl()
 	char conf_file[MAX_CONF_DIR_LEN+MAX_CONF_FILE_LEN];
 	char conf_line[CONF_LINE_BUFFER], first[CONF_LINE_BUFFER], second[CONF_LINE_BUFFER];
 	char dev[CONF_LINE_BUFFER];
+	int i;
 
 	if( !(buf = (char *)malloc(MSG_BUFFER*sizeof(char))) )
 		return -1;
@@ -80,7 +86,16 @@ init_cl()
 	{
 		while(fgets(conf_line, CONF_LINE_BUFFER, myfile))
 		{
-			sscanf(conf_line,"%s %s", first, second ) ;
+			for(i = 0; i < strlen(conf_line); i++)
+				if(conf_line[i] == '#')
+				{
+					conf_line[i] = 0;
+					break;
+				}
+
+			if(sscanf(conf_line, "%s %s", first, second ) != 2)
+				continue;
+
 			if( !strcmp(first, "Device") )
 				strncpy(dev, second, CONF_LINE_BUFFER);
 		}

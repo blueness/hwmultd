@@ -1,9 +1,15 @@
 
+
+
+#include <hwcommon.h>
+
+
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 
-#include <hwcommon.h>
+
 
 #undef ME
 #define ME "libscript_hw"
@@ -40,6 +46,7 @@ init_hw()
 	char conf_file[MAX_CONF_DIR_LEN+MAX_CONF_FILE_LEN];
 	char conf_line[CONF_LINE_BUFFER], first[CONF_LINE_BUFFER], second[CONF_LINE_BUFFER];
 	char script_file[MAX_CONF_FILE_LEN];
+	int i;
 
 	if( !(buf = (char *)malloc(MSG_BUFFER*sizeof(char))) )
 		return 0;
@@ -59,7 +66,16 @@ init_hw()
 	{
 		while(fgets(conf_line, CONF_LINE_BUFFER, myfile))
 		{
-			sscanf(conf_line,"%s %s", first, second ) ;
+			for(i = 0; i < strlen(conf_line); i++)
+				if(conf_line[i] == '#')
+				{
+					conf_line[i] = 0;
+					break;
+				}
+
+			if(sscanf(conf_line, "%s %s", first, second ) != 2)
+				continue;
+
 			if( !strcmp(first,"Script") )
 				strncpy(script_file, second, MAX_CONF_FILE_LEN);
 		}

@@ -1,4 +1,10 @@
 
+
+
+#include <hwcommon.h>
+
+
+
 #include <fcntl.h>
 #include <stdio.h>
 #include <stdint.h>
@@ -9,7 +15,7 @@
 #include <termios.h>
 #include <unistd.h>
 
-#include <hwcommon.h>
+
 
 #undef ME
 #define ME "libtemp_hw"
@@ -50,6 +56,7 @@ init_hw()
 	char conf_file[MAX_CONF_DIR_LEN+MAX_CONF_FILE_LEN];
 	char conf_line[CONF_LINE_BUFFER], first[CONF_LINE_BUFFER], second[CONF_LINE_BUFFER];
 	char dev[CONF_LINE_BUFFER];
+	int i;
 
 	uint8_t data[1024];
 	struct termios ios;
@@ -70,7 +77,16 @@ init_hw()
 	{
 		while(fgets(conf_line, CONF_LINE_BUFFER, myfile))
 		{
-			sscanf(conf_line,"%s %s", first, second ) ;
+			for(i = 0; i < strlen(conf_line); i++)
+				if(conf_line[i] == '#')
+				{
+					conf_line[i] = 0;
+					break;
+				}
+
+			if(sscanf(conf_line, "%s %s", first, second ) != 2)
+				continue;
+
 			if( !strcmp(first,"Device") )
 				strncpy(dev, second, CONF_LINE_BUFFER);
 		}
