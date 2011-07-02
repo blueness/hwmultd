@@ -12,7 +12,7 @@
 
 
 #undef ME
-#define ME "libscript_cl"
+#define ME "script_cl"
 
 void
 clplugin_init()

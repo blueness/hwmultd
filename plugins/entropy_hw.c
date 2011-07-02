@@ -17,7 +17,7 @@
 
 
 #undef ME
-#define ME "libentropy_hw"
+#define ME "entropy_hw"
 
 
 

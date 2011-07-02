@@ -12,7 +12,7 @@
 
 
 #undef ME
-#define ME "libexample_cl"
+#define ME "example_cl"
 
 void
 clplugin_init()

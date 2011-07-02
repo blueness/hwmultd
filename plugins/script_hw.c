@@ -12,7 +12,7 @@
 
 
 #undef ME
-#define ME "libscript_hw"
+#define ME "script_hw"
 
 void
 hwplugin_init()

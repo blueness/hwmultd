@@ -19,7 +19,7 @@
 
 
 #undef ME
-#define ME "libentropy_cl"
+#define ME "entropy_cl"
 
 
 

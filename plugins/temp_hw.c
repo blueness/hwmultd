@@ -18,7 +18,7 @@
 
 
 #undef ME
-#define ME "libtemp_hw"
+#define ME "temp_hw"
 
 
 

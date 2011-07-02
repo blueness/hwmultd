@@ -12,7 +12,7 @@
 
 
 #undef ME
-#define ME "libexample_hw"
+#define ME "example_hw"
 
 void
 hwplugin_init()
