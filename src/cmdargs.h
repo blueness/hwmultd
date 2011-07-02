@@ -77,6 +77,10 @@ int log_level;
 #define DEFAULT_HW_PLUGIN "null"
 #define DEFAULT_CL_PLUGIN "null"
 
+#ifndef DEFAULT_PLUGIN_PREFIX
+#define DEFAULT_PLUGIN_PREFIX "/usr/local/lib/hwmultd/"
+#endif
+
 char hw_plugin_name[MAX_PLUGIN_LEN];
 char cl_plugin_name[MAX_PLUGIN_LEN];
 

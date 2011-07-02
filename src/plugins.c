@@ -12,8 +12,6 @@
 
 
 
-#define PREFIX "/usr/local/lib/hwmultd/"
-
 #undef ME
 #define ME "plugins.c"
 
@@ -22,13 +20,15 @@ void *handle_hw, *handle_cl;
 int
 load_plugins()
 {
-	char plugin_name[MAX_PLUGIN_LEN+strlen(PREFIX)+3];	// Add PREFIX + hw_plugin_name + {"_hw","_cl"} + ".so"
+	// Add DEFAULT_PLUGIN_PREFIX + "/" + hw_plugin_name + {"_hw","_cl"} + ".so"
+	char plugin_name[MAX_PLUGIN_LEN+strlen(DEFAULT_PLUGIN_PREFIX)+4];
 
 	write_log(DBUG, ME, "loading plugins");
 
 	if(server_mode == SERVER_MODE)
 	{
-		strcpy(plugin_name, PREFIX);
+		strcpy(plugin_name, DEFAULT_PLUGIN_PREFIX);
+		strcat(plugin_name, "/");
 		strncat(plugin_name, hw_plugin_name, MAX_PLUGIN_LEN);
 		strcat(plugin_name, "_hw.so");
 	
@@ -56,7 +56,8 @@ load_plugins()
 	}
 	else
 	{
-		strcpy(plugin_name, PREFIX);
+		strcpy(plugin_name, DEFAULT_PLUGIN_PREFIX);
+		strcat(plugin_name, "/");
 		strncat(plugin_name, cl_plugin_name, MAX_PLUGIN_LEN);
 		strcat(plugin_name, "_cl.so");
 
