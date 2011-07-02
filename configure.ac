@@ -18,27 +18,34 @@ AC_CONFIG_MACRO_DIR([m4])
 AC_PROG_CC
 
 # Checks for libraries.
-AC_CHECK_LIB([dl], [dlopen])
+AC_CHECK_LIB([dl], [dlopen], [], [AC_MSG_ERROR(["Missing dlopen"])])
 
 # Checks for header files.
-AC_CHECK_HEADERS([arpa/inet.h fcntl.h netdb.h netinet/in.h pwd.h signal.h stdarg.h stdint.h stdio.h stdlib.h string.h sys/socket.h sys/stat.h sys/types.h time.h unistd.h utmp.h], [], [AC_MSG_ERROR(["Missing necessary header"])])
+AC_CHECK_HEADERS([arpa/inet.h dlfcn.h fcntl.h ifaddrs.h netdb.h netinet/in.h \
+	pwd.h signal.h stdarg.h stdint.h stdio.h stdlib.h string.h sys/socket.h \
+	sys/stat.h sys/types.h termios.h time.h unistd.h utmp.h],
+[], [AC_MSG_ERROR(["Missing necessary header"])])
 
 # Checks for typedefs, structures, and compiler characteristics.
 AC_TYPE_PID_T
 AC_TYPE_UID_T
+AC_TYPE_UINT8_T
 AC_TYPE_UINT16_T
+AC_TYPE_UINT32_T
 
 # Checks for library functions.
 AC_FUNC_CHOWN
 AC_FUNC_FORK
 AC_FUNC_MALLOC
-AC_CHECK_FUNCS([gethostbyname inet_ntoa memset mkdir socket], [], [AC_MSG_ERROR(["Missing necessary function"])])
+AC_CHECK_FUNCS([gethostbyname inet_ntoa memset mkdir socket],
+[], [AC_MSG_ERROR(["Missing necessary function"])])
 
 AC_CONFIG_FILES([Makefile
-                 plugins/Makefile
-                 include/Makefile
-                 src/Makefile
-                 etc/Makefile
-                 etc/scripts/Makefile
-                 doc/Makefile])
+	plugins/Makefile
+	include/Makefile
+	src/Makefile
+	etc/Makefile
+	etc/scripts/Makefile
+	doc/Makefile])
+
 AC_OUTPUT

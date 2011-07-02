@@ -2,6 +2,7 @@
 
 
 #include <hwcommon.h>
+#include "common.h"
 
 
 
