@@ -1,7 +1,7 @@
 AM_CPPFLAGS = -I$(top_srcdir)/include -DDEFAULT_CONF_DIR='"$(sysconfdir)/hwmultd"'
 
-CLIENTS = libnull_cl.la libexample_cl.la libscript_cl.la libentropy_cl.la
-SERVERS = libnull_hw.la libexample_hw.la libscript_hw.la libentropy_hw.la libtime_hw.la libtemp_hw.la
+CLIENTS = null_cl.la example_cl.la script_cl.la entropy_cl.la
+SERVERS = null_hw.la example_hw.la script_hw.la entropy_hw.la time_hw.la temp_hw.la
 
 pkglib_LTLIBRARIES = $(CLIENTS) $(SERVERS)
 
@@ -9,36 +9,36 @@ pkglib_LTLIBRARIES = $(CLIENTS) $(SERVERS)
 # Client plugins
 #
 
-libnull_cl_la_SOURCES = libnull_cl.c
-libnull_cl_la_LDFLAGS = -version-info 0:0:0
+null_cl_la_SOURCES = null_cl.c
+null_cl_la_LDFLAGS = -module -avoid-version
 
-libexample_cl_la_SOURCES = libexample_cl.c
-libexample_cl_la_LDFLAGS = -version-info 0:0:0
+example_cl_la_SOURCES = example_cl.c
+example_cl_la_LDFLAGS = -module -avoid-version
 
-libscript_cl_la_SOURCES = libscript_cl.c
-libscript_cl_la_LDFLAGS = -version-info 0:0:0
+script_cl_la_SOURCES = script_cl.c
+script_cl_la_LDFLAGS = -module -avoid-version
 
-libentropy_cl_la_SOURCES = libentropy_cl.c
-libentropy_cl_la_LDFLAGS = -version-info 0:0:0
+entropy_cl_la_SOURCES = entropy_cl.c
+entropy_cl_la_LDFLAGS = -module -avoid-version
 
 #
 # Hardware(server) plugins
 #
 
-libnull_hw_la_SOURCES = libnull_hw.c
-libnull_hw_la_LDFLAGS = -version-info 0:0:0
+null_hw_la_SOURCES = null_hw.c
+null_hw_la_LDFLAGS = -module -avoid-version
 
-libexample_hw_la_SOURCES = libexample_hw.c
-libexample_hw_la_LDFLAGS = -version-info 0:0:0
+example_hw_la_SOURCES = example_hw.c
+example_hw_la_LDFLAGS = -module -avoid-version
 
-libscript_hw_la_SOURCES = libscript_hw.c
-libscript_hw_la_LDFLAGS = -version-info 0:0:0
+script_hw_la_SOURCES = script_hw.c
+script_hw_la_LDFLAGS = -module -avoid-version
 
-libentropy_hw_la_SOURCES = libentropy_hw.c
-libentropy_hw_la_LDFLAGS = -version-info 0:0:0
+entropy_hw_la_SOURCES = entropy_hw.c
+entropy_hw_la_LDFLAGS = -module -avoid-version
 
-libtemp_hw_la_SOURCES = libtemp_hw.c
-libtemp_hw_la_LDFLAGS = -version-info 0:0:0
+temp_hw_la_SOURCES = temp_hw.c
+temp_hw_la_LDFLAGS = -module -avoid-version
 
-libtime_hw_la_SOURCES = libtime_hw.c
-libtime_hw_la_LDFLAGS = -version-info 0:0:0
+time_hw_la_SOURCES = time_hw.c
+time_hw_la_LDFLAGS = -module -avoid-version

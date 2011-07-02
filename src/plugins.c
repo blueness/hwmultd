@@ -12,6 +12,8 @@
 
 
 
+#define PREFIX "/usr/local/lib/hwmultd/"
+
 #undef ME
 #define ME "plugins.c"
 
@@ -20,23 +22,23 @@ void *handle_hw, *handle_cl;
 int
 load_plugins()
 {
-	char lib_name[MAX_PLUGIN_LEN+9];		// Add "lib" + hw_plugin_name + {"_hw","_cl"} + ".so"
+	char plugin_name[MAX_PLUGIN_LEN+strlen(PREFIX)+3];	// Add PREFIX + hw_plugin_name + {"_hw","_cl"} + ".so"
 
 	write_log(DBUG, ME, "loading plugins");
 
 	if(server_mode == SERVER_MODE)
 	{
-		strcpy(lib_name, "lib");
-		strncat(lib_name, hw_plugin_name, MAX_PLUGIN_LEN);
-		strcat(lib_name, "_hw.so");
+		strcpy(plugin_name, PREFIX);
+		strncat(plugin_name, hw_plugin_name, MAX_PLUGIN_LEN);
+		strcat(plugin_name, "_hw.so");
 	
-		if( !(handle_hw = dlopen(lib_name, RTLD_LAZY)) )
+		if( !(handle_hw = dlopen(plugin_name, RTLD_LAZY)) )
 		{
-			write_log(ERRO, ME, "failed dlopen hw plugin %s -> %s", hw_plugin_name, lib_name);
+			write_log(ERRO, ME, "failed dlopen hw plugin %s -> %s", hw_plugin_name, plugin_name);
 			return 0;
 		}
 		else
-			write_log(DBUG, ME, "dlopened hw plugin %s -> %s", hw_plugin_name, lib_name);
+			write_log(DBUG, ME, "dlopened hw plugin %s -> %s", hw_plugin_name, plugin_name);
 
 
 		init_hw = dlsym(handle_hw, "init_hw");
@@ -54,17 +56,17 @@ load_plugins()
 	}
 	else
 	{
-		strcpy(lib_name, "lib");
-		strncat(lib_name, cl_plugin_name, MAX_PLUGIN_LEN);
-		strcat(lib_name, "_cl.so");
+		strcpy(plugin_name, PREFIX);
+		strncat(plugin_name, cl_plugin_name, MAX_PLUGIN_LEN);
+		strcat(plugin_name, "_cl.so");
 
-		if( !(handle_cl = dlopen(lib_name, RTLD_LAZY)) )
+		if( !(handle_cl = dlopen(plugin_name, RTLD_LAZY)) )
 		{
-			write_log(ERRO, ME, "failed dlopen cl plugin %s -> %s", cl_plugin_name, lib_name);
+			write_log(ERRO, ME, "failed dlopen cl plugin %s -> %s", cl_plugin_name, plugin_name);
 			return 0;
 		}
 		else
-			write_log(DBUG, ME, "dlopened cl plugin %s -> %s", cl_plugin_name, lib_name);
+			write_log(DBUG, ME, "dlopened cl plugin %s -> %s", cl_plugin_name, plugin_name);
 
 		init_cl = dlsym(handle_cl, "init_cl");
 		reset_cl = dlsym(handle_cl, "reset_cl");
