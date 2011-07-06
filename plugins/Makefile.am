@@ -13,13 +13,13 @@ pkglib_LTLIBRARIES = $(CLIENTS) $(SERVERS)
 null_cl_la_SOURCES = null_cl.c
 null_cl_la_LDFLAGS = -module -avoid-version
 
-example_cl_la_SOURCES = example_cl.c
+example_cl_la_SOURCES = example_cl.c common.h
 example_cl_la_LDFLAGS = -module -avoid-version
 
-script_cl_la_SOURCES = script_cl.c
+script_cl_la_SOURCES = script_cl.c common.h
 script_cl_la_LDFLAGS = -module -avoid-version
 
-entropy_cl_la_SOURCES = entropy_cl.c
+entropy_cl_la_SOURCES = entropy_cl.c common.h
 entropy_cl_la_LDFLAGS = -module -avoid-version
 
 #
@@ -29,16 +29,16 @@ entropy_cl_la_LDFLAGS = -module -avoid-version
 null_hw_la_SOURCES = null_hw.c
 null_hw_la_LDFLAGS = -module -avoid-version
 
-example_hw_la_SOURCES = example_hw.c
+example_hw_la_SOURCES = example_hw.c common.h
 example_hw_la_LDFLAGS = -module -avoid-version
 
-script_hw_la_SOURCES = script_hw.c
+script_hw_la_SOURCES = script_hw.c common.h
 script_hw_la_LDFLAGS = -module -avoid-version
 
-entropy_hw_la_SOURCES = entropy_hw.c
+entropy_hw_la_SOURCES = entropy_hw.c common.h
 entropy_hw_la_LDFLAGS = -module -avoid-version
 
-temp_hw_la_SOURCES = temp_hw.c
+temp_hw_la_SOURCES = temp_hw.c common.h
 temp_hw_la_LDFLAGS = -module -avoid-version
 
 time_hw_la_SOURCES = time_hw.c

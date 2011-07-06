@@ -1,3 +1,5 @@
+ACLOCAL_AMFLAGS = -I m4
+
 man_MANS = hwmultd.8
 
 hwmultd.8: hwmultd.pod
