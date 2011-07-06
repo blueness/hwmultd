@@ -1,8 +1,10 @@
 ACLOCAL_AMFLAGS = -I m4
 
-man_MANS = hwmultd.8
+EXTRA_DIST = hwmultd.pod
+
+dist_man_MANS = hwmultd.8
 
 hwmultd.8: hwmultd.pod
-	pod2man hwmultd.pod > hwmultd.8
+	pod2man $(srcdir)/hwmultd.pod > hwmultd.8
 
-CLEANFILES = hwmultd.8
+CLEANFILES = $(srcdir)/hwmultd.8
