@@ -1,3 +1,4 @@
+ACLOCAL_AMFLAGS = -I m4
 AM_CPPFLAGS = -I$(top_srcdir)/include -DDEFAULT_CONF_DIR='"$(sysconfdir)/hwmultd"'
 
 CLIENTS = null_cl.la example_cl.la script_cl.la entropy_cl.la

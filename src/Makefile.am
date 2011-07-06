@@ -1,3 +1,4 @@
+ACLOCAL_AMFLAGS = -I m4
 AM_CPPFLAGS = -DDEFAULT_CONF_DIR='"$(sysconfdir)/hwmultd"' -DDEFAULT_PLUGIN_PREFIX='"$(pkglibdir)"'
 
 sbin_PROGRAMS = hwmultd

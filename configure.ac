@@ -7,7 +7,7 @@ AC_INIT([hwmultd],[0.1],[http://opensource.dyc.edu/bugzilla3])
 AM_INIT_AUTOMAKE([1.11 foreign])
 AM_SILENT_RULES([yes])
 
-LT_PREREQ([2.2])
+LT_PREREQ([2.4])
 LT_INIT([dlopen])
 
 AC_CONFIG_SRCDIR([src/hwmultd.c])
