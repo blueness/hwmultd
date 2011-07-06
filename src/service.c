@@ -14,10 +14,6 @@
 
 
 
-#undef ME
-#define ME "service.c"
-
-
 int
 start_service()
 {
@@ -29,37 +25,37 @@ start_service()
 	{
 		if((ret = (*init_hw)()) != 1)
 		{
-			write_log(CRIT, ME, "initialized hardware plugin failed: %d", ret);
+			write_log(CRIT, __FILE__, "initialized hardware plugin failed: %d", ret);
 			return 0;
 		}
 		else
-			write_log(DBUG, ME, "initialized hardware plugin");
+			write_log(DBUG, __FILE__, "initialized hardware plugin");
 
 		if( !mclient_start() )
 		{
-			write_log(ERRO, ME, "mclient_start() failed");
+			write_log(ERRO, __FILE__, "mclient_start() failed");
 			return 0;
 		}
 		else
-			write_log(DBUG, ME, "mclient_start()");
+			write_log(DBUG, __FILE__, "mclient_start()");
 	}
 	else
 	{
 		if((ret = (*init_cl)()) != 1)
 		{
-			write_log(CRIT, ME, "initialized client plugin failed: %d", ret);
+			write_log(CRIT, __FILE__, "initialized client plugin failed: %d", ret);
 			return 0;
 		}
 		else
-			write_log(DBUG, ME, "initialized client plugin");
+			write_log(DBUG, __FILE__, "initialized client plugin");
 
 		if( !mserver_start() )
 		{
-			write_log(ERRO, ME, "mserver_start() failed");
+			write_log(ERRO, __FILE__, "mserver_start() failed");
 			return 0;
 		}
 		else
-			write_log(DBUG, ME, "mserver_start()");
+			write_log(DBUG, __FILE__, "mserver_start()");
 	}
 
 	continue_big_loop = 1;
@@ -89,12 +85,12 @@ do_service()
 
 			if( !(rmsg = (*act_cl)(msg)) )
 			{
-				write_log(CRIT, ME, "client action failed");
+				write_log(CRIT, __FILE__, "client action failed");
 				clean_exit();
 			}
 			else
 			{
-				write_log(DBUG, ME, "client action: %s", rmsg);
+				write_log(DBUG, __FILE__, "client action: %s", rmsg);
 			}
 		}
 	}
@@ -112,42 +108,42 @@ stop_service()
 	{
 		if((ret = (*close_hw)()) != 1)
 		{
-			write_log(CRIT, ME, "close hardware plugin failed: %d", ret);
+			write_log(CRIT, __FILE__, "close hardware plugin failed: %d", ret);
 			return 0;
 		}
 		else
-			write_log(DBUG, ME, "closed hardware plugin");
+			write_log(DBUG, __FILE__, "closed hardware plugin");
 	}
 	else
 	{
 		if((ret = (*close_cl)()) != 1)
 		{
-			write_log(CRIT, ME, "close client plugin failed: %d", ret);
+			write_log(CRIT, __FILE__, "close client plugin failed: %d", ret);
 			return 0;
 		}
 		else
-			write_log(DBUG, ME, "closed client plugin");
+			write_log(DBUG, __FILE__, "closed client plugin");
 	}
 
 	if(server_mode == SERVER_MODE)
 	{
 		if( !mclient_stop() )
 		{
-			write_log(CRIT, ME, "close multicast client failed");
+			write_log(CRIT, __FILE__, "close multicast client failed");
 			return 0;
 		}
 		else
-			write_log(DBUG, ME, "closed multicast client");
+			write_log(DBUG, __FILE__, "closed multicast client");
 	}
 	else
 	{
 		if( !mserver_stop() )
 		{
-			write_log(CRIT, ME, "close multicast server failed");
+			write_log(CRIT, __FILE__, "close multicast server failed");
 			return 0;
 		}
 		else
-			write_log(DBUG, ME, "closed multicast server");
+			write_log(DBUG, __FILE__, "closed multicast server");
 	}
 	
 	return 1;

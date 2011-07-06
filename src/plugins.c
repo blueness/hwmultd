@@ -12,9 +12,6 @@
 
 
 
-#undef ME
-#define ME "plugins.c"
-
 void *handle_hw, *handle_cl;
 
 int
@@ -23,7 +20,7 @@ load_plugins()
 	// Add DEFAULT_PLUGIN_PREFIX + "/" + hw_plugin_name + {"_hw","_cl"} + ".so"
 	char plugin_name[MAX_PLUGIN_LEN+strlen(DEFAULT_PLUGIN_PREFIX)+4];
 
-	write_log(DBUG, ME, "loading plugins");
+	write_log(DBUG, __FILE__, "loading plugins");
 
 	if(server_mode == SERVER_MODE)
 	{
@@ -34,11 +31,11 @@ load_plugins()
 	
 		if( !(handle_hw = dlopen(plugin_name, RTLD_LAZY)) )
 		{
-			write_log(ERRO, ME, "failed dlopen hw plugin %s -> %s", hw_plugin_name, plugin_name);
+			write_log(ERRO, __FILE__, "failed dlopen hw plugin %s -> %s", hw_plugin_name, plugin_name);
 			return 0;
 		}
 		else
-			write_log(DBUG, ME, "dlopened hw plugin %s -> %s", hw_plugin_name, plugin_name);
+			write_log(DBUG, __FILE__, "dlopened hw plugin %s -> %s", hw_plugin_name, plugin_name);
 
 
 		init_hw = dlsym(handle_hw, "init_hw");
@@ -48,11 +45,11 @@ load_plugins()
 
 		if( init_hw == NULL || reset_hw == NULL || read_hw == NULL || close_hw == NULL )
 		{
-			write_log(ERRO, ME, "failed to register hw funcs init_hw || reset_hw || read_hw || close_hw");
+			write_log(ERRO, __FILE__, "failed to register hw funcs init_hw || reset_hw || read_hw || close_hw");
 			return 0;
 		}
 		else
-			write_log(DBUG, ME, "registered hw funcs init_hw && reset_hw && read_hw && close_hw");
+			write_log(DBUG, __FILE__, "registered hw funcs init_hw && reset_hw && read_hw && close_hw");
 	}
 	else
 	{
@@ -63,11 +60,11 @@ load_plugins()
 
 		if( !(handle_cl = dlopen(plugin_name, RTLD_LAZY)) )
 		{
-			write_log(ERRO, ME, "failed dlopen cl plugin %s -> %s", cl_plugin_name, plugin_name);
+			write_log(ERRO, __FILE__, "failed dlopen cl plugin %s -> %s", cl_plugin_name, plugin_name);
 			return 0;
 		}
 		else
-			write_log(DBUG, ME, "dlopened cl plugin %s -> %s", cl_plugin_name, plugin_name);
+			write_log(DBUG, __FILE__, "dlopened cl plugin %s -> %s", cl_plugin_name, plugin_name);
 
 		init_cl = dlsym(handle_cl, "init_cl");
 		reset_cl = dlsym(handle_cl, "reset_cl");
@@ -76,11 +73,11 @@ load_plugins()
 
 		if( init_cl == NULL || reset_cl == NULL || act_cl == NULL || close_cl == NULL )
 		{
-			write_log(ERRO, ME, "failed to register cl funcs init_cl || reset_cl || act_cl || close_cl");
+			write_log(ERRO, __FILE__, "failed to register cl funcs init_cl || reset_cl || act_cl || close_cl");
 			return 0;
 		}
 		else
-			write_log(DBUG, ME, "registered cl funcs init_cl && reset_cl && act_cl && close_cl");
+			write_log(DBUG, __FILE__, "registered cl funcs init_cl && reset_cl && act_cl && close_cl");
 	}
 
 	return 1;
@@ -96,14 +93,14 @@ unload_plugins()
 		{
 			if( dlclose(handle_hw) )
 			{
-				write_log(ERRO, ME, "failed unload hw plugin");
+				write_log(ERRO, __FILE__, "failed unload hw plugin");
 				return 0;
 			}
 			else
-				write_log(DBUG, ME, "unloaded hw plugin");
+				write_log(DBUG, __FILE__, "unloaded hw plugin");
 		}
 		else
-			write_log(DBUG, ME, "no hw plugin to unload");
+			write_log(DBUG, __FILE__, "no hw plugin to unload");
 	}
 	else
 	{
@@ -111,14 +108,14 @@ unload_plugins()
 		{
 			if( dlclose(handle_cl) )
 			{
-				write_log(ERRO, ME, "failed unload cl plugin");
+				write_log(ERRO, __FILE__, "failed unload cl plugin");
 				return 0;
 			}
 			else
-				write_log(DBUG, ME, "unloaded cl plugin");
+				write_log(DBUG, __FILE__, "unloaded cl plugin");
 		}
 		else
-			write_log(DBUG, ME, "no cl plugin to unload");
+			write_log(DBUG, __FILE__, "no cl plugin to unload");
 	}
 
 	return 1;

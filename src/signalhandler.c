@@ -16,14 +16,10 @@
 
 
 
-#undef ME
-#define ME "signalhandler.c"
-
-
 void
 clean_exit()
 {
-	write_log(DBUG, ME, "doing a clean_exit()");
+	write_log(DBUG, __FILE__, "doing a clean_exit()");
 	close_pid();
 	close_log();
 	exit(EXIT_SUCCESS);
@@ -33,7 +29,7 @@ clean_exit()
 void
 handle_term()
 {
-	write_log(INFO, ME, "SIGTERM recieved");
+	write_log(INFO, __FILE__, "SIGTERM recieved");
 	clean_exit();
 }
 
@@ -41,7 +37,7 @@ handle_term()
 void
 handle_hup()
 {
-	write_log(INFO, ME, "SIGHUP recieved");
+	write_log(INFO, __FILE__, "SIGHUP recieved");
 	continue_big_loop = 0;
 }
 
@@ -69,11 +65,11 @@ sighandler()
 
 	if (sigaction(SIGTERM, &sa, NULL) < 0)
 	{
-		write_log(ERRO, ME, "register SIGTERM failed");
+		write_log(ERRO, __FILE__, "register SIGTERM failed");
 		return 0;
 	}
 	else
-		write_log(DBUG, ME, "registered SIGTERM");
+		write_log(DBUG, __FILE__, "registered SIGTERM");
 
 
 	//SIGHUP
@@ -87,11 +83,11 @@ sighandler()
 
 	if(sigaction(SIGHUP, &sa, NULL) < 0)
 	{
-		write_log(ERRO, ME, "register SIGHUP failed");
+		write_log(ERRO, __FILE__, "register SIGHUP failed");
 		return 0;
 	}
 	else
-		write_log(DBUG, ME, "registered SIGTHUP");
+		write_log(DBUG, __FILE__, "registered SIGTHUP");
 
 	return 1;
 }

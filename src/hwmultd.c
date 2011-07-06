@@ -19,11 +19,6 @@
 
 
 
-#undef ME
-#define ME "hwmultd.c"
-
-
-
 int
 main( int argc, char *argv[] )
 {
@@ -64,25 +59,25 @@ main( int argc, char *argv[] )
 	// Read config file
 	parse_cfg_file();
 
-	write_log(DBUG, ME, "set process id %d", (int)pid) ;
+	write_log(DBUG, __FILE__, "set process id %d", (int)pid) ;
 
 	// Create a new SID
 	if( (sid = setsid()) < 0)
 	{
-		write_log(CRIT, ME, "set session id failed") ;
+		write_log(CRIT, __FILE__, "set session id failed") ;
 		clean_exit();
 	}
 	else
-		write_log(DBUG, ME, "set session id %d", (int)sid) ;
+		write_log(DBUG, __FILE__, "set session id %d", (int)sid) ;
 
         // chdir to root
         if(chdir("/") < 0)
 	{
-		write_log(CRIT, ME, "chdir / failed");
+		write_log(CRIT, __FILE__, "chdir / failed");
 		clean_exit();
         }
 	else
-		write_log(DBUG, ME, "chdir /");
+		write_log(DBUG, __FILE__, "chdir /");
 
 	// Get my uid and gid
 	uid = pwd->pw_uid ;
@@ -91,86 +86,86 @@ main( int argc, char *argv[] )
 	// Create pid directory
 	if( !dir_pid(uid, gid) )
 	{
-		write_log(CRIT, ME, "create pid file dir failed");
+		write_log(CRIT, __FILE__, "create pid file dir failed");
 		clean_exit();
 	}
 	else
-		write_log(DBUG, ME, "created pid file dir");
+		write_log(DBUG, __FILE__, "created pid file dir");
 
 	// Drop privileges
 	if(getuid() == 0)
 	{
 		if(setgid(gid))
 		{
-			write_log(CRIT, ME, "drop to gid %d failed", (int)gid);
+			write_log(CRIT, __FILE__, "drop to gid %d failed", (int)gid);
 			clean_exit();
 		}
 		else
-			write_log(DBUG, ME, "droped to gid %d", (int)gid);
+			write_log(DBUG, __FILE__, "droped to gid %d", (int)gid);
 
 		if(setuid(uid))
 		{
-			write_log(CRIT, ME, "drop to uid %d failed", (int)uid);
+			write_log(CRIT, __FILE__, "drop to uid %d failed", (int)uid);
 			clean_exit();
 		}
 		else
-			write_log(DBUG, ME, "droped to uid %d", (int)uid);
+			write_log(DBUG, __FILE__, "droped to uid %d", (int)uid);
 	}
 
 	// Create pid file
 	if( !open_pid(pid) )
 	{
-		write_log(CRIT, ME, "create pid file failed");
+		write_log(CRIT, __FILE__, "create pid file failed");
 		clean_exit();
 	}
 	else
-		write_log(DBUG, ME, "created pid file");
+		write_log(DBUG, __FILE__, "created pid file");
 
 	// Handle signals
 	if( !sighandler() )
 	{
-		write_log(CRIT, ME, "register signals failed");
+		write_log(CRIT, __FILE__, "register signals failed");
 		clean_exit();
 	}
 	else
-		write_log(DBUG, ME, "registered signals");
+		write_log(DBUG, __FILE__, "registered signals");
 
 	// The big loop
 	while(1)
 	{
 		if( !load_plugins() )
 		{
-			write_log(CRIT, ME, "load plugins failed");
+			write_log(CRIT, __FILE__, "load plugins failed");
 			clean_exit();
 		}
 		else
-			write_log(DBUG, ME, "loaded plugins");
+			write_log(DBUG, __FILE__, "loaded plugins");
 
 		if( !start_service() )
 		{
-			write_log(CRIT, ME, "service start failed");
+			write_log(CRIT, __FILE__, "service start failed");
 			clean_exit();
 		}
 		else
-			write_log(DBUG, ME, "service started");
+			write_log(DBUG, __FILE__, "service started");
 
 		do_service();
 
 		if( !stop_service() )
 		{
-			write_log(CRIT, ME, "service stop failed");
+			write_log(CRIT, __FILE__, "service stop failed");
 			clean_exit();
 		}
 		else
-			write_log(DBUG, ME, "service stopped");
+			write_log(DBUG, __FILE__, "service stopped");
 
 		if( !unload_plugins() )
 		{
-			write_log(CRIT, ME, "unload plugins failed");
+			write_log(CRIT, __FILE__, "unload plugins failed");
 			clean_exit();
 		}
 		else
-			write_log(DBUG, ME, "unloaded plugins");
+			write_log(DBUG, __FILE__, "unloaded plugins");
 
 		parse_cfg_file();
 	}

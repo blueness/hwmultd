@@ -13,10 +13,6 @@
 
 
 
-#undef ME
-#define ME "pidfile.c"
-
-
 int
 dir_pid(uid_t uid, gid_t gid)
 {
@@ -37,15 +33,15 @@ dir_pid(uid_t uid, gid_t gid)
 
 			if( unlink(PID_DIR) )
 			{
-				write_log(ERRO, ME, "unlink non-directory at %s failed", PID_DIR);
+				write_log(ERRO, __FILE__, "unlink non-directory at %s failed", PID_DIR);
 				return 0;
 			}
 			else
-				write_log(DBUG, ME, "unlinked non-directory at %s", PID_DIR);
+				write_log(DBUG, __FILE__, "unlinked non-directory at %s", PID_DIR);
 		}
 		else
 			// it is a directory
-			write_log(DBUG, ME, "pid file directory already exists: %s", PID_DIR);
+			write_log(DBUG, __FILE__, "pid file directory already exists: %s", PID_DIR);
 	}
 	else
 		// nothing exists at PID_DIR
@@ -55,20 +51,20 @@ dir_pid(uid_t uid, gid_t gid)
 	{
 		if( mkdir(PID_DIR, 0755) )
 		{
-			write_log(ERRO, ME, "make pid dir failed: %s", PID_DIR);
+			write_log(ERRO, __FILE__, "make pid dir failed: %s", PID_DIR);
 			return 0;
 		}
 		else
-			write_log(DBUG, ME, "made pid dir: %s", PID_DIR);
+			write_log(DBUG, __FILE__, "made pid dir: %s", PID_DIR);
 	}
 
 	if( chown(PID_DIR, uid, gid) )
 	{
-		write_log(ERRO, ME, "chown %d %d pid dir failed: %s", (int)uid, (int)gid, PID_DIR);
+		write_log(ERRO, __FILE__, "chown %d %d pid dir failed: %s", (int)uid, (int)gid, PID_DIR);
 		return 0;
 	}
 	else
-		write_log(DBUG, ME, "chowed %d %d pid dir: %s", (int)uid, (int)gid, PID_DIR);
+		write_log(DBUG, __FILE__, "chowed %d %d pid dir: %s", (int)uid, (int)gid, PID_DIR);
 
 	return 1;
 }
@@ -82,21 +78,21 @@ open_pid(int pid)
 	// Whether the pid file exists or not, truncate to zero length
 	if( !(fd = fopen(PID_FILE, "w")) )
 	{
-		write_log(ERRO, ME, "open pid file failed: %s", PID_FILE);
+		write_log(ERRO, __FILE__, "open pid file failed: %s", PID_FILE);
 		return 0;
 	}
 	else
-		write_log(DBUG, ME, "opened pid file: %s", PID_FILE);
+		write_log(DBUG, __FILE__, "opened pid file: %s", PID_FILE);
 
 	fprintf(fd, "%d\n", pid);
 
 	if( fclose(fd) )
 	{
-		write_log(ERRO, ME, "close pid file failed: %s", PID_FILE);
+		write_log(ERRO, __FILE__, "close pid file failed: %s", PID_FILE);
 		return 0;
 	}
 	else
-		write_log(DBUG, ME, "close pid file: %s", PID_FILE);
+		write_log(DBUG, __FILE__, "close pid file: %s", PID_FILE);
 
 	return 1;
 }
@@ -107,11 +103,11 @@ close_pid()
 {
 	if( unlink(PID_FILE) )
 	{
-		write_log(ERRO, ME, "unlink pid file failed: %s", PID_FILE);
+		write_log(ERRO, __FILE__, "unlink pid file failed: %s", PID_FILE);
 		return 0;
 	}
 	else
-		write_log(DBUG, ME, "unlink pid file: %s", PID_FILE);
+		write_log(DBUG, __FILE__, "unlink pid file: %s", PID_FILE);
 
 	return 1;
 }

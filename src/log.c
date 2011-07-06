@@ -13,11 +13,6 @@
 
 
 
-#undef ME
-#define ME "log.c"
-
-
-
 #define TIME_BUFFER 1000
 
 FILE *log_stream;
@@ -31,7 +26,7 @@ open_log()
 	if( !(log_stream = fopen(LOG_FILE, "a+")) )
 		return 0;
 
-	write_log(CRIT, ME, "START>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>") ;
+	write_log(CRIT, __FILE__, "START>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>") ;
 	return 1;
 }
 
@@ -83,7 +78,7 @@ write_log(int level, const char *code, const char *fmt,...)
 int
 close_log()
 {
-	write_log(CRIT, ME, "EXITING<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<") ;
+	write_log(CRIT, __FILE__, "EXITING<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<") ;
 	if(fclose(log_stream))
                 return 0 ;
         else
