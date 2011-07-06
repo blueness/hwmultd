@@ -17,11 +17,6 @@
 
 
 
-#undef ME
-#define ME "entropy_hw"
-
-
-
 void
 hwplugin_init()
 {
@@ -63,7 +58,7 @@ init_hw()
 
 	strncpy(conf_file, DEFAULT_CONF_DIR, MAX_CONF_DIR_LEN);
 	strcat(conf_file, "/");
-	strcat(conf_file, ME);
+	strncpy(conf_file, __FILE__, strlen(__FILE__) - 2);
 	strcat(conf_file, ".conf");
 
 	strcpy(dev, "/dev/urandom");

@@ -12,9 +12,6 @@
 
 
 
-#undef ME
-#define ME "script_cl"
-
 void
 clplugin_init()
 {
@@ -51,7 +48,7 @@ init_cl()
 
 	strncpy(conf_file, DEFAULT_CONF_DIR, MAX_CONF_DIR_LEN);
 	strcat(conf_file, "/");
-	strcat(conf_file, ME);
+	strncpy(conf_file, __FILE__, strlen(__FILE__) - 2);
 	strcat(conf_file, ".conf");
 
 	strcpy(script_file, "null.sh");
