@@ -44,7 +44,7 @@ init_cl()
 
 	strncpy(conf_file, DEFAULT_CONF_DIR, MAX_CONF_DIR_LEN);
 	strcat(conf_file, "/");
-	strncpy(conf_file, __FILE__, strlen(__FILE__) - 2);
+	strncat(conf_file, __FILE__, strlen(__FILE__) - 2);
 	strcat(conf_file, ".conf");
 
 	if(myfile = fopen(conf_file, "r"))
