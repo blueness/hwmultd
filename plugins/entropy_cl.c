@@ -53,15 +53,15 @@ init_cl()
 	int i;
 
 	if( !(buf = (char *)malloc(MSG_BUFFER*sizeof(char))) )
-		return -1;
+		return CL_MALLOC;
 
 	if( !(hex = (char *)malloc(MSG_BUFFER*sizeof(char))) )
-		return -1;
+		return CL_MALLOC;
 
 	size_random_pool = sizeof(struct rand_pool_info *) + MAX_NBYTES*sizeof(uint8_t) ;
 
 	if( !(random_pool = (struct rand_pool_info *)malloc(size_random_pool)) )
-		return -1;
+		return CL_MALLOC;
 
 	strncpy(conf_file, DEFAULT_CONF_DIR, MAX_CONF_DIR_LEN);
 	strcat(conf_file, "/");
@@ -92,23 +92,25 @@ init_cl()
 	}
 
 	if((fd = open( dev, O_WRONLY | O_NONBLOCK | O_NOCTTY )) < 0)
-		return -2;
+		return CL_OPEN_DEV;
 
-	return 1;
+	return CL_SUCCESS;
 }
 
 int
 reset_cl()
 {
-	usleep(DELAY);
-	if(close_cl() != 1)
-		return -1;
+	int ret;
 
 	usleep(DELAY);
-	if(init_cl() != 1)
-		return -2;
+	if((ret = close_cl()) != CL_SUCCESS)
+		return ret;
 
-	return 1;
+	usleep(DELAY);
+	if((ret = init_cl()) != CL_SUCCESS)
+		return ret;
+
+	return CL_SUCCESS;
 }
 
 void
@@ -175,7 +177,7 @@ close_cl()
 	free(hex);
 	free(buf);
 	if(close(fd))
-		return -1;
+		return CL_CLOSE;
 	else
-		return 1;
+		return CL_SUCCESS;
 }

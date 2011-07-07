@@ -21,13 +21,13 @@ clplugin_fini()
 int
 init_cl()
 {
-	return 1;
+	return CL_SUCCESS;
 }
 
 int
 reset_cl()
 {
-	return 1;
+	return CL_SUCCESS;
 }
 
 char *
@@ -39,5 +39,5 @@ act_cl(char *msg)
 int
 close_cl()
 {
-	return 1;
+	return CL_SUCCESS;
 }

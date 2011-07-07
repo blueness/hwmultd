@@ -37,7 +37,7 @@ init_cl()
 	int i;
 
 	if( !(buf = (char *)malloc(MSG_BUFFER*sizeof(char))) )
-		return 0;
+		return CL_MALLOC;
 
 	memset(buf, 0, MSG_BUFFER*sizeof(char));
 	strcpy(buf, "CL_EXAMPLE_PLUGIN_DEFAULT_MSG");
@@ -68,13 +68,13 @@ init_cl()
 		fclose(myfile);
 	}
 
-	return 1;
+	return CL_SUCCESS;
 }
 
 int
 reset_cl()
 {
-	return 1;
+	return CL_SUCCESS;
 }
 
 char *
@@ -87,5 +87,5 @@ int
 close_cl()
 {
 	free(buf);
-	return 1;
+	return CL_SUCCESS;
 }
