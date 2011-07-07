@@ -39,7 +39,7 @@ start_service()
 		else
 			write_log(DBUG, __FILE__, "mclient_start()");
 	}
-	else
+	else if (server_mode == CLIENT_MODE)
 	{
 		if((ret = (*init_cl)()) != 1)
 		{
@@ -56,6 +56,11 @@ start_service()
 		}
 		else
 			write_log(DBUG, __FILE__, "mserver_start()");
+	}
+	else if (server_mode == BOTH_MODE)
+	{
+		write_log(CRIT, __FILE__, "both mode TODO");
+		return 0;
 	}
 
 	continue_big_loop = 1;
@@ -78,7 +83,7 @@ do_service()
 			if( !snd_mcast_msg(msg) )
 				return 0;
 		}
-		else
+		else if (server_mode == CLIENT_MODE)
 		{
 			if( !(msg = rcv_mcast_msg()) )
 				return 0;
@@ -92,6 +97,11 @@ do_service()
 			{
 				write_log(DBUG, __FILE__, "client action: %s", rmsg);
 			}
+		}
+		else if (server_mode == BOTH_MODE)
+		{
+			write_log(CRIT, __FILE__, "both mode TODO");
+			return 0;
 		}
 	}
 
@@ -114,7 +124,7 @@ stop_service()
 		else
 			write_log(DBUG, __FILE__, "closed hardware plugin");
 	}
-	else
+	else if (server_mode == CLIENT_MODE)
 	{
 		if((ret = (*close_cl)()) != 1)
 		{
@@ -123,6 +133,11 @@ stop_service()
 		}
 		else
 			write_log(DBUG, __FILE__, "closed client plugin");
+	}
+	else if (server_mode == BOTH_MODE)
+	{
+		write_log(CRIT, __FILE__, "both mode TODO");
+		return 0;
 	}
 
 	if(server_mode == SERVER_MODE)
@@ -135,7 +150,7 @@ stop_service()
 		else
 			write_log(DBUG, __FILE__, "closed multicast client");
 	}
-	else
+	else if (server_mode == CLIENT_MODE)
 	{
 		if( !mserver_stop() )
 		{
@@ -144,6 +159,11 @@ stop_service()
 		}
 		else
 			write_log(DBUG, __FILE__, "closed multicast server");
+	}
+	else if (server_mode == BOTH_MODE)
+	{
+		write_log(CRIT, __FILE__, "both mode TODO");
+		return 0;
 	}
 	
 	return 1;
