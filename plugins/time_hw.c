@@ -11,18 +11,6 @@
 
 
 
-void my_init()
-{
-	return ;
-}
-
-void my_fini()
-{
-	return ;
-}
-
-
-
 char *buf;
 
 int

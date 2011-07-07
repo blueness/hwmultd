@@ -17,20 +17,6 @@
 
 
 
-void
-hwplugin_init()
-{
-	return ;
-}
-
-void
-hwplugin_fini()
-{
-	return ;
-}
-
-
-
 #define MAX_NBYTES 32
 #define DEFAULT_NBYTES 4
 #define DELAY 1000

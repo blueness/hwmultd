@@ -19,20 +19,6 @@
 
 
 
-void
-clplugin_init()
-{
-	return ;
-}
-
-void
-clplugin_fini()
-{
-	return ;
-}
-
-
-
 #define RNDDEVICE "/dev/random"
 #define MAX_NBYTES 32
 #define DELAY 1000

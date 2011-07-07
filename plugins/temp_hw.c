@@ -18,20 +18,6 @@
 
 
 
-void
-hwplugin_init()
-{
-	return ;
-}
-
-void
-hwplugin_fini()
-{
-	return ;
-}
-
-
-
 #define DELAY 15000
 
 int fd ;

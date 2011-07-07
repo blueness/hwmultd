@@ -12,20 +12,6 @@
 
 
 
-void
-clplugin_init()
-{
-	return ;
-}
-
-void
-clplugin_fini()
-{
-	return ;
-}
-
-
-
 char *buf;
 char script[MAX_CONF_DIR_LEN+MAX_CONF_FILE_LEN];
 

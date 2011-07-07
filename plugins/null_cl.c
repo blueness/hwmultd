@@ -5,19 +5,6 @@
 
 
 
-void
-clplugin_init()
-{
-	return ;
-}
-
-void
-clplugin_fini()
-{
-	return ;
-}
-
-
 int
 init_cl()
 {

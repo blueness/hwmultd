@@ -12,20 +12,6 @@
 
 
 
-void
-clplugin_init()
-{
-	return ;
-}
-
-void
-clplugin_fini()
-{
-	return ;
-}
-
-
-
 char *buf;
 
 int

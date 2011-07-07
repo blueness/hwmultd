@@ -5,19 +5,6 @@
 
 
 
-void
-hwplugin_init()
-{
-	return ;
-}
-
-void
-hwplugin_fini()
-{
-	return ;
-}
-
-
 int
 init_hw()
 {

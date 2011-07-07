@@ -12,20 +12,6 @@
 
 
 
-void
-hwplugin_init()
-{
-	return ;
-}
-
-void
-hwplugin_fini()
-{
-	return ;
-}
-
-
-
 char *buf;
 
 int
