@@ -87,10 +87,12 @@ do_service()
 				return 0;
 		}
 
-		if (server_mode == CLIENT_MODE)
+		if (server_mode == CLIENT_MODE || server_mode == BOTH_MODE)
 		{
-			if( !(msg = rcv_mcast_msg()) )
-				return 0;
+			//Only in pure client mode do we listen for the multicasted info
+			if(server_mode == CLIENT_MODE)
+				if( !(msg = rcv_mcast_msg()) )
+					return 0;
 
 			if( !(rmsg = (*act_cl)(msg)) )
 			{
