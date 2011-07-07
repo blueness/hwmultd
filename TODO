@@ -2,13 +2,13 @@ Before we release for the first time:
 
 [skipping - not that important] 1. Change the Message option in libexample_{cl,hw}.conf to variadic
 
-2. Make server optionally a pure server (as it is now) or server+client
+[DONE] 2. Make server optionally a pure server (as it is now) or server+client
 
 3. Set aside another signal to reset hardware - probably SIGUSR1
 
 4. Plugin work:
 
-	a. Add a standardized error return code from the plugins
+	[IN PROGRESS] a. Add a standardized error return code from the plugins
 	[DONE] b. Switch from shared library naming to module naming
 	c. Create typedef to properly include hwplugin.h and clplugin.h into plugin.h
 	d. Have configure check for dlopen and use conditional #ifdef in the code

@@ -39,7 +39,7 @@ init_hw()
 	int i;
 
 	if( !(buf = (char *)malloc(MSG_BUFFER*sizeof(char))) )
-		return 0;
+		return HW_MALLOC;
 
 	memset(buf, 0, MSG_BUFFER*sizeof(char));
 
@@ -75,13 +75,13 @@ init_hw()
 
 	strcat(script, script_file);
 
-	return 1;
+	return HW_SUCCESS;
 }
 
 int
 reset_hw()
 {
-	return 1;
+	return HW_SUCCESS;
 }
 
 char *
@@ -98,5 +98,5 @@ int
 close_hw()
 {
 	free(buf);
-	return 1;
+	return HW_SUCCESS;
 }

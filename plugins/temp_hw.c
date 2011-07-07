@@ -50,7 +50,7 @@ init_hw()
 	struct termios ios;
 
 	if( !(buf = (char *)malloc(MSG_BUFFER*sizeof(char))) )
-		return 0;
+		return HW_MALLOC;
 
 	memset(buf, 0, MSG_BUFFER*sizeof(char));
 
@@ -83,12 +83,12 @@ init_hw()
 	}
 
 	if((fd = open( dev, O_RDWR | O_NONBLOCK | O_NOCTTY )) < 0)
-		return -1;
+		return HW_OPEN_DEV;
 
 	if(tcgetattr(fd, &ios) < 0)
 	{
 		close(fd);
-		return -2;
+		return HW_GET_DEV_ATTR;
 	}
 
 	cfsetispeed(&ios, B9600);
@@ -97,45 +97,46 @@ init_hw()
 	if(tcsetattr(fd, TCSANOW, &ios) < 0)
 	{
 		close(fd);
-		return -3;
+		return HW_SET_DEV_ATTR;
 	}
 
 	usleep(DELAY);
 	if(write(fd, "X", 1) < 1)
-		return -4;
+		return HW_WRITE_DEV;
 
 	usleep(DELAY);		// Don't check for error on read since
 	read(fd, data, 1024);	// errno=EAGAIN may result from O_NONBLOCK
 
 	usleep(DELAY);
 	if(write(fd, "P", 1) < 1)
-		return -6;
+		return HW_WRITE_DEV;
 
 	usleep(DELAY);
 	read(fd, data, 1024);
 
 	usleep(DELAY);
 	if(write(fd, "R", 1) < 1)
-		return -6;
+		return HW_WRITE_DEV;
 
 	usleep(DELAY);
 	read(fd, data, 1024);
 
-	return 1;
+	return HW_SUCCESS;
 }
 
 int
 reset_hw()
 {
+	int ret;
 	usleep(DELAY);
-	if(close_hw() != 1)
-		return -1;
+	if((ret = close_hw()) != HW_SUCCESS)
+		return ret;
 
 	usleep(DELAY);
-	if(init_hw() != 1)
-		return -2;
+	if((ret = init_hw()) != HW_SUCCESS)
+		return ret;
 
-	return 1;
+	return HW_SUCCESS;
 }
 
 char *
@@ -178,7 +179,7 @@ close_hw()
 {
 	free(buf);
 	if(close(fd))
-		return -1;
+		return HW_CLOSE;
 	else
-		return 1;
+		return HW_SUCCESS;
 }

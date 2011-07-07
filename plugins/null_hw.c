@@ -21,13 +21,13 @@ hwplugin_fini()
 int
 init_hw()
 {
-	return 1;
+	return HW_SUCCESS;
 }
 
 int
 reset_hw()
 {
-	return 1;
+	return HW_SUCCESS;
 }
 
 char *
@@ -39,5 +39,5 @@ read_hw()
 int
 close_hw()
 {
-	return 1;
+	return HW_SUCCESS;
 }

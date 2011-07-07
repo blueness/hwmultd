@@ -49,10 +49,10 @@ init_hw()
 	int i, tmp_int;
 
 	if( !(buf = (char *)malloc(MSG_BUFFER*sizeof(char))) )
-		return -1;
+		return HW_MALLOC;
 
 	if( !(hex = (char *)malloc(MSG_BUFFER*sizeof(char))) )
-		return -1;
+		return HW_MALLOC;
 
 	memset(buf, 0, MSG_BUFFER*sizeof(char));
 
@@ -100,23 +100,25 @@ init_hw()
 	}
 
 	if((fd = open( dev, O_RDONLY | O_NONBLOCK | O_NOCTTY )) < 0)
-		return -2;
+		return HW_OPEN_DEV;
 
-	return 1;
+	return HW_SUCCESS;
 }
 
 int
 reset_hw()
 {
-	usleep(DELAY);
-	if(close_hw() != 1)
-		return -1;
+	int ret;
 
 	usleep(DELAY);
-	if(init_hw() != 1)
-		return -2;
+	if((ret = close_hw()) != HW_SUCCESS)
+		return ret;
 
-	return 1;
+	usleep(DELAY);
+	if((ret = init_hw()) != HW_SUCCESS)
+		return ret;
+
+	return HW_SUCCESS;
 }
 
 void
@@ -170,7 +172,7 @@ close_hw()
 	free(hex);
 	free(buf);
 	if(close(fd))
-		return -1;
+		return HW_CLOSE;
 	else
-		return 1;
+		return HW_SUCCESS;
 }
