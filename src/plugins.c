@@ -22,7 +22,7 @@ load_plugins()
 
 	write_log(DBUG, __FILE__, "loading plugins");
 
-	if(server_mode == SERVER_MODE)
+	if(server_mode == SERVER_MODE || server_mode == BOTH_MODE)
 	{
 		strcpy(plugin_name, DEFAULT_PLUGIN_PREFIX);
 		strcat(plugin_name, "/");
@@ -51,7 +51,8 @@ load_plugins()
 		else
 			write_log(DBUG, __FILE__, "registered hw funcs init_hw && reset_hw && read_hw && close_hw");
 	}
-	else
+
+	if(server_mode == CLIENT_MODE || server_mode == BOTH_MODE)
 	{
 		strcpy(plugin_name, DEFAULT_PLUGIN_PREFIX);
 		strcat(plugin_name, "/");
@@ -87,7 +88,7 @@ load_plugins()
 int
 unload_plugins()
 {
-	if(server_mode == SERVER_MODE)
+	if(server_mode == SERVER_MODE || server_mode == BOTH_MODE)
 	{
 		if(handle_hw)
 		{
@@ -102,7 +103,8 @@ unload_plugins()
 		else
 			write_log(DBUG, __FILE__, "no hw plugin to unload");
 	}
-	else
+
+	if(server_mode == CLIENT_MODE || server_mode == BOTH_MODE)
 	{
 		if(handle_cl)
 		{
