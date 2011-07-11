@@ -42,6 +42,15 @@ handle_hup()
 }
 
 
+void
+handle_usr1()
+{
+	write_log(INFO, __FILE__, "SIGUSR1 recieved");
+	//(*reset_hw)();
+	//(*reset_cl)();
+}
+
+
 int
 sighandler()
 {
@@ -52,6 +61,7 @@ sighandler()
 	sigfillset(&block_set);
 	sigdelset(&block_set, SIGTERM);
 	sigdelset(&block_set, SIGHUP);
+	sigdelset(&block_set, SIGUSR1);
 	sigprocmask(SIG_BLOCK, &block_set, NULL);
 
 	//SIGTERM
@@ -59,6 +69,7 @@ sighandler()
 
 	sigemptyset(&sa.sa_mask);
 	sigaddset(&sa.sa_mask, SIGHUP);
+	sigaddset(&sa.sa_mask, SIGUSR1);
 
 	sa.sa_flags = 0;
 	sa.sa_handler = handle_term;
@@ -77,6 +88,7 @@ sighandler()
 
 	sigemptyset(&sa.sa_mask);
 	sigaddset(&sa.sa_mask, SIGTERM);
+	sigaddset(&sa.sa_mask, SIGUSR1);
 
 	sa.sa_flags = 0;
 	sa.sa_handler = handle_hup;
@@ -87,7 +99,25 @@ sighandler()
 		return 0;
 	}
 	else
-		write_log(DBUG, __FILE__, "registered SIGTHUP");
+		write_log(DBUG, __FILE__, "registered SIGHUP");
+
+	//SIGUSR1
+	memset(&sa, 0, sizeof(struct sigaction));
+
+	sigemptyset(&sa.sa_mask);
+	sigaddset(&sa.sa_mask, SIGHUP);
+	sigaddset(&sa.sa_mask, SIGTERM);
+
+	sa.sa_flags = 0;
+	sa.sa_handler = handle_usr1;
+
+	if(sigaction(SIGUSR1, &sa, NULL) < 0)
+	{
+		write_log(ERRO, __FILE__, "register SIGUSR1 failed");
+		return 0;
+	}
+	else
+		write_log(DBUG, __FILE__, "registered SIGUSR1");
 
 	return 1;
 }
