@@ -46,8 +46,13 @@ void
 handle_usr1()
 {
 	write_log(INFO, __FILE__, "SIGUSR1 recieved");
-	//(*reset_hw)();
-	//(*reset_cl)();
+	if( !reset_plugins() )
+	{
+		write_log(CRIT, __FILE__, "reset hardware failed");
+		clean_exit();
+	}
+	else
+		write_log(DBUG, __FILE__, "reset hardware");
 }
 
 

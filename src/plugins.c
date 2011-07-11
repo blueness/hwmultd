@@ -86,6 +86,35 @@ load_plugins()
 
 
 int
+reset_plugins()
+{
+	if(server_mode == SERVER_MODE || server_mode == BOTH_MODE)
+	{
+		if( !reset_hw )
+		{
+			write_log(ERRO, __FILE__, "failed server hardware reset ");
+			return 0;
+		}
+		else
+			write_log(DBUG, __FILE__, "server hardware reset");
+	}
+
+	if(server_mode == CLIENT_MODE || server_mode == BOTH_MODE)
+	{
+		if( !reset_cl )
+		{
+			write_log(ERRO, __FILE__, "failed client hardware reset ");
+			return 0;
+		}
+		else
+			write_log(DBUG, __FILE__, "client hardware reset");
+	}
+
+	return 1;
+}
+
+
+int
 unload_plugins()
 {
 	if(server_mode == SERVER_MODE || server_mode == BOTH_MODE)
