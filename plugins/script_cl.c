@@ -73,11 +73,18 @@ reset_cl()
 char *
 act_cl(char *msg)
 {
+	char script_instance[MAX_CONF_DIR_LEN+MAX_CONF_FILE_LEN];
+
+	strcpy(script_instance, script);
+	strcat(script_instance, " ");
+	strncat(script_instance, msg, MAX_CONF_DIR_LEN+MAX_CONF_FILE_LEN-strlen(script)-strlen(msg));
+
 	FILE *f = popen(script, "r");
 	fread(buf, sizeof(char), 4096, f);
 	pclose(f);
 
 	return buf;
+//	return script_instance;
 }
 
 int
