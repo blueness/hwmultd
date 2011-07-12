@@ -17,6 +17,8 @@ int close_cl();
 #define CL_SET_DEV_ATTR		-4
 #define CL_READ_DEV		-5
 #define CL_WRITE_DEV		-6
-#define CL_CLOSE		-7
+#define CL_CLOSE_DEV		-7
+#define CL_OPEN_FILE		-8
+#define CL_CLOSE_FILE		-9
 
 #endif

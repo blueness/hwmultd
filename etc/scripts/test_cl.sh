@@ -1,3 +1,3 @@
 #!/bin/sh
-MSG=$1
+MSG=$*
 echo -n "TEST CL SCRIPT:" $MSG

@@ -16,6 +16,8 @@ int close_hw();
 #define HW_SET_DEV_ATTR		-4
 #define HW_READ_DEV		-5
 #define HW_WRITE_DEV		-6
-#define HW_CLOSE		-7
+#define HW_CLOSE_DEV		-7
+#define HW_OPEN_FILE		-8
+#define HW_CLOSE_FILE		-9
 
 #endif

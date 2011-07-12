@@ -42,6 +42,7 @@ init_hw()
 
 	memset(buf, 0, MSG_BUFFER*sizeof(char));
 
+	//TODO - properly compensate for extras past MAX_CONF_{DIR,FILE}_LEN
 	strncpy(conf_file, DEFAULT_CONF_DIR, MAX_CONF_DIR_LEN);
 	strcat(conf_file, "/");
 	strncat(conf_file, __FILE__, strlen(__FILE__) - 2);
@@ -82,8 +83,11 @@ init_hw()
 			}
 		}
 
-		fclose(myfile);
+		if(fclose(myfile))
+			return HW_CLOSE_FILE;
 	}
+	else
+		return HW_OPEN_FILE;
 
 	if((fd = open( dev, O_RDONLY | O_NONBLOCK | O_NOCTTY )) < 0)
 		return HW_OPEN_DEV;
@@ -158,7 +162,7 @@ close_hw()
 	free(hex);
 	free(buf);
 	if(close(fd))
-		return HW_CLOSE;
+		return HW_CLOSE_DEV;
 	else
 		return HW_SUCCESS;
 }

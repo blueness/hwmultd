@@ -28,6 +28,7 @@ init_cl()
 	memset(buf, 0, MSG_BUFFER*sizeof(char));
 	strcpy(buf, "CL_EXAMPLE_PLUGIN_DEFAULT_MSG");
 
+	//TODO - properly compensate for extras past MAX_CONF_{DIR,FILE}_LEN
 	strncpy(conf_file, DEFAULT_CONF_DIR, MAX_CONF_DIR_LEN);
 	strcat(conf_file, "/");
 	strncat(conf_file, __FILE__, strlen(__FILE__) - 2);
@@ -51,8 +52,11 @@ init_cl()
 				strncpy(buf, second, MSG_BUFFER);
 		}
 
-		fclose(myfile);
+		if(fclose(myfile))
+			return CL_CLOSE_FILE;
 	}
+	else
+		return CL_OPEN_FILE;
 
 	return CL_SUCCESS;
 }

@@ -49,6 +49,7 @@ init_cl()
 	if( !(random_pool = (struct rand_pool_info *)malloc(size_random_pool)) )
 		return CL_MALLOC;
 
+	//TODO - properly compensate for extras past MAX_CONF_{DIR,FILE}_LEN
 	strncpy(conf_file, DEFAULT_CONF_DIR, MAX_CONF_DIR_LEN);
 	strcat(conf_file, "/");
 	strncat(conf_file, __FILE__, strlen(__FILE__) - 2);
@@ -74,8 +75,11 @@ init_cl()
 				strncpy(dev, second, CONF_LINE_BUFFER);
 		}
 
-		fclose(myfile);
+		if(fclose(myfile))
+			return CL_CLOSE_FILE;
 	}
+	else
+		return CL_OPEN_FILE;
 
 	if((fd = open( dev, O_WRONLY | O_NONBLOCK | O_NOCTTY )) < 0)
 		return CL_OPEN_DEV;
@@ -163,7 +167,7 @@ close_cl()
 	free(hex);
 	free(buf);
 	if(close(fd))
-		return CL_CLOSE;
+		return CL_CLOSE_DEV;
 	else
 		return CL_SUCCESS;
 }

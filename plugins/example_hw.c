@@ -28,6 +28,7 @@ init_hw()
 	memset(buf, 0, MSG_BUFFER*sizeof(char));
 	strcpy(buf, "HW_EXAMPLE_PLUGIN_DEFAULT_MSG");
 
+	//TODO - properly compensate for extras past MAX_CONF_{DIR,FILE}_LEN
 	strncpy(conf_file, DEFAULT_CONF_DIR, MAX_CONF_DIR_LEN);
 	strcat(conf_file, "/");
 	strncat(conf_file, __FILE__, strlen(__FILE__) - 2);
@@ -51,8 +52,11 @@ init_hw()
 				strncpy(buf, second, MSG_BUFFER);
 		}
 
-		fclose(myfile);
+		if(fclose(myfile))
+			return HW_CLOSE_FILE;
 	}
+	else
+		return HW_OPEN_FILE;
 
 	return HW_SUCCESS;
 }
