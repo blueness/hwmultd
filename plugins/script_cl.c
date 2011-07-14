@@ -86,6 +86,7 @@ act_cl(char *msg)
 
 	//TODO - What if this fails?
 	FILE *f = popen(script_instance, "r");
+	memset(buf, 0, sizeof(buf));
 	fread(buf, sizeof(char), 4096, f);
 	pclose(f);
 

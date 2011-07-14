@@ -80,6 +80,7 @@ read_hw()
 {
 	//TODO - What if this fails?
 	FILE *f = popen(script, "r");
+	memset(buf, 0, sizeof(buf));
 	fread(buf, sizeof(char), 4096, f);
 	pclose(f);
 
