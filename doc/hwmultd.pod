@@ -1,106 +1,222 @@
 =head1 NAME
 
-B<hwmultd> - multicast hardware information, or respond to mutlicasted hardware
-information
+B<hwmultd> - multicast hardware information, or respond to mutlicasted
+hardware information
 
 =head1 SYNOPSIS
 
-hwmultd [-h] [-v] [-c F<config> ]
+B<hwmultd> [-h] [-v] [-c F<config> ]
 
 =head1 DESCRIPTION
 
-B<hwmultd> operates in one of two modes (or both).  As a server, B<hwmultd>
-monitors hardware information and multicasts it so that other computers in
-the same multicast group can act accordingly.  As a client, B<hwmultd>
-listens to multicasted hardware information and acts accordingly.  For
-example, one box (the server) can multicast entropy while others listening
-(the clients) can add it to their own entropy pools.
+B<hwmultd> operates in one of two modes (or both).  As a server,
+B<hwmultd> monitors hardware information and multicasts it so that
+other computers in the same multicast group can act accordingly.  As a
+client, B<hwmultd> listens to multicasted hardware information and acts
+accordingly.  For example, one box (the server) can multicast entropy
+while others listening (the clients) can add it to their own entropy
+pools.
 
 =head1 OPTIONS
 
-B<no option>
+=over
 
-	This is the normal mode of operation.  hmultd reads its configuration
-	file and forks into the background as a daemon
+=item B<no option>
 
-B<-c config>
+This is the normal mode of operation.  B<hmultd> reads its
+configuration file, drops root privileges, opens its log and
+pid file and forks into the background as a daemon.
 
-	Use an alternate configuration file instead of
-	/etc/hwmultd/hwmultd.conf, but otherwise operate as if no option
-	were given.
+=item B<-c config>
 
-B<-h>
+Use an alternate configuration file instead of the default
+F</etc/hwmultd/hwmultd.conf>.
 
-	Print out information about command line options and exit.
+=item B<-h>
 
-B<-v>
+Do not fork into the background.  Print out information about
+command line options and exit.
 
-	Print out version information and exit.
+=item B<-v>
+
+Do not fork into the background.  Print out version information
+and exit.
+
+=back
 
 =head1 SIGNALS
 
-Todo
+B<hwmultd> responds to three signals F<SIGTERM>, F<SIGHUP> and
+F<SIGUSR1>.  All others blockable signals are masked.
+
+=over
+
+=item F<SIGTERM>
+
+Exit cleanly.  Close all sockets, file descriptors and
+unlink the pid file.
+
+=item F<SIGHUP>
+
+Reread the configuration file(s) and, depending on what mode
+B<hwmultd> is running in, restart the multicast client, server
+or both.
+
+=item F<SIGUSR1>
+
+Reset the plugin hardware.  Depending on how the plugin works
+with its hardware, this signal will instruct it to close and
+reopen the hardware device.  This is useful in case the hardware
+has gotten into a bad state.
+
+=back
 
 =head1 FILES
 
+=over
 
-F</etc/hwmultd/hmultd.conf>
+=item F</etc/hwmultd/hmultd.conf>
 
-	The main daemon configuration file.
+The daemon's main configuration file.  Each line is interpreted as
+case sensitive, white space delimited, B<key> B<value> pairs.  Malformed
+lines are ignored.  Anything after an octothorpe '#' is also ignored.
+A missing B<key> B<value>'s is interpreted as "use the default value".
+
+=item F</etc/hwmultd/plugin_mode.conf>
+
+Per plugin configuration file(s).  Its format is the same as that of
+the main configuration file.  The filename I<plugin_mode.conf>
+must correspond to the filename I<plugin_molde.so> of the plugin that
+consumes it.
+
+=item F</usr/lib/hwmultd/>
+
+The directory where B<hwmultd> searches for its plugins.  Plugin
+names have the form I<plugin_mode.so> where I<plugin> is the name,
+and I<mode> is either I<hw> for server mode (ie. read hardware and
+multicast), or I<cl> for client mode (ie. read multicated information
+and act accordingly).
+
+The number of plugins is growing.  Current plugins are
+
+=over
+
+=item B<entropy_hw.so>
+
+This server plugin reads some entropy device, by default
+F</dev/urandom>, and multicasts some random data.  It is
+configured by B<entropy_hw.conf> which takes two options,
+I<Device> which specifies the device, and I<Bytes> which
+specifies the number of bytes to read per cycle --- see
+the B<Timing> option in B<MAIN CONFIGURATION FILE OPTIONS>
+below.
+
+=item B<entropy_cl.so>
+
+This client plugin accepts multicasted random data, as
+provided by B<entropy_hw.so>, and adds it to the local
+entropy pool using B<ioctl>() on the device specified by
+the B<Device> option in B<entropy_cl.conf>.  Since B<hwmultd>
+drops privileges on startup, it must be configured to run with
+sufficient privileges to execute B<ioctl>(..., RNDADDENTROPY, ...).
+Usually means root privileges --- see the B<User> option
+in B<MAIN CONFIGURATION FILE OPTIONS> below.
+
+=item B<example_hw.so>
+
+This is an example server plugin which simply multicasts
+the message set by the B<Message> option in B<example_hw.conf>.
+
+=item B<example_cl.so>
+
+xxx
+
+=item B<null_hw.so>
+
+This is the "do nothing" hardware plugin.  It simulates
+a device which always successfully (re)opens and closes,
+and returns a null string when read.
+
+=item B<null_cl.so>
+
+This is the "do nothing" client plugin.  It accepts any
+input read from the multicast and returns a null string
+as its result.  It always success (re)opens and closes.
+
+=item B<script_hw.so>
+
+xxx
+
+=item B<script_cl.so>
+
+xxx
+
+=item B<temp_hw.so>
+
+xxx
+
+=item B<time_hw.so>
+
+xxx
+
+=back
+
+=item F</etc/hwmultd/scripts/>
+
+The directory where scripts used by the I<script_hw.so> and
+I<script_cl.so> plugins are stored.
+
+=back
+
+=head2 MAIN CONFIGURATION FILE OPTIONS
 
 
-F</etc/hwmultd/plugin.conf>
+The following is a list of options recognized by the main configuration
+file, B</etc/hwmultd/hwmultd.conf>.
 
-	Per plugin configuration files.  The name must correspond to the
-	plugin.so file which uses it.
+=over
 
-=head1 MAIN CONFIGURATION FILE OPTIONS
+=item B<Debug>
 
-The daemon's main configuration file is organized as key value pairs.  Malformed
-lines not conforming are ignored.  Anything after # is also ignored.  Missing
-options are interpreted as use the default values.  The following is a list of
-valid options.
+Default 2
 
-B<Debug>
+=item B<MulticastIP>
 
-	Default 2
+Default 239.252.67.151
 
-B<MulticastIP>
+=item B<Port>
 
-	Default 239.252.67.151
+Default 8000
 
-B<Port>
+=item B<Server>
 
-	Default 8000
+0 = client mode, 1 = server mode, 2 = both Defaults to 0
 
-B<Server>
+=item B<User>
 
-	0 = client mode, 1 = server mode, 2 = both Defaults to 0
+Default hwmultd
 
-B<User>
+=item B<Timing>
 
-	Default hwmultd
+Default 1
 
-B<Timing>
+=item B<SourceIP>
 
-	Default 1
+Default 0.0.0.0
 
-B<SourceIP>
+=item B<Interface>
 
-	Default 0.0.0.0
+No default.  It defers to SourceIP if not set.
 
-B<Interface>
+=item B<HWPlugin>
 
-	No default.  It defers to SourceIP if not set.
+Default null, the do nothing hardware plugin.
 
-B<HWPlugin>
+=item B<CLPlugin>
 
-	Default null, the do nothing hardware plugin.
+Default null, the do nothing client plugin.
 
-B<CLPlugin>
-
-	Default null, the do nothing client plugin.
-
+=back
 
 =head1 BUGS
 
