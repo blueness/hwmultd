@@ -3,7 +3,9 @@
 # Make sure the hwmultd user is in /etc/shutdown.allow
 SHUTDOWN="/sbin/shutdown"
 SHUTFLAGS="-a -h"
-SHUTCANCEL="-c"
+KILL="/bin/kill"
+CAT="/bin/cat"
+PIDFILE="/var/run/shutdown.pid"
 
 TOUCH="/usr/bin/touch"
 RM="/bin/rm"
@@ -37,7 +39,7 @@ if [ $TEMPERATURE -gt $SOFT_MIN -a $TEMPERATURE -lt $SOFT_MAX ]; then
 	echo -n "Temp normal"
 	if [ -e $INPROGRESS ]; then
 		$RM $INPROGRESS
-		$SHUTDOWN $SHUTCANCEL >/dev/null 2>&1 <&- &
+		$KILL $($CAT $PIDFILE) >/dev/null 2>&1 <&- &
 	fi
 fi
 
