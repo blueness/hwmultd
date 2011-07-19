@@ -10,7 +10,7 @@
  * Network parameters
  *
  * See http://www.iana.org/assignments/multicast-addresses/multicast-addresses.xml
- * for the choice of multicast address in Site Local Scope, RFC RFC2365.
+ * for the choice of multicast address in Organization-Local Scope, RFC RFC2365.
  */
 #define DEFAULT_MULTICAST_IP "239.252.67.151"
 #define DEFAULT_PORT 8000

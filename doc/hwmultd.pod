@@ -23,7 +23,7 @@ pools.
 
 =item B<no option>
 
-This is the normal mode of operation.  B<hmultd> reads its
+This is the normal mode of operation.  B<hwmultd> reads its
 configuration file, drops root privileges, opens its log and
 pid file and forks into the background as a daemon.
 
@@ -104,10 +104,10 @@ The number of plugins is growing.  Current plugins are
 =item B<entropy_hw.so>
 
 This server plugin reads some entropy device, by default
-F</dev/urandom>, and multicasts some random data.  It is
+F</dev/urandom>, and multicasts random data.  It is
 configured by B<entropy_hw.conf> which takes two options,
-I<Device> which specifies the device, and I<Bytes> which
-specifies the number of bytes to read per cycle --- see
+B<Device> which specifies the device, and B<Bytes> which
+specifies the number of bytes to read per cycle.  See
 the B<Timing> option in B<MAIN CONFIGURATION FILE OPTIONS>
 below.
 
@@ -119,17 +119,19 @@ entropy pool using B<ioctl>() on the device specified by
 the B<Device> option in B<entropy_cl.conf>.  Since B<hwmultd>
 drops privileges on startup, it must be configured to run with
 sufficient privileges to execute B<ioctl>(..., RNDADDENTROPY, ...).
-Usually means root privileges --- see the B<User> option
+Usually means root privileges.  See the B<User> option
 in B<MAIN CONFIGURATION FILE OPTIONS> below.
 
 =item B<example_hw.so>
 
-This is an example server plugin which simply multicasts
-the message set by the B<Message> option in B<example_hw.conf>.
+This is an example server plugin which multicasts the
+message set by the B<Message> option in B<example_hw.conf>.
 
 =item B<example_cl.so>
 
-xxx
+This is an example client plugin which receives a
+multicasted message but does nothing with it.  It logs a
+string set by the B<Message> option in B<example_cl.conf>.
 
 =item B<null_hw.so>
 
@@ -139,32 +141,50 @@ and returns a null string when read.
 
 =item B<null_cl.so>
 
-This is the "do nothing" client plugin.  It accepts any
-input read from the multicast and returns a null string
-as its result.  It always success (re)opens and closes.
+This is the "do nothing" client plugin.  It receives
+a multicated message and returns a null string as its
+result.  It always successfully (re)opens and closes.
 
 =item B<script_hw.so>
 
-xxx
+This server plugin runs a script specified by the B<Script>
+option in B<script_hw.conf>.  B<hwmultd> searches for the
+script in the directory F</etc/hwmultd/scripts/>.  The
+script should query some hardware device or perform some
+other task and return a string which is multicasted.
 
 =item B<script_cl.so>
 
-xxx
+This client plugin runs a script specified by the B<Script>
+option in B<script_cl.conf>.  B<hwmultd> searches for the
+script in the directory F</etc/hwmultd/scripts/>.  Any
+received message is passed to the script as a paramter for
+processing.  Whatever string is returned by the script on
+exit is logged.
 
 =item B<temp_hw.so>
 
-xxx
+This server plugin queries a USB to serial converter device
+specified by the B<Device> option in B<temp_hw.conf>.  Typically
+these devices show up as F</dev/ttyUSB0>.  It queries the
+device using the Temperature @lert (TM) protocol and multicasts
+the temperature in Celsius.
 
 =item B<time_hw.so>
 
-xxx
+This server plugin multicasts the localtime on the server in
+human readable format, [%d/%b/%Y:%X %z].  See date(1) format
+details.
 
 =back
 
 =item F</etc/hwmultd/scripts/>
 
-The directory where scripts used by the I<script_hw.so> and
-I<script_cl.so> plugins are stored.
+The directory where scripts used by the B<script_hw.so> and
+B<script_cl.so> plugins are stored.  Currently, B<hwmultd>
+ships with several sample scripts.  In particular, shutdown.sh
+is useful as a client script in conjunction with a server running
+B<temp_hw.so>.
 
 =back
 
@@ -178,49 +198,85 @@ file, B</etc/hwmultd/hwmultd.conf>.
 
 =item B<Debug>
 
-Default 2
+The level of logging informtion.  Four levels are recognized, numbered
+0 through 3.  A Debug level of 0 is most terse, logging only B<CRITICAL>
+errors which necessarily lead to a shutdown of B<hwmultd>.  A level of 1 
+logs important B<ERROR> which do not necessarily cause a shutdown, but
+seriously hamper its function.  A level of 2 logs B<INFORMATION> which
+specifies the current state of the system.  This is the default level.
+Finally, a level of 3 is most verbose and logs details which are useful
+to B<DEBUG> the system.  Logging at a given level includes all the lower
+levels.
 
 =item B<MulticastIP>
 
-Default 239.252.67.151
+The multicast address.  This arbitrarily defaults to 239.252.67.151, but
+any address in the Organization-Local Scope, 239.0.0.0-239.255.255.255,
+will do.  See RFC2365.
 
 =item B<Port>
 
-Default 8000
+The multicast port.  This defaults to 8000.
 
 =item B<Server>
 
-0 = client mode, 1 = server mode, 2 = both Defaults to 0
+This is the mode in which B<hwmultd> will operate.  A value of 0
+indicates that B<hwmultd> will only act as a client, accepting
+multicasted data and acting accordingly.  A value of 1 indicates
+that it will act only as a server, reading hardware information
+and multicasting it.  A value of 2 means that it will act as both.
+In other words, not only will B<hwmultd> multicast its hardware
+information, but it will also pass that information internally to
+its client plugin and act accordning.  The default is 0.
 
 =item B<User>
 
-Default hwmultd
+The user as which B<hwmultd> will run after it drops privileges.
+The default user is hwmultd, but if it doesn't exist on the system,
+then B<hwmultd> will run as root.
 
 =item B<Timing>
 
-Default 1
+In server mode, the delay in seconds between subsequent reads from
+the hardware device and multicastings.  This defaults to its minimum
+possible values of 1 which may be too aggressive for some uses.
 
 =item B<SourceIP>
 
-Default 0.0.0.0
+In server mode, the source IP address for the multicast packets.
+This is a useful option on systems with two or network interfaces.
+If the multicastings are to only be directed down one subnet,
+this option can be used to select the desired interface.  This
+defaults to 0.0.0.0, which means "bind to the first available
+interface."
 
 =item B<Interface>
 
-No default.  It defers to SourceIP if not set.
+In server mode, this is an alternative to using B<SourceIP> to
+choose the network interface.  One should set either B<SourceIP>
+or B<Interface>, but if both are set, then B<SourceIP> is used.
+This option has no default value.  If it is missing, then the
+B<hwmultd> defers to using B<SourceIP>.
 
 =item B<HWPlugin>
 
-Default null, the do nothing hardware plugin.
+The server plugin to use.  If not set, it will default to
+B<null_hw.so>.
 
 =item B<CLPlugin>
 
-Default null, the do nothing client plugin.
+The client plugin to use.  If not set, it will default to
+B<null_cl.so>.
 
 =back
 
 =head1 BUGS
 
-Please report bugs at <http://opensource.dyc.edu/bugzilla3>
+Please report bugs at <http://opensource.dyc.edu/bugzilla3>.
+
+Currently there is no security.  A client can easily be fooled
+into acting on falsified multicasted information.  DO NOT USE
+ON AN INSECURE NETWORK!
 
 =head1 AUTHOR
 

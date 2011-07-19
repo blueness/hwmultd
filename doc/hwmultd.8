@@ -124,7 +124,7 @@
 .\" ========================================================================
 .\"
 .IX Title "HWMULTD 1"
-.TH HWMULTD 1 "2011-07-14" "HWMULTD(1)" "SYSTEM ADMINISTRATION COMMANDS"
+.TH HWMULTD 1 "2011-07-19" "HWMULTD(1)" "SYSTEM ADMINISTRATION COMMANDS"
 .\" For nroff, turn off justification.  Always turn off hyphenation; it makes
 .\" way too many mistakes in technical documents.
 .if n .ad l
@@ -148,7 +148,7 @@ pools.
 .IX Header "OPTIONS"
 .IP "\fBno option\fR" 4
 .IX Item "no option"
-This is the normal mode of operation.  \fBhmultd\fR reads its
+This is the normal mode of operation.  \fBhwmultd\fR reads its
 configuration file, drops root privileges, opens its log and
 pid file and forks into the background as a daemon.
 .IP "\fB\-c config\fR" 4
@@ -209,10 +209,10 @@ The number of plugins is growing.  Current plugins are
 .IP "\fBentropy_hw.so\fR" 4
 .IX Item "entropy_hw.so"
 This server plugin reads some entropy device, by default
-\&\fI/dev/urandom\fR, and multicasts some random data.  It is
+\&\fI/dev/urandom\fR, and multicasts random data.  It is
 configured by \fBentropy_hw.conf\fR which takes two options,
-\&\fIDevice\fR which specifies the device, and \fIBytes\fR which
-specifies the number of bytes to read per cycle \-\-\- see
+\&\fBDevice\fR which specifies the device, and \fBBytes\fR which
+specifies the number of bytes to read per cycle.  See
 the \fBTiming\fR option in \fB\s-1MAIN\s0 \s-1CONFIGURATION\s0 \s-1FILE\s0 \s-1OPTIONS\s0\fR
 below.
 .IP "\fBentropy_cl.so\fR" 4
@@ -223,15 +223,17 @@ entropy pool using \fBioctl\fR() on the device specified by
 the \fBDevice\fR option in \fBentropy_cl.conf\fR.  Since \fBhwmultd\fR
 drops privileges on startup, it must be configured to run with
 sufficient privileges to execute \fBioctl\fR(..., \s-1RNDADDENTROPY\s0, ...).
-Usually means root privileges \-\-\- see the \fBUser\fR option
+Usually means root privileges.  See the \fBUser\fR option
 in \fB\s-1MAIN\s0 \s-1CONFIGURATION\s0 \s-1FILE\s0 \s-1OPTIONS\s0\fR below.
 .IP "\fBexample_hw.so\fR" 4
 .IX Item "example_hw.so"
-This is an example server plugin which simply multicasts
-the message set by the \fBMessage\fR option in \fBexample_hw.conf\fR.
+This is an example server plugin which multicasts the
+message set by the \fBMessage\fR option in \fBexample_hw.conf\fR.
 .IP "\fBexample_cl.so\fR" 4
 .IX Item "example_cl.so"
-xxx
+This is an example client plugin which receives a
+multicasted message but does nothing with it.  It logs a
+string set by the \fBMessage\fR option in \fBexample_cl.conf\fR.
 .IP "\fBnull_hw.so\fR" 4
 .IX Item "null_hw.so"
 This is the \*(L"do nothing\*(R" hardware plugin.  It simulates
@@ -239,65 +241,119 @@ a device which always successfully (re)opens and closes,
 and returns a null string when read.
 .IP "\fBnull_cl.so\fR" 4
 .IX Item "null_cl.so"
-This is the \*(L"do nothing\*(R" client plugin.  It accepts any
-input read from the multicast and returns a null string
-as its result.  It always success (re)opens and closes.
+This is the \*(L"do nothing\*(R" client plugin.  It receives
+a multicated message and returns a null string as its
+result.  It always successfully (re)opens and closes.
 .IP "\fBscript_hw.so\fR" 4
 .IX Item "script_hw.so"
-xxx
+This server plugin runs a script specified by the \fBScript\fR
+option in \fBscript_hw.conf\fR.  \fBhwmultd\fR searches for the
+script in the directory \fI/etc/hwmultd/scripts/\fR.  The
+script should query some hardware device or perform some
+other task and return a string which is multicasted.
 .IP "\fBscript_cl.so\fR" 4
 .IX Item "script_cl.so"
-xxx
+This client plugin runs a script specified by the \fBScript\fR
+option in \fBscript_cl.conf\fR.  \fBhwmultd\fR searches for the
+script in the directory \fI/etc/hwmultd/scripts/\fR.  Any
+received message is passed to the script as a paramter for
+processing.  Whatever string is returned by the script on
+exit is logged.
 .IP "\fBtemp_hw.so\fR" 4
 .IX Item "temp_hw.so"
-xxx
+This server plugin queries a \s-1USB\s0 to serial converter device
+specified by the \fBDevice\fR option in \fBtemp_hw.conf\fR.  Typically
+these devices show up as \fI/dev/ttyUSB0\fR.  It queries the
+device using the Temperature \f(CW@lert\fR (\s-1TM\s0) protocol and multicasts
+the temperature in Celsius.
 .IP "\fBtime_hw.so\fR" 4
 .IX Item "time_hw.so"
-xxx
+This server plugin multicasts the localtime on the server in
+human readable format, [%d/%b/%Y:%X \f(CW%z\fR].  See \fIdate\fR\|(1) format
+details.
 .RE
 .RS 4
 .RE
 .IP "\fI/etc/hwmultd/scripts/\fR" 4
 .IX Item "/etc/hwmultd/scripts/"
-The directory where scripts used by the \fIscript_hw.so\fR and
-\&\fIscript_cl.so\fR plugins are stored.
+The directory where scripts used by the \fBscript_hw.so\fR and
+\&\fBscript_cl.so\fR plugins are stored.  Currently, \fBhwmultd\fR
+ships with several sample scripts.  In particular, shutdown.sh
+is useful as a client script in conjunction with a server running
+\&\fBtemp_hw.so\fR.
 .SS "\s-1MAIN\s0 \s-1CONFIGURATION\s0 \s-1FILE\s0 \s-1OPTIONS\s0"
 .IX Subsection "MAIN CONFIGURATION FILE OPTIONS"
 The following is a list of options recognized by the main configuration
 file, \fB/etc/hwmultd/hwmultd.conf\fR.
 .IP "\fBDebug\fR" 4
 .IX Item "Debug"
-Default 2
+The level of logging informtion.  Four levels are recognized, numbered
+0 through 3.  A Debug level of 0 is most terse, logging only \fB\s-1CRITICAL\s0\fR
+errors which necessarily lead to a shutdown of \fBhwmultd\fR.  A level of 1 
+logs important \fB\s-1ERROR\s0\fR which do not necessarily cause a shutdown, but
+seriously hamper its function.  A level of 2 logs \fB\s-1INFORMATION\s0\fR which
+specifies the current state of the system.  This is the default level.
+Finally, a level of 3 is most verbose and logs details which are useful
+to \fB\s-1DEBUG\s0\fR the system.  Logging at a given level includes all the lower
+levels.
 .IP "\fBMulticastIP\fR" 4
 .IX Item "MulticastIP"
-Default 239.252.67.151
+The multicast address.  This arbitrarily defaults to 239.252.67.151, but
+any address in the Organization-Local Scope, 239.0.0.0\-239.255.255.255,
+will do.  See \s-1RFC2365\s0.
 .IP "\fBPort\fR" 4
 .IX Item "Port"
-Default 8000
+The multicast port.  This defaults to 8000.
 .IP "\fBServer\fR" 4
 .IX Item "Server"
-0 = client mode, 1 = server mode, 2 = both Defaults to 0
+This is the mode in which \fBhwmultd\fR will operate.  A value of 0
+indicates that \fBhwmultd\fR will only act as a client, accepting
+multicasted data and acting accordingly.  A value of 1 indicates
+that it will act only as a server, reading hardware information
+and multicasting it.  A value of 2 means that it will act as both.
+In other words, not only will \fBhwmultd\fR multicast its hardware
+information, but it will also pass that information internally to
+its client plugin and act accordning.  The default is 0.
 .IP "\fBUser\fR" 4
 .IX Item "User"
-Default hwmultd
+The user as which \fBhwmultd\fR will run after it drops privileges.
+The default user is hwmultd, but if it doesn't exist on the system,
+then \fBhwmultd\fR will run as root.
 .IP "\fBTiming\fR" 4
 .IX Item "Timing"
-Default 1
+In server mode, the delay in seconds between subsequent reads from
+the hardware device and multicastings.  This defaults to its minimum
+possible values of 1 which may be too aggressive for some uses.
 .IP "\fBSourceIP\fR" 4
 .IX Item "SourceIP"
-Default 0.0.0.0
+In server mode, the source \s-1IP\s0 address for the multicast packets.
+This is a useful option on systems with two or network interfaces.
+If the multicastings are to only be directed down one subnet,
+this option can be used to select the desired interface.  This
+defaults to 0.0.0.0, which means \*(L"bind to the first available
+interface.\*(R"
 .IP "\fBInterface\fR" 4
 .IX Item "Interface"
-No default.  It defers to SourceIP if not set.
+In server mode, this is an alternative to using \fBSourceIP\fR to
+choose the network interface.  One should set either \fBSourceIP\fR
+or \fBInterface\fR, but if both are set, then \fBSourceIP\fR is used.
+This option has no default value.  If it is missing, then the
+\&\fBhwmultd\fR defers to using \fBSourceIP\fR.
 .IP "\fBHWPlugin\fR" 4
 .IX Item "HWPlugin"
-Default null, the do nothing hardware plugin.
+The server plugin to use.  If not set, it will default to
+\&\fBnull_hw.so\fR.
 .IP "\fBCLPlugin\fR" 4
 .IX Item "CLPlugin"
-Default null, the do nothing client plugin.
+The client plugin to use.  If not set, it will default to
+\&\fBnull_cl.so\fR.
 .SH "BUGS"
 .IX Header "BUGS"
-Please report bugs at <http://opensource.dyc.edu/bugzilla3>
+Please report bugs at <http://opensource.dyc.edu/bugzilla3>.
+.PP
+Currently there is no security.  A client can easily be fooled
+into acting on falsified multicasted information.  \s-1DO\s0 \s-1NOT\s0 \s-1USE\s0
+\&\s-1ON\s0 \s-1AN\s0 \s-1INSECURE\s0 \s-1NETWORK\s0!
 .SH "AUTHOR"
 .IX Header "AUTHOR"
 Anthony G. Basile <basile at opensource dot dyc dot edu>
