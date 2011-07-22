@@ -2,7 +2,7 @@
 # Process this file with autoconf to produce a configure script.
 
 AC_PREREQ([2.65])
-AC_INIT([hwmultd],[0.1],[http://opensource.dyc.edu/bugzilla3])
+AC_INIT([hwmultd],[0.2],[http://opensource.dyc.edu/bugzilla3])
 
 AM_INIT_AUTOMAKE([1.11 foreign])
 AM_SILENT_RULES([yes])
