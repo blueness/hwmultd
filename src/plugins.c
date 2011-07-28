@@ -38,13 +38,16 @@ load_plugins()
 
 	write_log(DBUG, __FILE__, "loading plugins");
 
+	// Load hardware plugin if we are in server mode or both
 	if(server_mode == SERVER_MODE || server_mode == BOTH_MODE)
 	{
+		// Construct plugin name: /path/to/plugin + /myplugin + _hw.so
 		strcpy(plugin_name, DEFAULT_PLUGIN_PREFIX);
 		strcat(plugin_name, "/");
 		strncat(plugin_name, hw_plugin_name, MAX_PLUGIN_LEN);
 		strcat(plugin_name, "_hw.so");
-	
+
+		// Dlopen the hardware plugin lazily
 		if( !(handle_hw = dlopen(plugin_name, RTLD_LAZY)) )
 		{
 			write_log(ERRO, __FILE__, "failed dlopen hw plugin %s -> %s", hw_plugin_name, plugin_name);
@@ -54,11 +57,16 @@ load_plugins()
 			write_log(DBUG, __FILE__, "dlopened hw plugin %s -> %s", hw_plugin_name, plugin_name);
 
 
+		// Assign the plugin symbols to our symbols
+		// For simplicity, try to avoid changing symbol name
 		init_hw = dlsym(handle_hw, "init_hw");
 		reset_hw = dlsym(handle_hw, "reset_hw");
 		read_hw = dlsym(handle_hw, "read_hw");
 		close_hw = dlsym(handle_hw, "close_hw");
 
+		// We expect all four to get assigned.
+		// If any are supposed to "do nothing",
+		// then the plugin must provide a "do nothing" function
 		if( init_hw == NULL || reset_hw == NULL || read_hw == NULL || close_hw == NULL )
 		{
 			write_log(ERRO, __FILE__, "failed to register hw funcs init_hw || reset_hw || read_hw || close_hw");
@@ -70,11 +78,13 @@ load_plugins()
 
 	if(server_mode == CLIENT_MODE || server_mode == BOTH_MODE)
 	{
+		// Construct plugin name: /path/to/plugin + /myplugin + _hw.so
 		strcpy(plugin_name, DEFAULT_PLUGIN_PREFIX);
 		strcat(plugin_name, "/");
 		strncat(plugin_name, cl_plugin_name, MAX_PLUGIN_LEN);
 		strcat(plugin_name, "_cl.so");
 
+		// Dlopen the client plugin lazily
 		if( !(handle_cl = dlopen(plugin_name, RTLD_LAZY)) )
 		{
 			write_log(ERRO, __FILE__, "failed dlopen cl plugin %s -> %s", cl_plugin_name, plugin_name);
@@ -83,11 +93,16 @@ load_plugins()
 		else
 			write_log(DBUG, __FILE__, "dlopened cl plugin %s -> %s", cl_plugin_name, plugin_name);
 
+		// Assign the plugin symbols to our symbols
+		// For simplicity, try to avoid changing symbol name
 		init_cl = dlsym(handle_cl, "init_cl");
 		reset_cl = dlsym(handle_cl, "reset_cl");
 		act_cl = dlsym(handle_cl, "act_cl");
 		close_cl = dlsym(handle_cl, "close_cl");
 
+		// We expect all four to get assigned
+		// If any are supposed to "do nothing",
+		// then the plugin must provide a "do nothing" function
 		if( init_cl == NULL || reset_cl == NULL || act_cl == NULL || close_cl == NULL )
 		{
 			write_log(ERRO, __FILE__, "failed to register cl funcs init_cl || reset_cl || act_cl || close_cl");
@@ -104,6 +119,7 @@ load_plugins()
 int
 reset_plugins()
 {
+	// Reset the hardware if we are in server mode or both
 	if(server_mode == SERVER_MODE || server_mode == BOTH_MODE)
 	{
 		if( !reset_hw )
@@ -115,6 +131,7 @@ reset_plugins()
 			write_log(DBUG, __FILE__, "server hardware reset");
 	}
 
+	// Reset the cleint if we are in client mode or both
 	if(server_mode == CLIENT_MODE || server_mode == BOTH_MODE)
 	{
 		if( !reset_cl )
@@ -133,6 +150,7 @@ reset_plugins()
 int
 unload_plugins()
 {
+	// Unload hardware plugin if we are in server mode or both
 	if(server_mode == SERVER_MODE || server_mode == BOTH_MODE)
 	{
 		if(handle_hw)
@@ -149,6 +167,7 @@ unload_plugins()
 			write_log(DBUG, __FILE__, "no hw plugin to unload");
 	}
 
+	// Unload client plugin if we are in client mode or both
 	if(server_mode == CLIENT_MODE || server_mode == BOTH_MODE)
 	{
 		if(handle_cl)

@@ -16,15 +16,21 @@
 	along with Foobar.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-
+// These are wrapper functions for loading either
+// hardware (ie server) plugins, or client plugins
 int load_plugins();
 int unload_plugins();
 
+// These are the function names (symbols) as we know them,
+// of the functions provided by the plugins
+
+// For the hardware (ie server) plugin
 int (*init_hw)();
 int (*reset_hw)();
 char *(*read_hw)();
 int (*close_hw)();
 
+// For the client plugin
 int (*init_cl)();
 int (*reset_cl)();
 char *(*act_cl)(char *);
