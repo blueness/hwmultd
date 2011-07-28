@@ -36,7 +36,7 @@ start_service()
 	int ret ;
 
 	// If we run in either server mode or both, initialize the server hardware
-	if(server_mode == SERVER_MODE || server_mode == BOTH_MODE)
+	if(operation_mode == SERVER_MODE || operation_mode == BOTH_MODE)
 	{
 		if((ret = (*init_hw)()) != 1)
 		{
@@ -48,7 +48,7 @@ start_service()
 	}
 
 	// If we run in either client mode or both, initialize the client hardware
-	if(server_mode == CLIENT_MODE || server_mode == BOTH_MODE)
+	if(operation_mode == CLIENT_MODE || operation_mode == BOTH_MODE)
 	{
 		if((ret = (*init_cl)()) != 1)
 		{
@@ -61,7 +61,7 @@ start_service()
 
 	// The hwmultd server is a multicast client, which initiates net communication
 	// The hwmultd client is a multicast server, which responds to received net communication
-	if(server_mode == SERVER_MODE || server_mode == BOTH_MODE)
+	if(operation_mode == SERVER_MODE || operation_mode == BOTH_MODE)
 	{
 		if( !mclient_start() )
 		{
@@ -74,7 +74,7 @@ start_service()
 
 	// Only start multicast server in pure client mode
 	// If we are in both mode, our client will just "listen" internally
-	if(server_mode == CLIENT_MODE)
+	if(operation_mode == CLIENT_MODE)
 	{
 		if( !mserver_start() )
 		{
@@ -106,7 +106,7 @@ do_service()
 
 		// If we are running in server mode or both, we need to
 		// read some value out of the hardware and multicast it out
-		if(server_mode == SERVER_MODE || server_mode == BOTH_MODE)
+		if(operation_mode == SERVER_MODE || operation_mode == BOTH_MODE)
 		{
 			msg = read_hw();
 			if( !snd_mcast_msg(msg) )
@@ -115,11 +115,11 @@ do_service()
 
 		// If we are running in client mode or both, we need to
 		// receive a message and then act on it
-		if (server_mode == CLIENT_MODE || server_mode == BOTH_MODE)
+		if (operation_mode == CLIENT_MODE || operation_mode == BOTH_MODE)
 		{
 			// We should only listen for multicasted messages in pure client mode
 			// In both mode, we already have the msg we are to act on
-			if(server_mode == CLIENT_MODE)
+			if(operation_mode == CLIENT_MODE)
 				if( !(msg = rcv_mcast_msg()) )
 					return 0;
 
@@ -147,7 +147,7 @@ stop_service()
 	int ret ;
 
 	// If we are running in server mode or both, we need to close down our server hardware
-	if(server_mode == SERVER_MODE || server_mode == BOTH_MODE)
+	if(operation_mode == SERVER_MODE || operation_mode == BOTH_MODE)
 	{
 		if((ret = (*close_hw)()) != 1)
 		{
@@ -159,7 +159,7 @@ stop_service()
 	}
 
 	// If we are running in client mode or both, we need to close down our client hardware
-	if (server_mode == CLIENT_MODE || server_mode == BOTH_MODE)
+	if (operation_mode == CLIENT_MODE || operation_mode == BOTH_MODE)
 	{
 		if((ret = (*close_cl)()) != 1)
 		{
@@ -171,7 +171,7 @@ stop_service()
 	}
 
 	// If we are running in server mode or both, we need to shutdown the multicast client
-	if(server_mode == SERVER_MODE || server_mode == BOTH_MODE)
+	if(operation_mode == SERVER_MODE || operation_mode == BOTH_MODE)
 	{
 		if( !mclient_stop() )
 		{
@@ -183,7 +183,7 @@ stop_service()
 	}
 
 	// Only in pure client mode do we need to shutdown our multicast server
-	if (server_mode == CLIENT_MODE)
+	if (operation_mode == CLIENT_MODE)
 	{
 		if( !mserver_stop() )
 		{

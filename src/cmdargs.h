@@ -74,7 +74,7 @@ char interface_name[MAX_IF_LEN];
 #define DEFAULT_SERVER_MODE 0
 
 // GLOBAL VALUE: What operation mode are we running in?
-int server_mode;
+int operation_mode;
 
 
 

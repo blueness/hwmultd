@@ -86,14 +86,14 @@ sanity_checks()
 		write_log(INFO, __FILE__, "Port         = %d", port);
 
 	// Is the operation mode a legal value?
-	if((server_mode != SERVER_MODE ) && (server_mode != CLIENT_MODE) && (server_mode != BOTH_MODE))
+	if((operation_mode != SERVER_MODE ) && (operation_mode != CLIENT_MODE) && (operation_mode != BOTH_MODE))
 	{
 		write_log(ERRO, __FILE__, "bad server mode %d.  Defaulting to %d",
-			server_mode, DEFAULT_SERVER_MODE);
-		server_mode = DEFAULT_SERVER_MODE;
+			operation_mode, DEFAULT_SERVER_MODE);
+		operation_mode = DEFAULT_SERVER_MODE;
 	}
 	else
-		write_log(INFO, __FILE__, "Server Mode  = %d", server_mode);
+		write_log(INFO, __FILE__, "Server Mode  = %d", operation_mode);
 
 	// Is the supplied username a legal user on the system?
 	if( !(pwd = getpwnam(user_name)) )
@@ -198,7 +198,7 @@ parse_cfg_file()
 	// Start with default values and let config file override
 	strncpy(multicast_ip, DEFAULT_MULTICAST_IP, MAX_IP_LEN);
 	port = DEFAULT_PORT;
-	server_mode = DEFAULT_SERVER_MODE;
+	operation_mode = DEFAULT_SERVER_MODE;
 	strncpy(user_name, DEFAULT_USERNAME, UT_NAMESIZE);
 	timing = DEFAULT_TIMING;
 	strncpy(interface_ip, DEFAULT_INTERFACE_IP, MAX_IP_LEN);
@@ -210,7 +210,7 @@ parse_cfg_file()
 	strncpy(multicast_ip, DEFAULT_MULTICAST_IP, MAX_IP_LEN);
 	port          = DEFAULT_PORT;
 	log_level     = DEFAULT_LOG_LEVEL;
-	server_mode   = DEFAULT_SERVER_MODE ;
+	operation_mode   = DEFAULT_SERVER_MODE ;
 
 	// Open the config file for reading
 	write_log(INFO, __FILE__, "Looking for config file %s", conf_file);
@@ -252,7 +252,7 @@ parse_cfg_file()
 			if( !strcmp(first,"Server") )
 				if(sscanf(second, "%d", &selection) == 1)
 					if( selection == SERVER_MODE || selection == CLIENT_MODE || selection == BOTH_MODE )
-						server_mode = selection;
+						operation_mode = selection;
 
 			if( !strcmp(first,"User") )
 				strncpy(user_name, second, UT_NAMESIZE);

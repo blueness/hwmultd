@@ -39,7 +39,7 @@ load_plugins()
 	write_log(DBUG, __FILE__, "loading plugins");
 
 	// Load hardware plugin if we are in server mode or both
-	if(server_mode == SERVER_MODE || server_mode == BOTH_MODE)
+	if(operation_mode == SERVER_MODE || operation_mode == BOTH_MODE)
 	{
 		// Construct plugin name: /path/to/plugin + /myplugin + _hw.so
 		strcpy(plugin_name, DEFAULT_PLUGIN_PREFIX);
@@ -76,7 +76,7 @@ load_plugins()
 			write_log(DBUG, __FILE__, "registered hw funcs init_hw && reset_hw && read_hw && close_hw");
 	}
 
-	if(server_mode == CLIENT_MODE || server_mode == BOTH_MODE)
+	if(operation_mode == CLIENT_MODE || operation_mode == BOTH_MODE)
 	{
 		// Construct plugin name: /path/to/plugin + /myplugin + _hw.so
 		strcpy(plugin_name, DEFAULT_PLUGIN_PREFIX);
@@ -120,7 +120,7 @@ int
 reset_plugins()
 {
 	// Reset the hardware if we are in server mode or both
-	if(server_mode == SERVER_MODE || server_mode == BOTH_MODE)
+	if(operation_mode == SERVER_MODE || operation_mode == BOTH_MODE)
 	{
 		if( !reset_hw )
 		{
@@ -132,7 +132,7 @@ reset_plugins()
 	}
 
 	// Reset the cleint if we are in client mode or both
-	if(server_mode == CLIENT_MODE || server_mode == BOTH_MODE)
+	if(operation_mode == CLIENT_MODE || operation_mode == BOTH_MODE)
 	{
 		if( !reset_cl )
 		{
@@ -151,7 +151,7 @@ int
 unload_plugins()
 {
 	// Unload hardware plugin if we are in server mode or both
-	if(server_mode == SERVER_MODE || server_mode == BOTH_MODE)
+	if(operation_mode == SERVER_MODE || operation_mode == BOTH_MODE)
 	{
 		if(handle_hw)
 		{
@@ -168,7 +168,7 @@ unload_plugins()
 	}
 
 	// Unload client plugin if we are in client mode or both
-	if(server_mode == CLIENT_MODE || server_mode == BOTH_MODE)
+	if(operation_mode == CLIENT_MODE || operation_mode == BOTH_MODE)
 	{
 		if(handle_cl)
 		{
