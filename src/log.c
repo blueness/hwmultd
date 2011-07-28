@@ -37,8 +37,11 @@ FILE *log_stream;
 int
 open_log()
 {
+	// We may not know our log level, but we need one, so default
 	log_level = EARLY_LOG_LEVEL;
 
+	// Open the log file, which may already exit, for writing
+	// Append, do not truncate
 	if( !(log_stream = fopen(LOG_FILE, "a+")) )
 		return 0;
 
@@ -50,6 +53,7 @@ open_log()
 int
 write_log(int level, const char *code, const char *fmt,...)
 {
+	// TODO - level_name should probably go into the log.h
 	va_list ap;
 	const char *level_name[] = { "CRIT", "ERRO", "INFO", "DBUG" } ;
 
@@ -58,9 +62,11 @@ write_log(int level, const char *code, const char *fmt,...)
 	char tmstr[TIME_BUFFER];
 	char tmstp[TIME_BUFFER];
 
+	// Are we being asked to log beyond our log level?  If so, log nothing
 	if(log_level < level)
 		return 0;
 
+	// Prepare time stamp
 	t = time(NULL);
 	tmp = localtime(&t);
 
@@ -75,15 +81,21 @@ write_log(int level, const char *code, const char *fmt,...)
 	strcat( tmstp, " " ) ;
 	strcat( tmstp, level_name[ level ] ) ;
 
+	// Write the timestamp + the source code file to the log
 	fprintf(log_stream, "%s: ", tmstp);
 	fprintf(log_stream, "%s: ", code );
 
+	// Write the variadic message parameters, formatted according to fmt
 	va_start(ap, fmt);
 	vfprintf(log_stream, fmt, ap);
 	va_end(ap);
 
+	// We need to guarantee that each log line is new line terminated
+	// otherwise the log becomes a mess.  Also, we don't want to put
+	// "\n" in ever write_log throughout the code
 	fprintf(log_stream, "\n");
 
+	// We want to see the log line written immediately, don't wait for the OS
 	if(fflush(log_stream) != 0)
 		return 0;
 

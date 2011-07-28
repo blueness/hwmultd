@@ -20,18 +20,26 @@
 /*
  * Log levels
  *
- * ERRO and CRIT are reserved for show stoppers.
+ * ERRO and CRIT are reserved for show stoppers
  * ERRO is logged at a deeper level and in more detail than CRIT
- * INFO is for normal operations.
- * DBUG is to follow step-by-step the operation of the daemon.
+ * INFO is for normal operations
+ * DBUG is to follow step-by-step the operation of the daemon
  */
 #define DBUG 3
 #define INFO 2
 #define ERRO 1
 #define CRIT 0
 
+// TODO - This should be renamed ot DEFAULT_LOG_FILE and be
+// TODO - made configurable at compile time with a -D
+// The name of the log file
 #define LOG_FILE "/var/log/hwmultd.log"
 
+// If the log file doesn't exist, create it.  If it does, open for appending
 int open_log();
+
+// The variadic function for writing one log line.  Do not supply your own "\n"
 int write_log(int, const char *, const char *,...);
+
+// Close the log file
 int close_log();
