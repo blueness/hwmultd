@@ -173,6 +173,9 @@ main( int argc, char *argv[] )
 		// Do the service as long as continue_little_loop=1
 		// Else we fall out of the loop, or clean_exit
 		// This is signal driven
+
+		// TODO - we should catch the return value from service.c
+		// TODO - we should add error logging
 		do_service();
 
 		// Stop the daemon service

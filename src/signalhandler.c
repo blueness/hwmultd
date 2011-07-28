@@ -31,7 +31,6 @@
 #include <unistd.h>
 
 
-
 void
 clean_exit()
 {
@@ -42,6 +41,7 @@ clean_exit()
 }
 
 
+// On SIGTERM, log it and cleanly exit
 void
 handle_term()
 {
@@ -50,6 +50,7 @@ handle_term()
 }
 
 
+// On SIGHUP, fall out of the little loop and continue the big loop
 void
 handle_hup()
 {
@@ -58,6 +59,7 @@ handle_hup()
 }
 
 
+// On SIGUSR1, reset the hardware, server or client
 void
 handle_usr1()
 {
@@ -78,14 +80,14 @@ sighandler()
 	struct sigaction sa;
 	sigset_t block_set;
 
-	// mask all signals except for those we pay attention to
+	// Mask all signals except for those we pay attention to
 	sigfillset(&block_set);
 	sigdelset(&block_set, SIGTERM);
 	sigdelset(&block_set, SIGHUP);
 	sigdelset(&block_set, SIGUSR1);
 	sigprocmask(SIG_BLOCK, &block_set, NULL);
 
-	//SIGTERM
+	// Register SIGTERM
 	memset(&sa, 0, sizeof(struct sigaction));
 
 	sigemptyset(&sa.sa_mask);
@@ -104,7 +106,7 @@ sighandler()
 		write_log(DBUG, __FILE__, "registered SIGTERM");
 
 
-	//SIGHUP
+	// Register SIGHUP
 	memset(&sa, 0, sizeof(struct sigaction));
 
 	sigemptyset(&sa.sa_mask);
@@ -122,7 +124,7 @@ sighandler()
 	else
 		write_log(DBUG, __FILE__, "registered SIGHUP");
 
-	//SIGUSR1
+	// Register SIGUSR1
 	memset(&sa, 0, sizeof(struct sigaction));
 
 	sigemptyset(&sa.sa_mask);

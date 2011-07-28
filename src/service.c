@@ -109,11 +109,12 @@ do_service()
 
 		if (server_mode == CLIENT_MODE || server_mode == BOTH_MODE)
 		{
-			//Only in pure client mode do we listen for the multicasted info
+			// We should only listen for multicasted messages in pure client mode
 			if(server_mode == CLIENT_MODE)
 				if( !(msg = rcv_mcast_msg()) )
 					return 0;
 
+			// TODO - we should not call clean_exit here but return 0
 			if( !(rmsg = (*act_cl)(msg)) )
 			{
 				write_log(CRIT, __FILE__, "client action failed");

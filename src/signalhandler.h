@@ -19,5 +19,9 @@
 
 #include <unistd.h>
 
+// Take care of closing any *external* resources, not internal
+// This should only be called from hwmultd.c or sighandler.c
 void clean_exit();
+
+// Register the signals
 int sighandler();
