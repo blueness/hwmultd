@@ -21,6 +21,9 @@
 
 // Take care of closing any *external* resources, not internal
 // This should only be called from hwmultd.c or sighandler.c
+// Any errors in lower levels which need a clean exit, should
+// return error codes which propagate up to either hwmultd.c
+// or sighandler.c which will deal with exiting cleanly.
 void clean_exit();
 
 // Register the signals

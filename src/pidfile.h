@@ -22,6 +22,11 @@
 #define PID_DIR  "/var/run/hwmultd"
 #define PID_FILE "/var/run/hwmultd/hwmultd.pid"
 
+// Make sure the pid directory exists and belongs to us
 int dir_pid(uid_t, gid_t);
+
+// Create the pidfile and write the PID to it
 int open_pid(int);
+
+// Remove the pidfile
 int close_pid();

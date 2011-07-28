@@ -38,13 +38,14 @@ dir_pid(uid_t uid, gid_t gid)
 	// Assume we do not need to mkdir PID_DIR until proven otherwise
 	need_mkdir = 0;
 
+	// Is there anything at PID_DIR, directory or otherwise?
 	if( !stat(PID_DIR, &buf) )
 	{
-		// something exists at PID_DIR
+		// Is the something at PID_DIR a directory?
 		if(!S_ISDIR(buf.st_mode))
 		{
-			// its a file/symlink/device/fifo/socket
-			// unlink it and we'll need to mkdir PID_DIR
+			// No it isn't, but this name belongs to us!
+			// We'll unlink it and note that we need to mkdir PID_DIR
 			need_mkdir = 1;
 
 			if( unlink(PID_DIR) )
@@ -56,15 +57,17 @@ dir_pid(uid_t uid, gid_t gid)
 				write_log(DBUG, __FILE__, "unlinked non-directory at %s", PID_DIR);
 		}
 		else
-			// it is a directory
+			// The directory is already there, so there is nothing to be done
 			write_log(DBUG, __FILE__, "pid file directory already exists: %s", PID_DIR);
 	}
 	else
-		// nothing exists at PID_DIR
+		// There is nothing at PID_DIR, so we note that we need to mkdir PID_DIR
 		need_mkdir = 1 ;
 
+	// Do we need to make the directory?
 	if( need_mkdir )
 	{
+		// If so, make it
 		if( mkdir(PID_DIR, 0755) )
 		{
 			write_log(ERRO, __FILE__, "make pid dir failed: %s", PID_DIR);
@@ -74,6 +77,7 @@ dir_pid(uid_t uid, gid_t gid)
 			write_log(DBUG, __FILE__, "made pid dir: %s", PID_DIR);
 	}
 
+	// Whether we just made the directory or it was already there, let's make sure it belongs to us
 	if( chown(PID_DIR, uid, gid) )
 	{
 		write_log(ERRO, __FILE__, "chown %d %d pid dir failed: %s", (int)uid, (int)gid, PID_DIR);
@@ -100,8 +104,11 @@ open_pid(int pid)
 	else
 		write_log(DBUG, __FILE__, "opened pid file: %s", PID_FILE);
 
+	// Write your PID
+	// TODO - should I check if this fails?  Unlikely but possible
 	fprintf(fd, "%d\n", pid);
 
+	// We're done for now so close the file
 	if( fclose(fd) )
 	{
 		write_log(ERRO, __FILE__, "close pid file failed: %s", PID_FILE);
@@ -117,6 +124,7 @@ open_pid(int pid)
 int
 close_pid()
 {
+	// The daemon is exiting, so unlink the pidfile
 	if( unlink(PID_FILE) )
 	{
 		write_log(ERRO, __FILE__, "unlink pid file failed: %s", PID_FILE);
