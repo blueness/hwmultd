@@ -35,8 +35,13 @@
 
 
 
+// The hardware device which is the source of random data
 #define RNDDEVICE "/dev/random"
+
+// Maximum number of bytes to read per TIMING cycle
 #define MAX_NBYTES 32
+
+// Microsecond of delay when resetting the device
 #define DELAY 1000
 
 int fd;
@@ -54,14 +59,18 @@ init_cl()
 	char dev[CONF_LINE_BUFFER];
 	int i;
 
+	// Allocate a buffer for returning a message from act_cl()
 	if( !(buf = (char *)malloc(MSG_BUFFER*sizeof(char))) )
 		return CL_MALLOC;
 
+	// Allocate a buffer for hex digit to random bytes conversion
 	if( !(hex = (char *)malloc(MSG_BUFFER*sizeof(char))) )
 		return CL_MALLOC;
 
+	// The actual size of our rand_pool_info <= size of pointer + max bytes of random data
 	size_random_pool = sizeof(struct rand_pool_info *) + MAX_NBYTES*sizeof(uint8_t) ;
 
+	// Allocate a buffer for the rand_pool_info
 	if( !(random_pool = (struct rand_pool_info *)malloc(size_random_pool)) )
 		return CL_MALLOC;
 
@@ -73,10 +82,13 @@ init_cl()
 
 	strcpy(dev, RNDDEVICE);
 
+	// Open the plugin config file for reading
 	if(myfile = fopen(conf_file, "r"))
 	{
+		// Read one line at a time
 		while(fgets(conf_line, CONF_LINE_BUFFER, myfile))
 		{
+			// Don't parse anything past #, so we'll just zero it
 			for(i = 0; i < strlen(conf_line); i++)
 				if(conf_line[i] == '#')
 				{
@@ -84,29 +96,36 @@ init_cl()
 					break;
 				}
 
+			// Read the key-value pairs
 			if(sscanf(conf_line, "%s %s", first, second ) != 2)
 				continue;
 
+			// The only recognize key is Device
 			if( !strcmp(first, "Device") )
 				strncpy(dev, second, CONF_LINE_BUFFER);
 		}
 
+		// We're done, so close the file
 		if(fclose(myfile))
 			return CL_CLOSE_FILE;
 	}
 	else
 		return CL_OPEN_FILE;
 
+	// Open the hardware device for non-block writing
 	if((fd = open( dev, O_WRONLY | O_NONBLOCK | O_NOCTTY )) < 0)
 		return CL_OPEN_DEV;
 
 	return CL_SUCCESS;
 }
 
+
 int
 reset_cl()
 {
 	int ret;
+
+	// Wait DELAY, close, wait DELAY and reopen
 
 	usleep(DELAY);
 	if((ret = close_cl()) != CL_SUCCESS)
@@ -119,6 +138,8 @@ reset_cl()
 	return CL_SUCCESS;
 }
 
+
+// Convert hex digits to raw bytes
 void
 hex_decode(uint32_t *data, int rbytes)
 {
@@ -142,6 +163,7 @@ hex_decode(uint32_t *data, int rbytes)
 	}
 }
 
+
 char *
 act_cl(char *msg)
 {
@@ -150,23 +172,30 @@ act_cl(char *msg)
 	uint32_t data[MAX_NBYTES];
 	char tmp[8];
 
+	// Zero the allocated buffers
 	memset(buf, 0, MSG_BUFFER*sizeof(char));
 	memset(hex, 0, MSG_BUFFER*sizeof(char));
 	memset(random_pool, 0, size_random_pool);
 
+	// The received should be 
+	//    1) number of bytes
+	//    2) a string of hex digits
 	sscanf(msg,"%u %s", &rbytes, hex) ;
 	hex_decode(data, rbytes);
 
+	// Pack the random_pool to write to the random number device
 	random_pool->buf_size = rbytes;
 	random_pool->entropy_count = rbytes * 8;
 	memcpy(random_pool->buf, data, rbytes);
 
+	// Add the entropy to the device
 	if(ioctl(fd, RNDADDENTROPY, random_pool) == -1)
 	{
 		sprintf(buf, "RNDADDENTROPY failed: %d", errno);
 		return buf;
 	}
 
+	// Return the string of hex digits for logging
 	for(i = 0; i < rbytes ; i++)
 	{
 		sprintf(tmp, " %u", data[i]);
@@ -179,9 +208,12 @@ act_cl(char *msg)
 int
 close_cl()
 {
+	// Free the allocated buffers
 	free(random_pool);
 	free(hex);
 	free(buf);
+
+	// Close the hardware device
 	if(close(fd))
 		return CL_CLOSE_DEV;
 	else

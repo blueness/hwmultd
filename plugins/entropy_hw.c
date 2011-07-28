@@ -32,9 +32,13 @@
 #include <unistd.h>
 
 
-
+// Maximum number of bytes to read per TIMING cycle
 #define MAX_NBYTES 32
+
+// The default number of bytes to read, if none is given in config file
 #define DEFAULT_NBYTES 4
+
+// Microsecond of delay when resetting the device
 #define DELAY 1000
 
 int fd ;
@@ -50,12 +54,15 @@ init_hw()
 	char dev[CONF_LINE_BUFFER];
 	int i, tmp_int;
 
+	// Allocate a buffer for returning a message from act_cl()
 	if( !(buf = (char *)malloc(MSG_BUFFER*sizeof(char))) )
 		return HW_MALLOC;
 
+	// Allocate a buffer for random bytes to hex digit conversion
 	if( !(hex = (char *)malloc(MSG_BUFFER*sizeof(char))) )
 		return HW_MALLOC;
 
+	// Zero the message buffer
 	memset(buf, 0, MSG_BUFFER*sizeof(char));
 
 	//TODO - properly compensate for extras past MAX_CONF_{DIR,FILE}_LEN
@@ -67,11 +74,13 @@ init_hw()
 	strcpy(dev, "/dev/urandom");
 	nbytes = DEFAULT_NBYTES;
 
+	// Open the plugin config file for reading
 	if(myfile = fopen(conf_file, "r"))
 	{
+		// Read one line at a time
 		while(fgets(conf_line, CONF_LINE_BUFFER, myfile))
 		{
-
+			// Don't parse anything past #, so we'll just zero it
 			for(i = 0; i < strlen(conf_line); i++)
 				if(conf_line[i] == '#')
 				{
@@ -79,8 +88,13 @@ init_hw()
 					break;
 				}
 
+			// Read the key-value pairs
 			if(sscanf(conf_line,"%s %s", first, second ) != 2)
 				continue;
+
+			// The recognized keys is
+			//    Device = the hardware device source of random data
+			//    Bytes = number of bytes to read from the device per TIMING cycle
 
 			if( !strcmp(first, "Device") )
 				strncpy(dev, second, CONF_LINE_BUFFER);
@@ -99,22 +113,27 @@ init_hw()
 			}
 		}
 
+		// We're done, so close the file
 		if(fclose(myfile))
 			return HW_CLOSE_FILE;
 	}
 	else
 		return HW_OPEN_FILE;
 
+	// Open the hardware device for non-block reading
 	if((fd = open( dev, O_RDONLY | O_NONBLOCK | O_NOCTTY )) < 0)
 		return HW_OPEN_DEV;
 
 	return HW_SUCCESS;
 }
 
+
 int
 reset_hw()
 {
 	int ret;
+
+	// Wait DELAY, close, wait DELAY and reopen
 
 	usleep(DELAY);
 	if((ret = close_hw()) != HW_SUCCESS)
@@ -127,6 +146,8 @@ reset_hw()
 	return HW_SUCCESS;
 }
 
+
+// Convert raw bytes to hex digits
 void
 hex_encode(uint8_t *data, int rbytes)
 {
@@ -149,6 +170,7 @@ hex_encode(uint8_t *data, int rbytes)
 	}
 }
 
+
 char *
 read_hw()
 {
@@ -157,6 +179,7 @@ read_hw()
 
 	memset( data, 0, MAX_NBYTES*sizeof(char) );
 
+	// Repeatedly do a non-blocking read until we get some bytes
 	rbytes = 0;
 	for(;;)
 	{
@@ -165,18 +188,24 @@ read_hw()
 			break;
 	}
 
+	// Encode these raw bytes as hex digits
 	hex_encode(data, rbytes);
 
+	// Return the string of hex digits for multicasting
 	sprintf(buf, "%u %s", rbytes, hex);
 
 	return buf;
 }
 
+
 int
 close_hw()
 {
+	// Free the allocated buffers
 	free(hex);
 	free(buf);
+
+	// Close the hardware device
 	if(close(fd))
 		return HW_CLOSE_DEV;
 	else
