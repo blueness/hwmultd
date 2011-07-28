@@ -22,12 +22,25 @@
  * for the choice of multicast address in Site Local Scope, RFC RFC2365.
  */
 
+// Maximum size of the received message
 #define MSG_BUFFER 4096
 
+
+// Prepare the listening socket and message buffer for the server
 int mserver_start();
+
+// Block until a message is received and return a pointer to that message
 char *rcv_mcast_msg();
+
+// Free the message buffer and tear down the server (listening) socket
 int mserver_stop();
 
+
+// Prepare the client socket
 int mclient_start();
-int snd_mcast_msg();
+
+// Receive a pointer to a buffer and multicast out the null terminated string
+int snd_mcast_msg(const char *);
+
+// Tear down the client (sending) socket
 int mclient_stop();
