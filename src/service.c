@@ -97,9 +97,15 @@ do_service()
 {
 	char *msg, *rmsg;
 
+	// The value of continue_little_loop is signal driven
 	while(continue_little_loop)
 	{
+		// TODO - Do we want this for client mode?
+		// Wait some delay time
 		sleep(timing);
+
+		// If we are running in server mode or both, we need to
+		// read some value out of the hardware and multicast it out
 		if(server_mode == SERVER_MODE || server_mode == BOTH_MODE)
 		{
 			msg = read_hw();
@@ -107,14 +113,18 @@ do_service()
 				return 0;
 		}
 
+		// If we are running in client mode or both, we need to
+		// receive a message and then act on it
 		if (server_mode == CLIENT_MODE || server_mode == BOTH_MODE)
 		{
 			// We should only listen for multicasted messages in pure client mode
+			// In both mode, we already have the msg we are to act on
 			if(server_mode == CLIENT_MODE)
 				if( !(msg = rcv_mcast_msg()) )
 					return 0;
 
 			// TODO - we should not call clean_exit here but return 0
+			// TODO - and let hwmultd.c take care of calling clean_exit
 			if( !(rmsg = (*act_cl)(msg)) )
 			{
 				write_log(CRIT, __FILE__, "client action failed");
@@ -136,6 +146,7 @@ stop_service()
 {
 	int ret ;
 
+	// If we are running in server mode or both, we need to close down our server hardware
 	if(server_mode == SERVER_MODE || server_mode == BOTH_MODE)
 	{
 		if((ret = (*close_hw)()) != 1)
@@ -147,6 +158,7 @@ stop_service()
 			write_log(DBUG, __FILE__, "closed hardware plugin");
 	}
 
+	// If we are running in client mode or both, we need to close down our client hardware
 	if (server_mode == CLIENT_MODE || server_mode == BOTH_MODE)
 	{
 		if((ret = (*close_cl)()) != 1)
@@ -158,6 +170,7 @@ stop_service()
 			write_log(DBUG, __FILE__, "closed client plugin");
 	}
 
+	// If we are running in server mode or both, we need to shutdown the multicast client
 	if(server_mode == SERVER_MODE || server_mode == BOTH_MODE)
 	{
 		if( !mclient_stop() )
@@ -169,6 +182,7 @@ stop_service()
 			write_log(DBUG, __FILE__, "closed multicast client");
 	}
 
+	// Only in pure client mode do we need to shutdown our multicast server
 	if (server_mode == CLIENT_MODE)
 	{
 		if( !mserver_stop() )
