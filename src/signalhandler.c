@@ -54,7 +54,7 @@ void
 handle_hup()
 {
 	write_log(INFO, __FILE__, "SIGHUP recieved");
-	continue_big_loop = 0;
+	continue_little_loop = 0;
 }
 
 

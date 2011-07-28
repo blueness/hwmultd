@@ -146,9 +146,13 @@ main( int argc, char *argv[] )
 	else
 		write_log(DBUG, __FILE__, "registered signals");
 
-	// The big loop
+	// The "big" loop, the main daemon loop which cycles
+	// through a full startup and shutdown of the service.
+	// Each cycle reparse the config file so the daemon can
+	// change behavior.
 	while(1)
 	{
+		// Load plugins
 		if( !load_plugins() )
 		{
 			write_log(CRIT, __FILE__, "load plugins failed");
@@ -157,6 +161,7 @@ main( int argc, char *argv[] )
 		else
 			write_log(DBUG, __FILE__, "loaded plugins");
 
+		// Start the daemon service
 		if( !start_service() )
 		{
 			write_log(CRIT, __FILE__, "service start failed");
@@ -165,8 +170,12 @@ main( int argc, char *argv[] )
 		else
 			write_log(DBUG, __FILE__, "service started");
 
+		// Do the service as long as continue_little_loop=1
+		// Else we fall out of the loop, or clean_exit
+		// This is signal driven
 		do_service();
 
+		// Stop the daemon service
 		if( !stop_service() )
 		{
 			write_log(CRIT, __FILE__, "service stop failed");
@@ -175,6 +184,7 @@ main( int argc, char *argv[] )
 		else
 			write_log(DBUG, __FILE__, "service stopped");
 
+		// Unload plugins
 		if( !unload_plugins() )
 		{
 			write_log(CRIT, __FILE__, "unload plugins failed");
@@ -183,6 +193,7 @@ main( int argc, char *argv[] )
 		else
 			write_log(DBUG, __FILE__, "unloaded plugins");
 
+		// Reread the config file, which may have changed
 		parse_cfg_file();
 	}
 }

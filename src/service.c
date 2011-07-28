@@ -35,6 +35,7 @@ start_service()
 {
 	int ret ;
 
+	// If we run in either server mode or both, initialize the server hardware
 	if(server_mode == SERVER_MODE || server_mode == BOTH_MODE)
 	{
 		if((ret = (*init_hw)()) != 1)
@@ -46,6 +47,7 @@ start_service()
 			write_log(DBUG, __FILE__, "initialized hardware plugin");
 	}
 
+	// If we run in either client mode or both, initialize the client hardware
 	if(server_mode == CLIENT_MODE || server_mode == BOTH_MODE)
 	{
 		if((ret = (*init_cl)()) != 1)
@@ -57,8 +59,8 @@ start_service()
 			write_log(DBUG, __FILE__, "initialized client plugin");
 	}
 
-	// the hwmultd server is a multicast client and
-	// the hwmultd client is a multicast server
+	// The hwmultd server is a multicast client, which initiates net communication
+	// The hwmultd client is a multicast server, which responds to received net communication
 	if(server_mode == SERVER_MODE || server_mode == BOTH_MODE)
 	{
 		if( !mclient_start() )
@@ -70,8 +72,9 @@ start_service()
 			write_log(DBUG, __FILE__, "mclient_start()");
 	}
 
-	//Don't start multicast server in client mode, just "listen" internally
-	if (server_mode == CLIENT_MODE)
+	// Only start multicast server in pure client mode
+	// If we are in both mode, our client will just "listen" internally
+	if(server_mode == CLIENT_MODE)
 	{
 		if( !mserver_start() )
 		{
@@ -82,7 +85,8 @@ start_service()
 			write_log(DBUG, __FILE__, "mserver_start()");
 	}
 
-	continue_big_loop = 1;
+	// We're ready to jump into the little loop
+	continue_little_loop = 1;
 
 	return 1;
 }
@@ -93,7 +97,7 @@ do_service()
 {
 	char *msg, *rmsg;
 
-	while(continue_big_loop)
+	while(continue_little_loop)
 	{
 		sleep(timing);
 		if(server_mode == SERVER_MODE || server_mode == BOTH_MODE)
