@@ -40,6 +40,9 @@
 
 
 
+// Check and optionally set the values of the GLOBAL VALUEs.
+// If any key-value pair is not found, or an illegal value is
+// found, the corresponding GLOBAL VALUE is set to the default.
 void
 sanity_checks()
 {
@@ -51,6 +54,7 @@ sanity_checks()
 
 	write_log(INFO, __FILE__, ">>>>> Parameters set");
 
+	// Is the multicast IP address a legal ipv4 address?
 	if( !(host = gethostbyname(multicast_ip)) )
 	{
 		write_log(ERRO, __FILE__, "bad multicast IP %s.  Defaulting to %s",
@@ -59,6 +63,7 @@ sanity_checks()
 	}
 	else
 	{
+		// If it is, is it a legal mutlicast address?
 		memcpy(&iaddr, host->h_addr_list[0], host->h_length);
 		if( !IN_MULTICAST(ntohl(iaddr.s_addr)) )
 		{
@@ -70,6 +75,7 @@ sanity_checks()
 			write_log(INFO, __FILE__, "Mulitcast IP = %s", multicast_ip);
 	}
 
+	// Is the port a legal value?
 	if(port < MIN_PORT || MAX_PORT < port)
 	{
 		write_log(ERRO, __FILE__, "bad port %d.  Defaulting to %d",
@@ -79,6 +85,7 @@ sanity_checks()
 	else
 		write_log(INFO, __FILE__, "Port         = %d", port);
 
+	// Is the operation mode a legal value?
 	if((server_mode != SERVER_MODE ) && (server_mode != CLIENT_MODE) && (server_mode != BOTH_MODE))
 	{
 		write_log(ERRO, __FILE__, "bad server mode %d.  Defaulting to %d",
@@ -88,16 +95,20 @@ sanity_checks()
 	else
 		write_log(INFO, __FILE__, "Server Mode  = %d", server_mode);
 
+	// Is the supplied username a legal user on the system?
 	if( !(pwd = getpwnam(user_name)) )
 	{
 		write_log(ERRO, __FILE__, "no such user name %s.  Defaulting to %s",
 			user_name, DEFAULT_USERNAME);
 		strncpy(user_name, DEFAULT_USERNAME, UT_NAMESIZE);
 
+		// If not, is the DEFAULT_USERNAME a legal user on the system?
 		if( !(pwd = getpwnam(user_name)) )
 		{
 			write_log(ERRO, __FILE__, "no such user name %s.  Defaulting to %s",
 				user_name, FALLBACK_USERNAME);
+
+			// If not, fall back on the guaranteed username
 			strncpy(user_name, FALLBACK_USERNAME, UT_NAMESIZE);
 			pwd = getpwnam(user_name);
 		}
@@ -105,6 +116,7 @@ sanity_checks()
 	else
 		write_log(INFO, __FILE__, "User name    = %s", user_name);
 
+	// Is the timing a legal value?
 	if( (timing < MIN_TIMING) || (MAX_TIMING < timing) )
 	{
 		write_log(ERRO, __FILE__, "bad timing %d.  Defaulting to %d",
@@ -114,9 +126,13 @@ sanity_checks()
 	else
 		write_log(INFO, __FILE__, "Timing       = %d", timing);
 
+	// Is the interface IP to multicast out of a legal IP address?
+	//TODO - we need to set to the default value on failure
 	if( host = gethostbyname(interface_ip) )
 	{
 		memcpy(&iaddr, host->h_addr_list[0], host->h_length);
+
+		// If so, is it a legal class A, B or C
 		if( !IN_CLASSA(ntohl(iaddr.s_addr)) && !IN_CLASSB(ntohl(iaddr.s_addr))
 				&& !IN_CLASSC(ntohl(iaddr.s_addr)) )
 			write_log(ERRO, __FILE__, "non-class A, B or C IP %s.  Defaulting.", interface_ip);
@@ -126,11 +142,16 @@ sanity_checks()
 	else
 		write_log(ERRO, __FILE__, "bad interface IP %s.  Defaulting.", interface_ip);
 
+	// Let's get the IP address for all the interfaces
+	//TODO - we need to set to the default value on failure
 	if( getifaddrs(&ifa) == 0 )
 	{
+		// Let's loop through all the interface
 		while( ifa != NULL )
 		{
 			saddr = (struct sockaddr_in *) ifa->ifa_addr;
+
+			// This interface matches the interface name we want, so use its IP addr
 			if(saddr->sin_family == AF_INET && !strcmp(ifa->ifa_name, interface_name))
 			{
 				strncpy(interface_ip, inet_ntoa(saddr->sin_addr), MAX_IP_LEN);
@@ -141,12 +162,15 @@ sanity_checks()
 		}
 	}
 	else
+		//TODO - this should be "can't get IP addresses for all interfaces"
 		write_log(ERRO, __FILE__, "can't get IP for interface %s", interface_name);
 
 	//TODO - check for the existence of the the hw_plugin and/or cl_plugin
+	//TODO - we need to set to the default value on failure
 	write_log(INFO, __FILE__, "HW Plugin    = %s", hw_plugin_name);
 	write_log(INFO, __FILE__, "CL Plugin    = %s", cl_plugin_name);
 
+	// Is the log value a legal value?
 	if(log_level < CRIT || DBUG < log_level)
 	{
 		write_log(ERRO, __FILE__, "bad log level %d.  Defaulting to %d", log_level, DEFAULT_LOG_LEVEL);
@@ -159,6 +183,7 @@ sanity_checks()
 }
 
 
+// The maximum length of a line in the configuration file
 #define CONF_LINE_BUFFER 4096
 char conf_file[MAX_CONF_DIR_LEN+MAX_CONF_FILE_LEN];
 
@@ -187,16 +212,19 @@ parse_cfg_file()
 	log_level     = DEFAULT_LOG_LEVEL;
 	server_mode   = DEFAULT_SERVER_MODE ;
 
+	// Open the config file for reading
 	write_log(INFO, __FILE__, "Looking for config file %s", conf_file);
 	if( !(myfile = fopen(conf_file, "r")) )
 		write_log(INFO, __FILE__, "No config file found");
 	else
 	{
+		// Read one line at a time
 		while( fgets(conf_line, CONF_LINE_BUFFER, myfile) )
 		{
+			// Keep a copy of the config line before we start zeroing chars
 			strncpy(conf_line_orig, conf_line, CONF_LINE_BUFFER);
 
-			//Don't parse anything past #
+			// Don't parse anything past #, so we'll just zero it
 			for( i = 0; i < strlen(conf_line); i++ )
 				if( conf_line[i] == '#' )
 				{
@@ -204,12 +232,15 @@ parse_cfg_file()
 					break;
 				}
 
+			// Read the key-value pairs
 			if( sscanf(conf_line, "%s %s", first, second ) != 2 )
 			{
 				conf_line_orig[strlen(conf_line_orig) - 1] = 0; //Remove newline
 				write_log(DBUG, __FILE__, "skipping config line: %s", conf_line_orig);
 				continue;
 			}
+
+			//If you find a recognized key, set its corresponding value
 
 			if( !strcmp(first,"MulticastIP") )
 				strncpy(multicast_ip, second, MAX_IP_LEN);
@@ -247,9 +278,11 @@ parse_cfg_file()
 					log_level = selection;
 		}
 
+		// We're done, so close the file
 		fclose(myfile) ;
 	}
 
+	// With all the GLOBAL VALUEs populated, let's sanitize them
 	sanity_checks();
 }
 
@@ -278,12 +311,16 @@ print_version()
 }
 
 
+// Deal with the command line options
 void
 parse_cmd_args( int argc, char *argv[] )
 {
 	int oc ;
 
 	strncpy(conf_file, DEFAULT_CONF_DIR, MAX_CONF_DIR_LEN);
+
+	// TODO - This should be renamed to DEFAULT_CONFIG_FILE and be
+	// TODO - made configurable at compile time with a -D
 	strcat(conf_file, "/hwmultd.conf");
 
 	while( ( oc = getopt( argc, argv, ":hvc:") ) != -1 )
