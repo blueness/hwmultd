@@ -38,9 +38,11 @@ init_hw()
 	char conf_line[CONF_LINE_BUFFER], first[CONF_LINE_BUFFER], second[CONF_LINE_BUFFER];
 	int i;
 
+	// Allocate a buffer for returning a message from act_cl()
 	if( !(buf = (char *)malloc(MSG_BUFFER*sizeof(char))) )
 		return HW_MALLOC;
 
+	// Prepare the message buffer with the default message
 	memset(buf, 0, MSG_BUFFER*sizeof(char));
 	strcpy(buf, "HW_EXAMPLE_PLUGIN_DEFAULT_MSG");
 
@@ -50,10 +52,13 @@ init_hw()
 	strncat(conf_file, __FILE__, strlen(__FILE__) - 2);
 	strcat(conf_file, ".conf");
 
+	// Open the plugin config file for reading
 	if(myfile = fopen(conf_file, "r"))
 	{
+		// Read one line at a time
 		while(fgets(conf_line, CONF_LINE_BUFFER, myfile))
 		{
+			// Don't parse anything past #, so we'll just zero it
 			for(i = 0; i < strlen(conf_line); i++)
 				if(conf_line[i] == '#')
 				{
@@ -61,13 +66,16 @@ init_hw()
 					break;
 				}
 
+			// Read the key-value pairs
 			if(sscanf(conf_line, "%s %s", first, second ) != 2)
 				continue;
 
+			// The only recognized key is the Message to multicast
 			if( !strcmp(first,"Message") )
 				strncpy(buf, second, MSG_BUFFER);
 		}
 
+		// We're done, so close the file
 		if(fclose(myfile))
 			return HW_CLOSE_FILE;
 	}
@@ -77,21 +85,27 @@ init_hw()
 	return HW_SUCCESS;
 }
 
+
 int
 reset_hw()
 {
 	return HW_SUCCESS;
 }
 
+
+// The pretend the hardware device always returns buf
 char *
 read_hw()
 {
 	return buf;
 }
 
+
 int
 close_hw()
 {
+	// Free the allocated buffer
 	free(buf);
+
 	return HW_SUCCESS;
 }
