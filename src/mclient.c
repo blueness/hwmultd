@@ -110,6 +110,15 @@ mclient_start()
 	else
 		write_log(DBUG, __FILE__,"client socket bound");
 
+	// Set our ttl.  Do we want our multicast packets to leave our subnet?
+	if(setsockopt(cd, IPPROTO_IP, IP_MULTICAST_TTL, &ttl,  sizeof(unsigned char)))
+	{
+		write_log(ERRO, __FILE__,"client cannot set ttl %d", (int)ttl);
+		return 0;
+	}
+	else
+		write_log(DBUG, __FILE__,"client set ttl %d", (int)ttl);
+
 	// Set our loop.  Do we loop multicast messages back to ourselves?
 	if(setsockopt(cd, IPPROTO_IP, IP_MULTICAST_LOOP, &loop, sizeof(unsigned char)))
 	{
@@ -143,16 +152,6 @@ mclient_start()
 	else
 		write_log(DBUG, __FILE__,"client set iaddr %s", interface_ip);
 
-
-	// TODO - should we move this to just below where we set loop?  Its easier to read
-	// Set our ttl.  Do we want our multicast packets to leave our subnet?
-	if(setsockopt(cd, IPPROTO_IP, IP_MULTICAST_TTL, &ttl,  sizeof(unsigned char)))
-	{
-		write_log(ERRO, __FILE__,"client cannot set ttl %d", (int)ttl);
-		return 0;
-	}
-	else
-		write_log(DBUG, __FILE__,"client set ttl %d", (int)ttl);
 
 	// Now that we have (ab)used caddr to aim the client socket out the desired
 	// interface, let set the correct address family, multicast IP and port
