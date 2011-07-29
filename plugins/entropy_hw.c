@@ -71,6 +71,7 @@ init_hw()
 	strncat(conf_file, __FILE__, strlen(__FILE__) - 2);
 	strcat(conf_file, ".conf");
 
+	// Default to urandom if no Device is found in the plugin config file
 	strcpy(dev, "/dev/urandom");
 	nbytes = DEFAULT_NBYTES;
 

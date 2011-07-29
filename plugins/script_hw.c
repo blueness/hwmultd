@@ -58,7 +58,7 @@ init_hw()
 	strncat(conf_file, __FILE__, strlen(__FILE__) - 2);
 	strcat(conf_file, ".conf");
 
-	// Default to null.sh if no Script is found
+	// Default to null.sh if no Script is found in the plugin config file
 	strcpy(script_file, "null.sh");
 
 	// Open the plugin config file for reading
