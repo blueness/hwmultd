@@ -20,6 +20,7 @@
 #include <clcommon.h>
 
 
+//Every function does nothing successfully
 
 int
 init_cl()

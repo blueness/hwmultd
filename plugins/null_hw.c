@@ -20,6 +20,7 @@
 #include <hwcommon.h>
 
 
+//Every function does nothing successfully
 
 int
 init_hw()
