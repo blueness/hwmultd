@@ -47,6 +47,7 @@ init_hw()
 	strcpy(buf, "HW_EXAMPLE_PLUGIN_DEFAULT_MSG");
 
 	//TODO - properly compensate for extras past MAX_CONF_{DIR,FILE}_LEN
+	// Construct the full path to the plugin config file
 	strncpy(conf_file, DEFAULT_CONF_DIR, MAX_CONF_DIR_LEN);
 	strcat(conf_file, "/");
 	strncat(conf_file, __FILE__, strlen(__FILE__) - 2);
