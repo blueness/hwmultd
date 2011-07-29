@@ -38,7 +38,7 @@ init_hw()
 	char conf_line[CONF_LINE_BUFFER], first[CONF_LINE_BUFFER], second[CONF_LINE_BUFFER];
 	int i;
 
-	// Allocate a buffer for returning a message from act_cl()
+	// Allocate a buffer for returning a message from read_hw()
 	if( !(buf = (char *)malloc(MSG_BUFFER*sizeof(char))) )
 		return HW_MALLOC;
 

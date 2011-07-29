@@ -32,9 +32,11 @@ char *buf;
 int
 init_hw()
 {
+	// Allocate a buffer for returning a message from read_hw()
 	if( !(buf = (char *)malloc(MSG_BUFFER*sizeof(char))) )
 		return HW_MALLOC;
 
+	// Zero the message buffer
 	memset(buf, 0, MSG_BUFFER*sizeof(char));
 
 	return HW_SUCCESS;
@@ -48,12 +50,12 @@ reset_hw()
 }
 
 
-
 char *read_hw()
 {
 	time_t t;
 	struct tm *tmp;
 
+	// Construct a well formed time stamp to be returned for multicasting
 	t = time(NULL);
 	tmp = localtime(&t);
 
@@ -71,6 +73,8 @@ char *read_hw()
 int
 close_hw()
 {
+	// Free the allocated buffer
 	free(buf);
+
 	return HW_SUCCESS;
 }
