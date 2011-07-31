@@ -122,7 +122,7 @@ act_cl(char *msg)
 	//TODO - What if this fails?
 	// Run the script and pipe back the output to be returned for logging
 	FILE *f = popen(script_instance, "r");
-	memset(buf, 0, sizeof(buf));
+	memset(buf, 0, MSG_BUFFER*sizeof(char));
 	fread(buf, sizeof(char), 4096, f);
 	pclose(f);
 

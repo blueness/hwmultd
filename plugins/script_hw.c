@@ -114,7 +114,7 @@ read_hw()
 	// Run the script and pipe back the output to be returned for multicasting
 	//TODO - What if this fails?
 	FILE *f = popen(script, "r");
-	memset(buf, 0, sizeof(buf));
+	memset(buf, 0, MSG_BUFFER*sizeof(char));
 	fread(buf, sizeof(char), 4096, f);
 	pclose(f);
 

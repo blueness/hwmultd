@@ -179,7 +179,7 @@ read_hw()
 	int i, rbytes;
 	uint8_t data[MAX_NBYTES];
 
-	memset( data, 0, MAX_NBYTES*sizeof(char) );
+	memset(data, 0, MAX_NBYTES*sizeof(char));
 
 	// Repeatedly do a non-blocking read until we get some bytes
 	rbytes = 0;
