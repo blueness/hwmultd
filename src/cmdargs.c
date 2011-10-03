@@ -172,7 +172,7 @@ sanity_checks()
 
 	// Is the log destination a legal value?
 	// TODO - you may want an array for these in cmdargs.h
-	if( strcmp(log_dest, "file" ) && strcmp(log_dest, "syslog" ) && strcmp(log_dest, "both" ) )
+	if(strcmp(log_dest, "file") && strcmp(log_dest, "syslog") && strcmp(log_dest, "both"))
 	{
 		write_log(ERRO, __FILE__, "bad log destination %s.  Defaulting to %s", log_dest, DEFAULT_LOG_DEST);
 		strncpy(log_dest, DEFAULT_LOG_DEST, MAX_LOG_DEST);

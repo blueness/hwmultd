@@ -120,7 +120,7 @@ int timing;
 #define MAX_LOG_DEST 6
 
 // GLOBAL VALUE: The log destination
-int log_dest;
+char log_dest[MAX_LOG_DEST];
 
 // Log level to use before log_level is read from the config file
 #define EARLY_LOG_LEVEL 3
