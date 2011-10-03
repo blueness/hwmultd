@@ -71,7 +71,7 @@ char interface_name[MAX_IF_LEN];
 #define CLIENT_MODE 0
 #define SERVER_MODE 1
 #define BOTH_MODE 2
-#define DEFAULT_SERVER_MODE 0
+#define DEFAULT_MODE 0
 
 // GLOBAL VALUE: What operation mode are we running in?
 int operation_mode;

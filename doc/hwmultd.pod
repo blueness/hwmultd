@@ -218,7 +218,7 @@ will do.  See RFC2365.
 
 The multicast port.  This defaults to 8000.
 
-=item B<Server>
+=item B<Mode>
 
 This is the mode in which B<hwmultd> will operate.  A value of 0
 indicates that B<hwmultd> will only act as a client, accepting
