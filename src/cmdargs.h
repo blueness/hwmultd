@@ -114,6 +114,14 @@ int timing;
  * See log.h for the definition of the log levels
  ************************************************************************/
 
+// DEFAULT_LOGDEST = where do we log to by default?
+// "file" = file only, "syslog" = syslog only, "both" = both
+#define DEFAULT_LOG_DEST "file"
+#define MAX_LOG_DEST 6
+
+// GLOBAL VALUE: The log destination
+int log_dest;
+
 // Log level to use before log_level is read from the config file
 #define EARLY_LOG_LEVEL 3
 

@@ -170,6 +170,16 @@ sanity_checks()
 	write_log(INFO, __FILE__, "HW Plugin    = %s", hw_plugin_name);
 	write_log(INFO, __FILE__, "CL Plugin    = %s", cl_plugin_name);
 
+	// Is the log destination a legal value?
+	// TODO - you may want an array for these in cmdargs.h
+	if( strcmp(log_dest, "file" ) && strcmp(log_dest, "syslog" ) && strcmp(log_dest, "both" ) )
+	{
+		write_log(ERRO, __FILE__, "bad log destination %s.  Defaulting to %s", log_dest, DEFAULT_LOG_DEST);
+		strncpy(log_dest, DEFAULT_LOG_DEST, MAX_LOG_DEST);
+	}
+	else
+		write_log(INFO, __FILE__, "Log Dest     = %s", log_dest);
+
 	// Is the log value a legal value?
 	if(log_level < CRIT || DBUG < log_level)
 	{
@@ -205,6 +215,7 @@ parse_cfg_file()
 	strncpy(interface_name, DEFAULT_INTERFACE_NAME, MAX_IF_LEN);
 	strncpy(hw_plugin_name, DEFAULT_HW_PLUGIN, MAX_PLUGIN_LEN);
 	strncpy(cl_plugin_name, DEFAULT_CL_PLUGIN, MAX_PLUGIN_LEN);
+	strncpy(log_dest, DEFAULT_LOG_DEST, MAX_LOG_DEST);
 	log_level = DEFAULT_LOG_LEVEL;
 
 	// Open the config file for reading
@@ -267,6 +278,9 @@ parse_cfg_file()
 
 			if( !strcmp(first,"CLPlugin") )
 				strncpy(cl_plugin_name, second, MAX_PLUGIN_LEN);
+
+			if(strcmp(first,"LOGTO") == 0)
+				strncpy(log_dest, second, MAX_LOG_DEST);
 
 			if(strcmp(first,"Debug") == 0)
 				if( sscanf(second, "%d", &selection) == 1 )
