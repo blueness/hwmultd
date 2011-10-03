@@ -116,7 +116,10 @@ int timing;
 
 // DEFAULT_LOGDEST = where do we log to by default?
 // "file" = file only, "syslog" = syslog only, "both" = both
-#define DEFAULT_LOG_DEST "file"
+#define LOGTO_FILE "file"
+#define LOGTO_SYSLOG "syslog"
+#define LOGTO_BOTH "both"
+#define DEFAULT_LOG_DEST LOGTO_FILE
 #define MAX_LOG_DEST 6
 
 // GLOBAL VALUE: The log destination

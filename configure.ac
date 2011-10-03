@@ -23,7 +23,7 @@ AC_CHECK_LIB([dl], [dlopen], [], [AC_MSG_ERROR(["Missing dlopen"])])
 # Checks for header files.
 AC_CHECK_HEADERS([arpa/inet.h dlfcn.h fcntl.h ifaddrs.h netdb.h netinet/in.h \
 	pwd.h signal.h stdarg.h stdint.h stdio.h stdlib.h string.h sys/socket.h \
-	sys/stat.h sys/types.h termios.h time.h unistd.h utmp.h],
+	sys/stat.h sys/types.h syslog.h termios.h time.h unistd.h utmp.h],
 [], [AC_MSG_ERROR(["Missing necessary header"])])
 
 # Checks for typedefs, structures, and compiler characteristics.

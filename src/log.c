@@ -19,17 +19,20 @@
 
 #include "cmdargs.h"
 #include "log.h"
+#include <config.h>
 
 
 
 #include <stdio.h>
 #include <stdarg.h>
 #include <string.h>
+#include <syslog.h>
 #include <time.h>
 
 
 
-#define TIME_BUFFER 1000
+#define MAX_TIME 1024
+#define MAX_LINE 2048
 
 FILE *log_stream;
 
@@ -39,11 +42,16 @@ open_log()
 {
 	// We may not know our log level, but we need one, so default
 	log_level = EARLY_LOG_LEVEL;
+	log_stream = NULL;
 
 	// Open the log file, which may already exit, for writing
 	// Append, do not truncate
-	if( !(log_stream = fopen(LOG_FILE, "a+")) )
-		return 0;
+	if( !strcmp(log_dest, LOGTO_FILE) || !strcmp(log_dest, LOGTO_BOTH))
+		if( !(log_stream = fopen(LOG_FILE, "a+")) )
+			return 0;
+
+	if( !strcmp(log_dest, LOGTO_SYSLOG) || !strcmp(log_dest, LOGTO_BOTH))
+		openlog (PACKAGE_NAME, LOG_PID, LOG_DAEMON);
 
 	write_log(CRIT, __FILE__, "START>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>") ;
 	return 1;
@@ -56,11 +64,13 @@ write_log(int level, const char *code, const char *fmt,...)
 	// TODO - level_name should probably go into the log.h
 	va_list ap;
 	const char *level_name[] = { "CRIT", "ERRO", "INFO", "DBUG" } ;
+	int syslog_level[] = { LOG_CRIT, LOG_ERR, LOG_INFO, LOG_DEBUG } ;
 
 	time_t t;
 	struct tm *tmp;
-	char tmstr[TIME_BUFFER];
-	char tmstp[TIME_BUFFER];
+	char tmstr[MAX_TIME];
+	char tmstp[MAX_TIME];
+	char line[MAX_LINE];
 
 	// Are we being asked to log beyond our log level?  If so, log nothing
 	if(log_level < level)
@@ -82,22 +92,27 @@ write_log(int level, const char *code, const char *fmt,...)
 	strcat( tmstp, level_name[ level ] ) ;
 
 	// Write the timestamp + the source code file to the log
-	fprintf(log_stream, "%s: ", tmstp);
-	fprintf(log_stream, "%s: ", code );
+	sprintf(line, "%s: ", tmstp);
+	sprintf(line, "%s: ", code );
 
 	// Write the variadic message parameters, formatted according to fmt
 	va_start(ap, fmt);
-	vfprintf(log_stream, fmt, ap);
+	sprintf(line, fmt, ap);
 	va_end(ap);
 
 	// We need to guarantee that each log line is new line terminated
 	// otherwise the log becomes a mess.  Also, we don't want to put
 	// "\n" in ever write_log throughout the code
-	fprintf(log_stream, "\n");
+	if( !strcmp(log_dest, LOGTO_FILE) || !strcmp(log_dest, LOGTO_BOTH))
+		fprintf(log_stream, "%s\n", line);
+	
+	if( !strcmp(log_dest, LOGTO_SYSLOG) || !strcmp(log_dest, LOGTO_BOTH))
+		syslog(syslog_level[ level ], line);
 
 	// We want to see the log line written immediately, don't wait for the OS
-	if(fflush(log_stream) != 0)
-		return 0;
+	if( !strcmp(log_dest, LOGTO_FILE) || !strcmp(log_dest, LOGTO_BOTH))
+		if(fflush(log_stream) != 0)
+			return 0;
 
 	return 1;
 }
@@ -107,8 +122,15 @@ int
 close_log()
 {
 	write_log(CRIT, __FILE__, "EXITING<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<") ;
-	if(fclose(log_stream))
-                return 0 ;
-        else
-                return 1 ;
+
+	if( !strcmp(log_dest, LOGTO_FILE) || !strcmp(log_dest, LOGTO_BOTH))
+	{
+		if(fclose(log_stream))
+			return 0 ;
+		else
+			return 1 ;
+	}
+
+	if( !strcmp(log_dest, LOGTO_SYSLOG) || !strcmp(log_dest, LOGTO_BOTH))
+		closelog ();
 }
