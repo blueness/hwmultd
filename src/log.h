@@ -30,11 +30,6 @@
 #define ERRO 1
 #define CRIT 0
 
-// TODO - This should be renamed ot DEFAULT_LOG_FILE and be
-// TODO - made configurable at compile time with a -D
-// The name of the log file
-#define LOG_FILE "/var/log/hwmultd.log"
-
 // If the log file doesn't exist, create it.  If it does, open for appending
 int open_log();
 

@@ -122,6 +122,12 @@ int timing;
 // GLOBAL VALUE: The log destination
 int log_dest;
 
+// DEFAULT_LOG_FILE = file to which we log if we log to file
+#define DEFAULT_LOG_FILE "/var/log/hwmultd.log"
+
+#define MAX_LOG_FILE_LEN 4096
+char *log_file[MAX_LOG_FILE_LEN];
+
 // Log level to use before log_level is read from the config file
 #define EARLY_LOG_LEVEL 3
 

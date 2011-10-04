@@ -290,9 +290,9 @@ print_help()
 	"Bug Reports  : " PACKAGE_BUGREPORT "\n"
 	"Program Name : " PACKAGE_NAME "\n"
 	"Description  : Broadcast hardware information\n\n"
-	"Usage        : %s {[-c] configfile | [-v] | [-h]}\n"
-	"options      : -c configfile  Use an non-default config file\n"
-	"             : -l  Log to file (default if neither -l nor -s is given)\n"
+	"Usage        : %s [-c configfile] [-l logfile] -s | -v | -h}\n"
+	"options      : -c  configfile   Use an non-default config file\n"
+	"             : -l  logfile      Log to logfile\n"
 	"             : -s  Log to syslog\n"
 	"             : -v  Print out version\n"
 	"             : -h  Print out this help\n",
@@ -320,9 +320,10 @@ parse_cmd_args( int argc, char *argv[] )
 	// TODO - made configurable at compile time with a -D
 	strcat(conf_file, "/hwmultd.conf");
 
+	strcpy(log_file, DEFAULT_LOG_FILE);
 	log_dest = 0;
 
-	while( ( oc = getopt( argc, argv, ":hvc:ls") ) != -1 )
+	while( ( oc = getopt( argc, argv, ":hvc:l:s") ) != -1 )
 	{
 		switch(oc)
 		{
@@ -337,6 +338,7 @@ parse_cmd_args( int argc, char *argv[] )
 				break;
 			case 'l':
 				log_dest |= LOGTO_FILE;
+				strncpy(log_file, optarg, MAX_LOG_FILE_LEN);
 				break;
 			case 's':
 				log_dest |= LOGTO_SYSLOG;

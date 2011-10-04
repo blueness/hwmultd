@@ -47,7 +47,7 @@ open_log()
 	// Open the log file, which may already exit, for writing
 	// Append, do not truncate
 	if(log_dest & LOGTO_FILE)
-		if( !(log_stream = fopen(LOG_FILE, "a+")) )
+		if( !(log_stream = fopen(log_file, "a+")) )
 			return 0;
 
 	if(log_dest & LOGTO_SYSLOG)
