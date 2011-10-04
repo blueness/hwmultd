@@ -5,7 +5,7 @@ hardware information
 
 =head1 SYNOPSIS
 
-B<hwmultd> [-h] [-v] [-c F<config> ]
+B<hwmultd> [-c F<config> ] [-l F<logfile>] -s | -v | -h 
 
 =head1 DESCRIPTION
 
@@ -32,15 +32,24 @@ pid file and forks into the background as a daemon.
 Use an alternate configuration file instead of the default
 F</etc/hwmultd/hwmultd.conf>.
 
-=item B<-h>
+=item B<-l logfile>
 
-Do not fork into the background.  Print out information about
-command line options and exit.
+Use an alternate log file instead of the default F</var/log/hwmultd.log>.
+
+=item B<-s>
+
+Use syslog instead of a log file.  If both -l B<logfile> and -s are
+given, then both will be used.
 
 =item B<-v>
 
 Do not fork into the background.  Print out version information
 and exit.
+
+=item B<-h>
+
+Do not fork into the background.  Print out information about
+command line options and exit.
 
 =back
 

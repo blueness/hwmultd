@@ -134,7 +134,7 @@ hwmultd \- multicast hardware information, or respond to mutlicasted
 hardware information
 .SH "SYNOPSIS"
 .IX Header "SYNOPSIS"
-\&\fBhwmultd\fR [\-h] [\-v] [\-c \fIconfig\fR ]
+\&\fBhwmultd\fR [\-c \fIconfig\fR ] [\-l \fIlogfile\fR] \-s | \-v | \-h
 .SH "DESCRIPTION"
 .IX Header "DESCRIPTION"
 \&\fBhwmultd\fR operates in one of two modes (or both).  As a server,
@@ -155,14 +155,21 @@ pid file and forks into the background as a daemon.
 .IX Item "-c config"
 Use an alternate configuration file instead of the default
 \&\fI/etc/hwmultd/hwmultd.conf\fR.
-.IP "\fB\-h\fR" 4
-.IX Item "-h"
-Do not fork into the background.  Print out information about
-command line options and exit.
+.IP "\fB\-l logfile\fR" 4
+.IX Item "-l logfile"
+Use an alternate log file instead of the default \fI/var/log/hwmultd.log\fR.
+.IP "\fB\-s\fR" 4
+.IX Item "-s"
+Use syslog instead of a log file.  If both \-l \fBlogfile\fR and \-s are
+given, then both will be used.
 .IP "\fB\-v\fR" 4
 .IX Item "-v"
 Do not fork into the background.  Print out version information
 and exit.
+.IP "\fB\-h\fR" 4
+.IX Item "-h"
+Do not fork into the background.  Print out information about
+command line options and exit.
 .SH "SIGNALS"
 .IX Header "SIGNALS"
 \&\fBhwmultd\fR responds to three signals \fI\s-1SIGTERM\s0\fR, \fI\s-1SIGHUP\s0\fR and
