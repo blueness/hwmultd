@@ -46,11 +46,11 @@ open_log()
 
 	// Open the log file, which may already exit, for writing
 	// Append, do not truncate
-	if( !strcmp(log_dest, LOGTO_FILE) || !strcmp(log_dest, LOGTO_BOTH))
+	if(log_dest & LOGTO_FILE)
 		if( !(log_stream = fopen(LOG_FILE, "a+")) )
 			return 0;
 
-	if( !strcmp(log_dest, LOGTO_SYSLOG) || !strcmp(log_dest, LOGTO_BOTH))
+	if(log_dest & LOGTO_SYSLOG)
 		openlog (PACKAGE_NAME, LOG_PID, LOG_DAEMON);
 
 	write_log(CRIT, __FILE__, "START>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>") ;
@@ -76,43 +76,51 @@ write_log(int level, const char *code, const char *fmt,...)
 	if(log_level < level)
 		return 0;
 
-	// Prepare time stamp
-	t = time(NULL);
-	tmp = localtime(&t);
-
-	if(tmp != NULL)
+	if(log_dest & LOGTO_FILE)
 	{
-		if(strftime(tmstr, sizeof(tmstr), "[%d/%b/%Y:%X %z]", tmp) != 0)
-			strcpy( tmstp, tmstr ) ;
-	}
-	else
-		strcpy( tmstp, "[NO TIME]" ) ;
+		// Prepare time stamp
+		t = time(NULL);
+		tmp = localtime(&t);
 
-	strcat( tmstp, " " ) ;
-	strcat( tmstp, level_name[ level ] ) ;
+		if(tmp != NULL)
+		{
+			if(strftime(tmstr, sizeof(tmstr), "[%d/%b/%Y:%X %z]", tmp) != 0)
+				strcpy(tmstp, tmstr) ;
+		}
+		else
+			strcpy(tmstp, "[NO TIME]") ;
 
-	// Write the timestamp + the source code file to the log
-	sprintf(line, "%s: ", tmstp);
-	sprintf(line, "%s: ", code );
+		strcat( tmstp, " " ) ;
+		strcat( tmstp, level_name[ level ] ) ;
 
-	// Write the variadic message parameters, formatted according to fmt
-	va_start(ap, fmt);
-	sprintf(line, fmt, ap);
-	va_end(ap);
+		// Write the timestamp + the source code file to the log
+		fprintf(log_stream, "%s: ", tmstp);
+		fprintf(log_stream, "%s: ", code );
 
-	// We need to guarantee that each log line is new line terminated
-	// otherwise the log becomes a mess.  Also, we don't want to put
-	// "\n" in ever write_log throughout the code
-	if( !strcmp(log_dest, LOGTO_FILE) || !strcmp(log_dest, LOGTO_BOTH))
-		fprintf(log_stream, "%s\n", line);
-	
-	if( !strcmp(log_dest, LOGTO_SYSLOG) || !strcmp(log_dest, LOGTO_BOTH))
-		syslog(syslog_level[ level ], line);
+		// Write the variadic message parameters, formatted according to fmt
+		va_start(ap, fmt);
+		vfprintf(log_stream, fmt, ap);
+		va_end(ap);
 
-	// We want to see the log line written immediately, don't wait for the OS
-	if( !strcmp(log_dest, LOGTO_FILE) || !strcmp(log_dest, LOGTO_BOTH))
+		// We need to guarantee that each log line is new line terminated
+		// otherwise the log becomes a mess.  Also, we don't want to put
+		// "\n" in ever write_log throughout the code
+		fprintf(log_stream, "\n");
+
+		// We want to see the log line written immediately,
+		// don't wait for the OS
 		if(fflush(log_stream) != 0)
 			return 0;
+	}
+	
+	if(log_dest & LOGTO_SYSLOG)
+	{
+		va_start(ap, fmt);
+		vsprintf(line, fmt, ap);
+		va_end(ap);
+
+		syslog(syslog_level[ level ], line);
+	}
 
 	return 1;
 }
@@ -123,7 +131,7 @@ close_log()
 {
 	write_log(CRIT, __FILE__, "EXITING<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<") ;
 
-	if( !strcmp(log_dest, LOGTO_FILE) || !strcmp(log_dest, LOGTO_BOTH))
+	if(log_dest & LOGTO_FILE)
 	{
 		if(fclose(log_stream))
 			return 0 ;
@@ -131,6 +139,6 @@ close_log()
 			return 1 ;
 	}
 
-	if( !strcmp(log_dest, LOGTO_SYSLOG) || !strcmp(log_dest, LOGTO_BOTH))
+	if(log_dest & LOGTO_SYSLOG)
 		closelog ();
 }

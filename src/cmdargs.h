@@ -115,15 +115,12 @@ int timing;
  ************************************************************************/
 
 // DEFAULT_LOGDEST = where do we log to by default?
-// "file" = file only, "syslog" = syslog only, "both" = both
-#define LOGTO_FILE "file"
-#define LOGTO_SYSLOG "syslog"
-#define LOGTO_BOTH "both"
+#define LOGTO_FILE	1
+#define LOGTO_SYSLOG	2
 #define DEFAULT_LOG_DEST LOGTO_FILE
-#define MAX_LOG_DEST 6
 
 // GLOBAL VALUE: The log destination
-char log_dest[MAX_LOG_DEST];
+int log_dest;
 
 // Log level to use before log_level is read from the config file
 #define EARLY_LOG_LEVEL 3

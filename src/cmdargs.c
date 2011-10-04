@@ -170,16 +170,6 @@ sanity_checks()
 	write_log(INFO, __FILE__, "HW Plugin    = %s", hw_plugin_name);
 	write_log(INFO, __FILE__, "CL Plugin    = %s", cl_plugin_name);
 
-	// Is the log destination a legal value?
-	// TODO - you may want an array for these in cmdargs.h
-	if(strcmp(log_dest, LOGTO_FILE) && strcmp(log_dest, LOGTO_SYSLOG) && strcmp(log_dest, LOGTO_BOTH))
-	{
-		write_log(ERRO, __FILE__, "bad log destination %s.  Defaulting to %s", log_dest, DEFAULT_LOG_DEST);
-		strncpy(log_dest, DEFAULT_LOG_DEST, MAX_LOG_DEST);
-	}
-	else
-		write_log(INFO, __FILE__, "Log Dest     = %s", log_dest);
-
 	// Is the log value a legal value?
 	if(log_level < CRIT || DBUG < log_level)
 	{
@@ -215,7 +205,6 @@ parse_cfg_file()
 	strncpy(interface_name, DEFAULT_INTERFACE_NAME, MAX_IF_LEN);
 	strncpy(hw_plugin_name, DEFAULT_HW_PLUGIN, MAX_PLUGIN_LEN);
 	strncpy(cl_plugin_name, DEFAULT_CL_PLUGIN, MAX_PLUGIN_LEN);
-	strncpy(log_dest, DEFAULT_LOG_DEST, MAX_LOG_DEST);
 	log_level = DEFAULT_LOG_LEVEL;
 
 	// Open the config file for reading
@@ -279,9 +268,6 @@ parse_cfg_file()
 			if( !strcmp(first,"CLPlugin") )
 				strncpy(cl_plugin_name, second, MAX_PLUGIN_LEN);
 
-			if(strcmp(first,"LOGTO") == 0)
-				strncpy(log_dest, second, MAX_LOG_DEST);
-
 			if(strcmp(first,"Debug") == 0)
 				if( sscanf(second, "%d", &selection) == 1 )
 					log_level = selection;
@@ -305,7 +291,9 @@ print_help()
 	"Program Name : " PACKAGE_NAME "\n"
 	"Description  : Broadcast hardware information\n\n"
 	"Usage        : %s {[-c] configfile | [-v] | [-h]}\n"
-	"options      : -c configfile  Use an non-default config file \n"
+	"options      : -c configfile  Use an non-default config file\n"
+	"             : -l  Log to file (default if neither -l nor -s is given)\n"
+	"             : -s  Log to syslog\n"
 	"             : -v  Print out version\n"
 	"             : -h  Print out this help\n",
 	PACKAGE_NAME
@@ -332,7 +320,9 @@ parse_cmd_args( int argc, char *argv[] )
 	// TODO - made configurable at compile time with a -D
 	strcat(conf_file, "/hwmultd.conf");
 
-	while( ( oc = getopt( argc, argv, ":hvc:") ) != -1 )
+	log_dest = 0;
+
+	while( ( oc = getopt( argc, argv, ":hvc:ls") ) != -1 )
 	{
 		switch(oc)
 		{
@@ -345,6 +335,12 @@ parse_cmd_args( int argc, char *argv[] )
 			case 'c':
 				strncpy(conf_file, optarg, MAX_CONF_DIR_LEN+MAX_CONF_FILE_LEN);
 				break;
+			case 'l':
+				log_dest |= LOGTO_FILE;
+				break;
+			case 's':
+				log_dest |= LOGTO_SYSLOG;
+				break;
 			case ':':
 				fprintf(stderr, "%s: option -%c requires argument\n", argv[0], optopt);
 				break;
@@ -353,4 +349,7 @@ parse_cmd_args( int argc, char *argv[] )
 				fprintf(stderr, "%s: option -%c is invalid: ignored\n", argv[0], optopt);
 		}
 	}
+
+	if(log_dest == 0)
+		log_dest = DEFAULT_LOG_DEST;
 }
