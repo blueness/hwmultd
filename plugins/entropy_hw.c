@@ -182,7 +182,6 @@ read_hw()
 	memset(data, 0, MAX_NBYTES*sizeof(char));
 
 	// Repeatedly do a non-blocking read until we get some bytes
-	rbytes = 0;
 	for(;;)
 	{
 		usleep(DELAY);
