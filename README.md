@@ -7,7 +7,8 @@ servers on the same subnet can act on that information.
 
 Authors:
 
-	Anthony G. Basile	<basile@opensource.dyc.edu>
+* Anthony G. Basile	<basile@opensource.dyc.edu>
 
+## Build status
+[![Build Status](https://travis-ci.org/blueness/hwmultd.svg?branch=master)](https://travis-ci.org/blueness/hwmultd)
 
-2011-05-21
